@@ -19,23 +19,26 @@ package com.github.i49.cascade.core.matchers;
 import org.w3c.dom.Element;
 
 /**
- * The base type for performing various kinds of matching against given element.
+ *
  */
-@FunctionalInterface
-public interface Matcher {
-    
-    /**
-     * Performs matching for given element.
-     * 
-     * @param element the element to check, cannot be {@code null}.
-     * @return {@code true} if given element satisfied the condition, {@code false} otherwise. 
-     */
-    boolean matches(Element element);
-    
-    default Matcher and(Matcher other) {
-        if (other == null) {
-            return this;
+public class DashMatcher extends AttributeValueMatcher {
+
+    public DashMatcher(String name, String value) {
+        super(name, value);
+    }
+   
+    @Override
+    public boolean matches(Element element) {
+        if (!super.matches(element)) {
+            return false;
         }
-        return new AllOfMatcher(this, other);
+        String actual = element.getAttribute(getName());
+        String expected = getExpectedValue();
+        return actual.equals(expected) || actual.startsWith(expected + "-");
+    }
+    
+    @Override
+    protected String getSymbol() {
+        return "|=";
     }
 }

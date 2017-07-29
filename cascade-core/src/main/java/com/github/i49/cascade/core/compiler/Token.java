@@ -17,12 +17,9 @@
 package com.github.i49.cascade.core.compiler;
 
 /**
- *
+ * Tokens to be extracted from selector expression.
  */
 public class Token {
-    
-    private final TokenCategory category;
-    private final String lexeme;
     
     public static final Token UNKNOWN = new Token(TokenCategory.UNKNOWN, "");
     public static final Token EOI = new Token(TokenCategory.EOI, ""); 
@@ -32,22 +29,69 @@ public class Token {
     public static final Token TILDE = new Token(TokenCategory.TILDE, "~"); 
     public static final Token WILDCARD = new Token(TokenCategory.WILDCARD, "*"); 
     public static final Token PERIOD = new Token(TokenCategory.PERIOD, "."); 
+    public static final Token SPACE = new Token(TokenCategory.SPACE, " ");
+    public static final Token OPENING_BRACKET = new Token(TokenCategory.OPENING_BRACKET, "["); 
+    public static final Token CLOSING_BRACKET = new Token(TokenCategory.OPENING_BRACKET, "]"); 
+    public static final Token EXACT_MATCH = new Token(TokenCategory.EXACT_MATCH, "=");
+    public static final Token INCLUDES = new Token(TokenCategory.INCLUDES, "~=");
+    public static final Token DASH_MATCH = new Token(TokenCategory.DASH_MATCH, "|=");
+    public static final Token PREFIX_MATCH = new Token(TokenCategory.PREFIX_MATCH, "^="); 
+    public static final Token SUFFIX_MATCH = new Token(TokenCategory.SUFFIX_MATCH, "$="); 
+    public static final Token SUBSTRING_MATCH = new Token(TokenCategory.SUBSTRING_MATCH, "*="); 
     
-    public Token(TokenCategory category, String lexeme) {
+    private final TokenCategory category;
+    private final String lexeme;
+    
+    public static Token of(TokenCategory category, String lexeme) {
+        if (category == TokenCategory.STRING) {
+            return new StringToken(lexeme);
+        } else {
+            return new Token(category, lexeme);
+        }
+    }
+    
+    private Token(TokenCategory category, String lexeme) {
         this.category = category;
         this.lexeme = lexeme;
     }
     
+    /**
+     * Returns the category of this token.
+     * 
+     * @return the category of this token.
+     */
     public TokenCategory getCategory() {
         return category;
     }
     
+    /**
+     * Returns the original lexeme of this token.
+     * 
+     * @return the lexeme of this token.
+     */
     public String getLexeme() {
         return lexeme;
+    }
+    
+    public String getValue() {
+        return getLexeme();
     }
     
     @Override
     public String toString() {
         return getLexeme() + "@" + getCategory().name();
+    }
+    
+    private static final class StringToken extends Token {
+        
+        public StringToken(String lexeme) {
+            super(TokenCategory.STRING, lexeme);
+        }
+
+        @Override
+        public String getValue() {
+            String lexeme = getLexeme();
+            return lexeme.substring(1, lexeme.length() - 1);
+        }
     }
 }

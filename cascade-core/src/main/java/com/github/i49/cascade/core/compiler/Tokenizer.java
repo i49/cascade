@@ -24,15 +24,9 @@ import static java.lang.Character.isDigit;
  */
 public class Tokenizer {
     
-    private static final int HISTORY_SIZE = 16;
-    
     private final String input;
     private int currentIndex;
     private int nextIndex;
-    
-    private final int[] history = new int[HISTORY_SIZE];
-    private int nextHistoryIndex;
-    private int historyEntryCount;
     
     public Tokenizer(String input) {
         this.input = input;
@@ -40,26 +34,29 @@ public class Tokenizer {
         this.currentIndex = 0;
     }
     
-    public boolean hasMoreTokens() {
-        return nextIndex < input.length();
-    }
-    
     public Token nextToken() {
         this.currentIndex = this.nextIndex;
         int c = nextChar();
         if (c < 0) {
             return Token.EOI;
-        } if (c == '*') {
-            return Token.WILDCARD;
         } else if (c == '.') {
             return Token.PERIOD;
-        } else if (isDelimiter(c)) {
-            return delimiterToken(c);
+        } else if (c == '[') {
+            return Token.OPENING_BRACKET;
+        } else if (c == ']') {
+            return Token.CLOSING_BRACKET;
+        } else if (c == '\"' || c == '\'') {
+            return string(c);
+        } else if (isEqualSign(c)) {
+            return equalSign(c);
+        } else if (isSeparator(c)) {
+            return separator(c);
         } else if (isHash(c)) {
-            return new Token(TokenCategory.HASH, hash());
+            return Token.of(TokenCategory.HASH, hash());
         } else if (isIdent(c)) {
-            rewind(1);
-            return new Token(TokenCategory.IDENT, ident());
+            return Token.of(TokenCategory.IDENT, ident(c));
+        } if (c == '*') {
+            return Token.WILDCARD;
         }
         return Token.UNKNOWN;
     }
@@ -68,38 +65,35 @@ public class Tokenizer {
         return input;
     }
     
-    public int getLastPosition() {
+    public int getCurrentIndex() {
         return currentIndex;
     }
     
     private boolean isIdent(int c) {
         if (c == '-') {
+            int pos = current();
             c = nextChar();
-            rewind(1);
+            rewind(pos);
         }
         return isFirstLetter(c);
     }
     
-    private String ident() {
+    private String ident(int c) {
         StringBuilder b = new StringBuilder();
-        for (int c = nextChar(); c >= 0; c = nextChar()) {
-            if (isNameLetter(c)) {
-                b.append((char)c);
-            } else {
-                rewind(1);
-                break;
-            }
-        }
+        b.append((char)c);
+        b.append(name());
         return b.toString();
     }
     
     private String name() {
         StringBuilder b = new StringBuilder();
-        for (int c = nextChar(); c >= 0; c = nextChar()) {
+        for (;;) {
+            int pos = current();
+            int c = nextChar();
             if (isNameLetter(c)) {
                 b.append((char)c);
             } else {
-                rewind(1);
+                rewind(pos);
                 break;
             }
         }
@@ -110,10 +104,9 @@ public class Tokenizer {
         if (c != '#') {
             return false;
         }
+        int pos = current();
         c = nextChar();
-        if (c >= 0) {
-            rewind(1);
-        }
+        rewind(pos);
         return isNameLetter(c); 
     }
     
@@ -124,7 +117,21 @@ public class Tokenizer {
         return b.toString();
     }
     
-    private Token delimiterToken(int c) {
+    private Token string(int quote) {
+        StringBuilder b = new StringBuilder();
+        b.append((char)quote);
+        int c = 0;
+        while ((c = nextChar()) != quote) {
+            if (c < 0) {
+                return Token.EOI;
+            }
+            b.append((char)c);
+        }
+        String value = b.append((char)quote).toString();
+        return Token.of(TokenCategory.STRING, value);
+    }
+    
+    private Token separator(int c) {
         if (isWhitespace(c)) {
             skipSpaces();
             c = nextChar();
@@ -143,7 +150,7 @@ public class Tokenizer {
             skipSpaces();
             return Token.TILDE;
         default:
-            return new Token(TokenCategory.SPACE, " ");
+            return Token.SPACE;
         }
     }
     
@@ -169,46 +176,67 @@ public class Tokenizer {
         return c == 0x20 || c == '\t' || c == '\r' || c == '\n' || c == '\f';
     }
     
-    private static boolean isDelimiter(int c) {
+    private static boolean isSeparator(int c) {
         return isWhitespace(c) || c == '+' || c == '>' || c == ',' || c == '~';
     }
     
-    private void skipSpaces() {
-        int c = nextChar();
-        while (isWhitespace(c)) {
+    private boolean isEqualSign(int c) {
+        if (c == '=') {
+            return true;
+        } else if (c == '~' || c == '|' || c == '^' || c == '$' ||  c == '*') {
+            int pos = current();
             c = nextChar();
-        }
-        if (c >= 0) {
-            rewind(1);
+            rewind(pos);
+            return c == '=';
+        } else {
+            return false;
         }
     }
-
+    
+    private Token equalSign(int c) {
+        if (c == '=') {
+            return Token.EXACT_MATCH;
+        }
+        nextChar();
+        switch (c) {
+        case '~':
+            return Token.INCLUDES;
+        case '|':
+            return Token.DASH_MATCH;
+        case '^':
+            return Token.PREFIX_MATCH;
+        case '$':
+            return Token.SUFFIX_MATCH;
+        case '*':
+            return Token.SUBSTRING_MATCH;
+        default:
+            throw new IllegalStateException();
+        }
+    }
+    
+    private int current() {
+        return nextIndex;
+    }
+    
+    private void rewind(int mark) {
+        this.nextIndex = mark;
+    }
+    
+    private void skipSpaces() {
+        for (;;) {
+            int pos = current();
+            int c = nextChar();
+            if (!isWhitespace(c)) {
+                rewind(pos);
+                break;
+            }
+        }
+    }
+    
     private int nextChar() {
         if (nextIndex >= input.length()) {
             return -1;
         }
-        history[nextHistoryIndex++] = nextIndex;
-        if (nextHistoryIndex >= HISTORY_SIZE) {
-            nextHistoryIndex = 0; 
-        }
-        if (historyEntryCount < HISTORY_SIZE) {
-            historyEntryCount++;
-        }
         return input.charAt(nextIndex++);
-    }
-    
-    private void rewind(int count) {
-        if (count <= 0) {
-            return;
-        } if (count > historyEntryCount) {
-            throw new IllegalStateException();
-        }
-        int newHistoryIndex = nextHistoryIndex - count;
-        if (newHistoryIndex < 0) {
-            newHistoryIndex += HISTORY_SIZE;
-        }
-        historyEntryCount -= count;
-        nextHistoryIndex = newHistoryIndex;
-        nextIndex = history[newHistoryIndex];
     }
 }

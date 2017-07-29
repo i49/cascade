@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.compiler;
+package com.github.i49.cascade.core.matchers;
+
+import org.w3c.dom.Element;
 
 /**
- * Categories of tokens.
+ * The matcher which will check the presence of the specified attribute. 
  */
-public enum TokenCategory {
-    /** Unknown category. */
-    UNKNOWN,
-    /** End of input. */
-    EOI,
-    /* Sequence of whitespaces. */
-    SPACE,
-    IDENT,
-    HASH,
-    PLUS,
-    GREATER,
-    COMMA,
-    TILDE,
-    WILDCARD,
-    PERIOD,
-    OPENING_BRACKET,
-    CLOSING_BRACKET,
-    STRING,
-    EXACT_MATCH,
-    INCLUDES,
-    DASH_MATCH,
-    PREFIX_MATCH,
-    SUFFIX_MATCH,
-    SUBSTRING_MATCH
+public class AttributeMatcher implements Matcher {
+    
+    private final String name;
+    
+    public AttributeMatcher(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean matches(Element element) {
+        return element.hasAttribute(getName());
+    }
+    
+    @Override
+    public String toString() {
+        return "[" + getName() + "]";
+    }
+    
+    protected String getName() {
+        return name;
+    }
 }

@@ -95,7 +95,16 @@ public class SimpleSelectorTest {
         assertThat(e.getTagName()).isEqualTo("dt");
         assertThat(e.getTextContent()).isEqualTo("term2");
     }
-    
+ 
+    @Test
+    public void attributePresenceSelector_shouldSelectElement() {
+        Selector s = compiler.compile("[title]");
+        Set<Element> found = s.select(doc.getDocumentElement());
+        assertThat(found).hasSize(1);
+        Element e = found.iterator().next();
+        assertThat(e.getTagName()).isEqualTo("p");
+    }
+     
     @Test
     public void selector_shouldThrowExceptionIfRootIsNull() {
         Selector s = compiler.compile("p");

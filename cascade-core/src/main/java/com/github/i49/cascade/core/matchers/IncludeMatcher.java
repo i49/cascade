@@ -19,23 +19,31 @@ package com.github.i49.cascade.core.matchers;
 import org.w3c.dom.Element;
 
 /**
- * The base type for performing various kinds of matching against given element.
+ *
  */
-@FunctionalInterface
-public interface Matcher {
+public class IncludeMatcher extends AttributeValueMatcher {
     
-    /**
-     * Performs matching for given element.
-     * 
-     * @param element the element to check, cannot be {@code null}.
-     * @return {@code true} if given element satisfied the condition, {@code false} otherwise. 
-     */
-    boolean matches(Element element);
-    
-    default Matcher and(Matcher other) {
-        if (other == null) {
-            return this;
+    public IncludeMatcher(String name, String value) {
+        super(name, value);
+    }
+
+    @Override
+    public boolean matches(Element element) {
+        if (!super.matches(element)) {
+            return false;
         }
-        return new AllOfMatcher(this, other);
+        String expected = getExpectedValue();
+        String list = element.getAttribute(getName()); 
+        for (String value: list.split("\\s")) {
+            if (value.equals(expected)) {
+                return true;
+            }
+        }
+        return false;
+    }
+  
+    @Override
+    protected String getSymbol() {
+        return "~=";
     }
 }
