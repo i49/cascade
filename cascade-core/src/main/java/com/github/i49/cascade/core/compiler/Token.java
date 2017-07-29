@@ -21,30 +21,33 @@ package com.github.i49.cascade.core.compiler;
  */
 public class Token {
     
-    private final TokenType type;
-    private final String value;
+    private final TokenCategory category;
+    private final String lexeme;
     
-    public static final Token PLUS = new Token(TokenType.PLUS, "+"); 
-    public static final Token GREATER = new Token(TokenType.PLUS, ">"); 
-    public static final Token COMMA = new Token(TokenType.COMMA, ","); 
-    public static final Token TILDE = new Token(TokenType.TILDE, "~"); 
-    public static final Token WILDCARD = new Token(TokenType.WILDCARD, "*"); 
+    public static final Token UNKNOWN = new Token(TokenCategory.UNKNOWN, "");
+    public static final Token EOI = new Token(TokenCategory.EOI, ""); 
+    public static final Token PLUS = new Token(TokenCategory.PLUS, "+"); 
+    public static final Token GREATER = new Token(TokenCategory.PLUS, ">"); 
+    public static final Token COMMA = new Token(TokenCategory.COMMA, ","); 
+    public static final Token TILDE = new Token(TokenCategory.TILDE, "~"); 
+    public static final Token WILDCARD = new Token(TokenCategory.WILDCARD, "*"); 
+    public static final Token PERIOD = new Token(TokenCategory.PERIOD, "."); 
     
-    public Token(TokenType type, String value) {
-        this.type = type;
-        this.value = value;
+    public Token(TokenCategory category, String lexeme) {
+        this.category = category;
+        this.lexeme = lexeme;
     }
     
-    public TokenType getType() {
-        return type;
+    public TokenCategory getCategory() {
+        return category;
     }
     
-    public String getValue() {
-        return value;
+    public String getLexeme() {
+        return lexeme;
     }
     
     @Override
     public String toString() {
-        return getValue() + "@" + getType().name();
+        return getLexeme() + "@" + getCategory().name();
     }
 }

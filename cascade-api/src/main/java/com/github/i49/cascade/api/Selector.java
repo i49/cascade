@@ -25,9 +25,23 @@ import org.w3c.dom.Element;
  */
 public interface Selector {
     
+    /**
+     * Compiles the given expression to generate a selector.
+     * 
+     * @param expression the expression representing a selector.
+     * @return created selector.
+     * @throws NullPointerException if given {@code expression} is {@code null}.
+     */
     static Selector compile(String expression) {
         return SelectorCompiler.create().compile(expression);
     }
     
+    /**
+     * Finds all elements matching this selector.
+     * 
+     * @param root the root of all elements to search.
+     * @return the set of elements found, cannot be {@code null}.
+     * @throws NullPointerException if the given {@code root} is {@code null}.
+     */
     Set<Element> select(Element root);
 }

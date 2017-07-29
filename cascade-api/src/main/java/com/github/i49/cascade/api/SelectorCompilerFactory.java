@@ -19,7 +19,7 @@ package com.github.i49.cascade.api;
 import java.util.ServiceLoader;
 
 /**
- *
+ * A factory for producing instances of {@link SelectorCompiler}.
  */
 public abstract class SelectorCompilerFactory {
 
@@ -31,9 +31,19 @@ public abstract class SelectorCompilerFactory {
         return loader.iterator().next();
     }    
 
+    /**
+     * Returns the instance of this factory class.
+     * 
+     * @return the instance of this factory class.
+     */
     static SelectorCompilerFactory get() {
         return providers.get();
     }
     
+    /**
+     * Creates a selector compiler.
+     * 
+     * @return newly created instance of compiler.
+     */
     public abstract SelectorCompiler createCompiler();
 }

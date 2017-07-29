@@ -17,5 +17,17 @@
         <module>../cascade-api</module>
         <module>../cascade-core</module>
     </modules>
-    
+
+    <build>
+        <pluginManagement>
+            <plugins>
+	            <plugin>
+	                <artifactId>maven-javadoc-plugin</artifactId>
+	                <configuration>
+	                   <locale>en_US</locale>
+	                </configuration>
+	            </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>    
 </project>

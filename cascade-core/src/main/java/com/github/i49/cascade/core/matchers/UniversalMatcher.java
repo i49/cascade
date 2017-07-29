@@ -44,4 +44,9 @@ public class UniversalMatcher implements Matcher {
         }
         return other;
     }
+
+    @Override
+    public String toString() {
+        return "*";
+    }
 }

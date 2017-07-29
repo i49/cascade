@@ -36,48 +36,56 @@ public class SelectorCompilerTest {
     @Test
     public void compile_shouldParseUniversalSelector() {
        Selector s = compiler.compile("*"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseTypeSelector() {
        Selector s = compiler.compile("address"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseIdSelector() {
        Selector s = compiler.compile("#t1"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseTypeWithId() {
        Selector s = compiler.compile("li#t2"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseUnversalWithId() {
        Selector s = compiler.compile("*#t1"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseClassSelector() {
        Selector s = compiler.compile(".t1"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseTypeWithClass() {
        Selector s = compiler.compile("li.t1"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
 
     @Test
     public void compile_shouldParseIdWithClass() {
        Selector s = compiler.compile("*.t1"); 
-       assertThat(s).isNotNull();
+       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
+    }
+    
+    @Test
+    public void compile_shouldParseSelectorsGroup() {
+        Selector s = compiler.compile("li, p"); 
+        assertThat(s).isNotNull().isInstanceOf(SelectorGroup.class);
+        SelectorGroup g = (SelectorGroup)s;
+        assertThat(g).hasSize(2);
     }
 }

@@ -28,5 +28,4 @@ public class DefaultSelectorCompilerFactory extends SelectorCompilerFactory {
     public SelectorCompiler createCompiler() {
         return new DefaultSelectorCompiler();
     }
-
 }

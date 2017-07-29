@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.compiler;
+package com.github.i49.cascade.api;
+
+import java.util.List;
 
 /**
- *
+ * A group of Selectors.
  */
-public enum TokenType {
-    SPACE,
-    IDENT,
-    HASH,
-    CLASS,
-    PLUS,
-    GREATER,
-    COMMA,
-    TILDE,
-    WILDCARD
+public interface SelectorGroup extends Selector, List<SingleSelector> {
 }

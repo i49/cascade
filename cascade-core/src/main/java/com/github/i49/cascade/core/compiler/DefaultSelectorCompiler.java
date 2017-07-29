@@ -16,6 +16,9 @@
 
 package com.github.i49.cascade.core.compiler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.i49.cascade.api.InvalidSelectorException;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
@@ -25,7 +28,8 @@ import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
 import com.github.i49.cascade.core.selectors.Collector;
-import com.github.i49.cascade.core.selectors.SelectorGroup;
+import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
+import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
 import com.github.i49.cascade.core.selectors.SequenceCollector;
 
 /**
@@ -34,7 +38,7 @@ import com.github.i49.cascade.core.selectors.SequenceCollector;
 public class DefaultSelectorCompiler implements SelectorCompiler {
    
     private Tokenizer tokenizer;
-    private Token lastToken;
+    private Token currentToken;
     
     @Override
     public Selector compile(String expression) {
@@ -45,20 +49,24 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return selectorGroup();
     }
     
-    private SelectorGroup selectorGroup() {
-        SelectorGroup group = new SelectorGroup();
-        Collector collector = sequenceOfSimpleSelectors();
-        group.addCollector(collector);
-        return group;
+    private Selector selectorGroup() {
+        List<Collector> collectors = new ArrayList<>();
+        
+        do {
+            Collector collector = sequenceOfSimpleSelectors();
+            collectors.add(collector);
+        } while (currentToken.getCategory() != TokenCategory.EOI);
+
+        if (collectors.size() == 1) {
+            return new DefaultSingleSelector(collectors.get(0));
+        } else {
+            return new DefaultSelectorGroup(collectors);
+        }
     }
 
     private Token nextToken() {
-        Token token = null;
-        if (tokenizer.hasMoreTokens()) {
-            token = tokenizer.nextToken();
-        }
-        this.lastToken = token;
-        return token;
+        this.currentToken = this.tokenizer.nextToken();
+        return this.currentToken;
     }
     
     private Collector sequenceOfSimpleSelectors() {
@@ -66,47 +74,60 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         Token token = null;
         int index = 0;
         while ((token = nextToken()) != null) {
-            Matcher matcher = null;
-            switch (token.getType()) {
-            case WILDCARD:
-            case IDENT:
-            case HASH:
-            case CLASS:
-                matcher = simpleSelector(token, index++);
-                break;
-            default:
-                lastToken = token;
-                break;
-            }
+            Matcher matcher = parseSimpleSelector(token, index++);
             if (matcher == null) {
                 break;
+            }
+            if (composed == null) {
+                composed = matcher;
             } else {
-                if (composed == null) {
-                    composed = matcher;
-                } else {
-                    composed = composed.and(matcher);
-                }
-           }
+                composed = composed.and(matcher);
+            }
         }
         return new SequenceCollector(composed);
     }
     
+    private Matcher parseSimpleSelector(Token token, int index) {
+        switch (token.getCategory()) {
+        case WILDCARD:
+        case IDENT:
+        case HASH:
+            return simpleSelector(token, index++);
+        case PERIOD:
+            token = nextToken();
+            if (token.getCategory() == TokenCategory.IDENT) {
+                return classSelector(token.getLexeme());
+            }
+            throwException("Class name is missing."); 
+            break;
+        case EOI:
+        case COMMA:
+        case SPACE:
+            break;
+        case UNKNOWN:
+            throwException("Unknown token found.");
+            break;
+        default:
+            throwException("Unexpected token.");
+            break;
+        }
+        return null;
+    }
+    
     private Matcher simpleSelector(Token token, int index) {
-        TokenType type = token.getType();
-        if (type == TokenType.WILDCARD) {
+        TokenCategory type = token.getCategory();
+        if (type == TokenCategory.WILDCARD) {
             if (index > 0) {
                 throwException("Invalid ordering of selectors");
             }
             return universalSelector();
-        } else if (type == TokenType.IDENT) {
+        } else if (type == TokenCategory.IDENT) {
             if (index > 0) {
                 throwException("Invalid ordering of selectors");
             }
-            return typeSelector(token.getValue());
-        } else if (type == TokenType.HASH) {
-            return idSelector(token.getValue());
-        } else if (type == TokenType.CLASS) {
-            return classSelector(token.getValue());
+            return typeSelector(token.getLexeme());
+        } else if (type == TokenCategory.HASH) {
+            return idSelector(token.getLexeme().substring(1));
         }
         return null;
     }
@@ -119,13 +140,11 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return new TypeMatcher(selector);
     }
     
-    private Matcher idSelector(String selector) {
-        String identifier = selector.substring(1);
+    private Matcher idSelector(String identifier) {
         return new IdentifierMatcher(identifier);
     }
     
-    private Matcher classSelector(String selector) {
-        String className = selector.substring(1);
+    private Matcher classSelector(String className) {
         return new ClassMatcher(className);
     }
     

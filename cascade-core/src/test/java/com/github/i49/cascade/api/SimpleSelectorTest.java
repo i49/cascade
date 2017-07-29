@@ -26,6 +26,9 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Unit tests for simple selectors.
+ */
 public class SimpleSelectorTest {
 
     private static Document doc;
@@ -40,26 +43,65 @@ public class SimpleSelectorTest {
     public void setUp() {
         this.compiler = SelectorCompiler.create();
     }
-    
+
     @Test
-    public void typeSelector_shouldSelectElementsByName() {
-        Selector s = compile("address");
+    public void typeSelector_shouldSelectElement() {
+        Selector s = compiler.compile("address");
         Set<Element> found = s.select(doc.getDocumentElement());
         assertThat(found).hasSize(1);
         Element e = found.iterator().next();
         assertThat(e.getTagName()).isEqualTo("address");
     }
-    
+
     @Test
-    public void idSelector_shouldSelectElementsById() {
-        Selector s = compile("#t2");
+    public void typeSelector_shouldSelectRootElement() {
+        Selector s = compiler.compile("html");
+        Set<Element> found = s.select(doc.getDocumentElement());
+        assertThat(found).hasSize(1);
+        Element e = found.iterator().next();
+        assertThat(e.getTagName()).isEqualTo("html");
+    }
+   
+    @Test
+    public void typeSelector_shouldSelectMultipleElements() {
+        Selector s = compiler.compile("p");
+        Set<Element> found = s.select(doc.getDocumentElement());
+        assertThat(found).hasSize(3);
+    }
+
+    @Test
+    public void typeSelector_shouldSelectNoElements() {
+        Selector s = compiler.compile("object");
+        Set<Element> found = s.select(doc.getDocumentElement());
+        assertThat(found).isNotNull().isEmpty();
+    }
+
+    @Test
+    public void idSelector_shouldSelectElement() {
+        Selector s = compiler.compile("#i2");
         Set<Element> found = s.select(doc.getDocumentElement());
         assertThat(found).hasSize(1);
         Element e = found.iterator().next();
         assertThat(e.getTagName()).isEqualTo("li");
+        assertThat(e.getTextContent()).isEqualTo("list item 2");
     }
     
-    private Selector compile(String expression) {
-        return this.compiler.compile(expression);
+    @Test
+    public void classSelector_shouldSelectElement() {
+        Selector s = compiler.compile(".c2");
+        Set<Element> found = s.select(doc.getDocumentElement());
+        assertThat(found).hasSize(1);
+        Element e = found.iterator().next();
+        assertThat(e.getTagName()).isEqualTo("dt");
+        assertThat(e.getTextContent()).isEqualTo("term2");
+    }
+    
+    @Test
+    public void selector_shouldThrowExceptionIfRootIsNull() {
+        Selector s = compiler.compile("p");
+        Throwable thrown = catchThrowable(()->{
+            s.select(null);
+        });
+        assertThat(thrown).isInstanceOf(NullPointerException.class);
     }
 }

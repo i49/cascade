@@ -22,13 +22,13 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 /**
- * 
+ * A matcher which return true if all of joined matchers are satisfied. 
  */
-public class AndMatcher implements Matcher {
+public class AllOfMatcher implements Matcher {
     
     private final List<Matcher> matchers;
     
-    public AndMatcher(Matcher... matchers) {
+    public AllOfMatcher(Matcher... matchers) {
         this.matchers = new ArrayList<>();
         for (Matcher matcher: matchers) {
             this.matchers.add(matcher);
@@ -51,5 +51,14 @@ public class AndMatcher implements Matcher {
             this.matchers.add(other);
         }
         return this;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        for (Matcher m: this.matchers) {
+            b.append(m.toString());
+        }
+        return b.toString();
     }
 }

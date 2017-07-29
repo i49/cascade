@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public final class Documents {
+final class Documents {
     
     private static final ThreadLocal<DocumentBuilder> builders = 
             ThreadLocal.withInitial(Documents::builder);

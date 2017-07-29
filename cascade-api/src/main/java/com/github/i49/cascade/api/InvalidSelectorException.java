@@ -17,6 +17,7 @@
 package com.github.i49.cascade.api;
 
 /**
+ * Exception thrown if the given expression was invalid.
  */
 public class InvalidSelectorException extends RuntimeException {
 
@@ -25,16 +26,33 @@ public class InvalidSelectorException extends RuntimeException {
     private final String expression;
     private final int position;
     
+    /**
+     * Constructs this exception.
+     * 
+     * @param message the messages for the exception.
+     * @param expression the input expression.
+     * @param position the position in the expression.
+     */
     public InvalidSelectorException(String message, String expression, int position) {
         super(message);
         this.expression = expression;
         this.position = position;
     }
     
+    /**
+     * Returns the expression which caused a problem.
+     * 
+     * @return the expression. 
+     */
     public String getExpression() {
         return expression;
     }
     
+    /**
+     * Returns the position in the expression where the problem was found.
+     * 
+     * @return the position in the expression.
+     */
     public int getPosition() {
         return position;
     }

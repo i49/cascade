@@ -21,23 +21,35 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.api.Selector;
+import com.github.i49.cascade.api.SingleSelector;
 
 /**
  *
  */
-public class SingleSelector implements Selector {
+public class DefaultSingleSelector implements SingleSelector {
     
     private final Collector collector;
     
-    public SingleSelector(Collector collector) {
+    public DefaultSingleSelector(Collector collector) {
         this.collector = collector;
     }
 
     @Override
     public Set<Element> select(Element root) {
+        if (root == null) {
+            throw new NullPointerException("root must not be null");
+        }
         Set<Element> found = new LinkedHashSet<>();
         collector.collect(root, found);
         return found;
+    }
+    
+    @Override
+    public String toString() {
+        return collector.toString();
+    }
+    
+    public Collector getCollector() {
+        return collector;
     }
 }

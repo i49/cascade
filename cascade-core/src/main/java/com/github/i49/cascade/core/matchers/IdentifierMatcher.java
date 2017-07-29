@@ -42,4 +42,9 @@ public class IdentifierMatcher implements Matcher {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "#" + this.identifier;
+    }
 }

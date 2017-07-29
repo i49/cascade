@@ -33,4 +33,9 @@ public class TypeMatcher implements Matcher {
     public boolean matches(Element element) {
         return elementName.equals(element.getTagName());
     }
+
+    @Override
+    public String toString() {
+        return elementName;
+    }
 }

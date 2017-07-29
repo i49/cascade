@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
-
-import org.w3c.dom.Element;
+package com.github.i49.cascade.api;
 
 /**
- *
+ * A type of selector composed of exactly a single selector. 
  */
-@FunctionalInterface
-public interface Matcher {
-    
-    boolean matches(Element element);
-    
-    default Matcher and(Matcher other) {
-        if (other == null) {
-            return this;
-        }
-        return new AllOfMatcher(this, other);
-    }
+public interface SingleSelector extends Selector {
 }

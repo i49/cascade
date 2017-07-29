@@ -39,4 +39,9 @@ public class ClassMatcher implements Matcher {
         }
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "." + this.className;
+    }
 }

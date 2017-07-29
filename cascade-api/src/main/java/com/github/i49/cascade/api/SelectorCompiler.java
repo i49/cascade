@@ -17,14 +17,26 @@
 package com.github.i49.cascade.api;
 
 /**
- *
+ * Selector expression compiler.
  */
 public interface SelectorCompiler {
     
+    /**
+     * Creates an instance of this type.
+     * 
+     * @return newly created instance of this type.
+     */
     static SelectorCompiler create() {
         SelectorCompilerFactory factory = SelectorCompilerFactory.get();
         return factory.createCompiler();
     }
 
-    Selector compile(String exrepssion);
+    /**
+     * Compiles the given expression to generate a selector.
+     * 
+     * @param expression the expression representing a selector.
+     * @return created selector.
+     * @throws NullPointerException if given {@code expression} is {@code null}.
+     */
+    Selector compile(String expression);
 }

@@ -39,6 +39,11 @@ public class SequenceCollector implements Collector {
         visitElement(element, found);
     }
     
+    @Override
+    public String toString() {
+        return matcher.toString();
+    }
+    
     private void visitElement(Element current, Set<Element> found) {
         if (this.matcher.matches(current)) {
             found.add(current);

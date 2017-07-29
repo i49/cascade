@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
-
-import org.w3c.dom.Element;
+package com.github.i49.cascade.core.compiler;
 
 /**
- *
+ * Categories of tokens.
  */
-@FunctionalInterface
-public interface Matcher {
-    
-    boolean matches(Element element);
-    
-    default Matcher and(Matcher other) {
-        if (other == null) {
-            return this;
-        }
-        return new AllOfMatcher(this, other);
-    }
+public enum TokenCategory {
+    /** Unknown category. */
+    UNKNOWN,
+    /** End of input. */
+    EOI,
+    SPACE,
+    IDENT,
+    HASH,
+    CLASS,
+    PLUS,
+    GREATER,
+    COMMA,
+    TILDE,
+    WILDCARD,
+    PERIOD,
 }
