@@ -17,6 +17,9 @@
 package com.github.i49.cascade.api;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,12 +29,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 final class Documents {
     
     private static final ThreadLocal<DocumentBuilder> builders = 
             ThreadLocal.withInitial(Documents::builder);
 
+    /**
+     * Loads a document from resource specified by name.
+     *  
+     * @param resourceName the name of the resource.
+     * @return loaded document.
+     */
     public static Document load(String resourceName) {
         Document doc = null;
         DocumentBuilder b = builders.get();
@@ -44,6 +54,24 @@ final class Documents {
             return null;
         }
         return doc;
+    }
+    
+    public static Element findOne(Document doc, String tagname) {
+        NodeList nodes = doc.getElementsByTagName(tagname);
+        if (nodes.getLength() > 0) {
+            return (Element)nodes.item(0);
+        } else {
+            return null;
+        }
+    }
+    
+    public static Collection<Element> findAll(Document doc) {
+        NodeList nodes = doc.getElementsByTagName("*");
+        List<Element> found = new ArrayList<>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            found.add((Element)nodes.item(i));
+        }
+        return found;
     }
     
     private static void activateIdentifiers(Document doc) {

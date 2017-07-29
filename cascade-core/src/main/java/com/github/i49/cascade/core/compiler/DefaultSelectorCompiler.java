@@ -24,6 +24,7 @@ import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
 import com.github.i49.cascade.core.matchers.ClassMatcher;
 import com.github.i49.cascade.core.matchers.DashMatcher;
+import com.github.i49.cascade.core.matchers.ExactMatcher;
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.IncludeMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
@@ -33,7 +34,6 @@ import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
-import com.github.i49.cascade.core.matchers.AttributeValueMatcher;
 import com.github.i49.cascade.core.selectors.Collector;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
@@ -189,7 +189,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
         switch (operator.getCategory()) {
         case EXACT_MATCH:
-            return new AttributeValueMatcher(name, value);
+            return new ExactMatcher(name, value);
         case INCLUDES:
             return new IncludeMatcher(name, value);
         case DASH_MATCH:
