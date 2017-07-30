@@ -16,33 +16,16 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.Set;
+import java.util.List;
 
-import org.w3c.dom.Element;
-
-import com.github.i49.cascade.api.SingleSelector;
+import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
  *
  */
-public class DefaultSingleSelector implements SingleSelector {
+public class StartingSequence extends AbstractSequence {
     
-    private final Sequence firstSequence;
-    
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
-    }
-
-    @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null");
-        }
-        return firstSequence.process(root);
-    }
-    
-    @Override
-    public String toString() {
-        return firstSequence.toString();
+    public StartingSequence(List<Matcher> matchers) {
+        super(matchers);
     }
 }

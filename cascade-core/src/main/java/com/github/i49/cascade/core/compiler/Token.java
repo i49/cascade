@@ -24,7 +24,7 @@ public class Token {
     public static final Token UNKNOWN = new Token(TokenCategory.UNKNOWN, "");
     public static final Token EOI = new Token(TokenCategory.EOI, ""); 
     public static final Token PLUS = new Token(TokenCategory.PLUS, "+"); 
-    public static final Token GREATER = new Token(TokenCategory.PLUS, ">"); 
+    public static final Token GREATER = new Token(TokenCategory.GREATER, ">"); 
     public static final Token COMMA = new Token(TokenCategory.COMMA, ","); 
     public static final Token TILDE = new Token(TokenCategory.TILDE, "~"); 
     public static final Token WILDCARD = new Token(TokenCategory.WILDCARD, "*"); 
@@ -82,6 +82,10 @@ public class Token {
         return getLexeme() + "@" + getCategory().name();
     }
     
+    /**
+     * Specialized token which represents strings.
+     *
+     */
     private static final class StringToken extends Token {
         
         public StringToken(String lexeme) {
@@ -90,8 +94,11 @@ public class Token {
 
         @Override
         public String getValue() {
-            String lexeme = getLexeme();
-            return lexeme.substring(1, lexeme.length() - 1);
+            return unquote(getLexeme());
+        }
+        
+        private static String unquote(String s) {
+            return s.substring(1, s.length() - 1);
         }
     }
 }

@@ -33,7 +33,7 @@ public class SelectorGroupTest {
     
     @BeforeClass
     public static void setUpOnce() {
-        doc = Documents.load("selector-group-test.html");
+        doc = Documents.load("/selector-group-test.html");
     }
     
     @Before

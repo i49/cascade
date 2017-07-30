@@ -20,12 +20,16 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Set;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Tests for attribute selectors.
+ */
 public class AttributeSelectorTest {
 
     private static Document doc;
@@ -33,7 +37,12 @@ public class AttributeSelectorTest {
     
     @BeforeClass
     public static void setUpOnce() {
-        doc = Documents.load("attribute-selector-test.html");
+        doc = Documents.load("/attribute-selector-test.html");
+    }
+
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
     
     @Before

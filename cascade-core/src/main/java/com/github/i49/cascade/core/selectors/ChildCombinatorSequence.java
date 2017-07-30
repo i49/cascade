@@ -16,6 +16,7 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -24,40 +25,24 @@ import org.w3c.dom.Node;
 import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- * A collector which collects elements matching a sequence of simple selectors.  
+ * A sequence preceded by child combinator.
  */
-public class SequenceCollector implements Collector {
+public class ChildCombinatorSequence extends CombinatorSequence {
 
-    private final Matcher matcher;
-    
-    public SequenceCollector(Matcher matcher) {
-        this.matcher = matcher;
+    public ChildCombinatorSequence(List<Matcher> matchers) {
+        super(Combinator.CHILD, matchers);
     }
-    
+
     @Override
-    public void collect(Element element, Set<Element> found) {
-        visitElement(element, found);
+    protected void traverse(Element e, Set<Element> found) {
+        visitDirectChildrenOf(e, found);
     }
     
-    @Override
-    public String toString() {
-        return matcher.toString();
-    }
-    
-    private void visitElement(Element current, Set<Element> found) {
-        if (this.matcher.matches(current)) {
-            found.add(current);
-        }
-        visitChildren(current, found);
-    }
-    
-    private void visitChildren(Element current, Set<Element> found) {
-        Node child = current.getFirstChild();
-        while (child != null) {
+    private void visitDirectChildrenOf(Element e, Set<Element> found) {
+        for (Node child = e.getFirstChild(); child != null; child = child.getNextSibling()) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                visitElement((Element)child, found);
+                match((Element)child, found);
             }
-            child = child.getNextSibling();
         }
     }
 }

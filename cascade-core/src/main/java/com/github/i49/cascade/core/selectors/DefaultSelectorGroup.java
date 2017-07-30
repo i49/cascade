@@ -17,7 +17,6 @@
 package com.github.i49.cascade.core.selectors;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,13 +32,10 @@ import com.github.i49.cascade.api.SingleSelector;
  */
 public class DefaultSelectorGroup extends AbstractList<SingleSelector> implements SelectorGroup {
     
-    private final List<DefaultSingleSelector> selectors;
+    private final List<SingleSelector> selectors;
     
-    public DefaultSelectorGroup(List<Collector> collectors) {
-        this.selectors = new ArrayList<>();
-        for (Collector collector: collectors) {
-            this.selectors.add(new DefaultSingleSelector(collector));
-        }
+    public DefaultSelectorGroup(List<SingleSelector> selectors) {
+        this.selectors = selectors;
     }
 
     @Override
@@ -48,8 +44,8 @@ public class DefaultSelectorGroup extends AbstractList<SingleSelector> implement
             throw new NullPointerException("root must not be null");
         }
         Set<Element> found  = new LinkedHashSet<>();
-        for (DefaultSingleSelector selector: this.selectors) {
-            selector.getCollector().collect(root, found);
+        for (SingleSelector selector: this.selectors) {
+            found.addAll(selector.select(root));
         }
         return found;
     }
@@ -57,7 +53,7 @@ public class DefaultSelectorGroup extends AbstractList<SingleSelector> implement
     @Override
     public String toString() {
         return selectors.stream()
-                .map(DefaultSingleSelector::toString)
+                .map(SingleSelector::toString)
                 .collect(Collectors.joining(", "));
     }
     

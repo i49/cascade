@@ -16,13 +16,18 @@
 
 package com.github.i49.cascade.core.matchers;
 
+import java.util.regex.Pattern;
+
 import org.w3c.dom.Element;
 
 /**
- *
+ * Matcher which returns true if one of attribute values
+ * separated by whitespaces equals the specified value.
  */
 public class IncludeMatcher extends AttributeValueMatcher {
     
+    private static final Pattern SEPARATOR = Pattern.compile("[ \\t\\r\\n\\f]+");
+            
     public IncludeMatcher(String name, String value) {
         super(name, value);
     }
@@ -33,8 +38,8 @@ public class IncludeMatcher extends AttributeValueMatcher {
             return false;
         }
         String expected = getExpectedValue();
-        String list = element.getAttribute(getName()); 
-        for (String value: list.split("\\s")) {
+        String values = element.getAttribute(getName()); 
+        for (String value: SEPARATOR.split(values)) {
             if (value.equals(expected)) {
                 return true;
             }

@@ -29,13 +29,29 @@ public class ParsingErrorTest {
     public static void setUpOnce() {
         compiler = SelectorCompiler.create(); 
     }
- 
+    
+    @Test
+    public void compile_shouldThrowExceptionIfExpressionIsNull() {
+        Throwable thrown = catchThrowable(()->{
+           compiler.compile(null); 
+        });
+        assertThat(thrown).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void compile_shouldThrowExceptionIfExpressionIsBlank() {
+        Throwable thrown = catchThrowable(()->{
+           compiler.compile(""); 
+        });
+        assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
+    }
+
     @Test
     public void compile_shouldThrowExceptionIfUnexpectedEndOfInputOcurred() {
         Throwable thrown = catchThrowable(()->{
            compiler.compile("p, "); 
         });
-        assertThat(thrown).isInstanceOf(RuntimeExeption.class);
+        assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
     }
     
     @Test
@@ -43,6 +59,6 @@ public class ParsingErrorTest {
         Throwable thrown = catchThrowable(()->{
             compiler.compile(".5cm"); 
          });
-         assertThat(thrown).isInstanceOf(RuntimeExeption.class);
+         assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
     }
 }

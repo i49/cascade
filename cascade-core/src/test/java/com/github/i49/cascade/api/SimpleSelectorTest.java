@@ -36,7 +36,7 @@ public class SimpleSelectorTest {
     
     @BeforeClass
     public static void setUpOnce() {
-        doc = Documents.load("simple-selector-test.html");
+        doc = Documents.load("/simple-selector-test.html");
     }
     
     @Before

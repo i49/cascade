@@ -45,8 +45,7 @@ final class Documents {
     public static Document load(String resourceName) {
         Document doc = null;
         DocumentBuilder b = builders.get();
-        ClassLoader loader = Documents.class.getClassLoader();
-        try (InputStream in = loader.getResourceAsStream(resourceName)) {
+        try (InputStream in = Documents.class.getResourceAsStream(resourceName)) {
             doc = b.parse(in);
             activateIdentifiers(doc);
         } catch (Exception e) {

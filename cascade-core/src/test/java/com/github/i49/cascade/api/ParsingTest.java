@@ -140,12 +140,61 @@ public class ParsingTest {
         Selector s = compiler.compile("[title*=\"hello\"]"); 
         assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
     }
+    
+    @Test
+    public void compile_shouldCompileDescendantCombinator() {
+        Selector s1 = compiler.compile("h1 em"); 
+        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s1).hasToString("h1 em");
+
+        Selector s2 = compiler.compile("div * p"); 
+        assertThat(s2).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s2).hasToString("div * p");
+
+        Selector s3 = compiler.compile("div p *[href]"); 
+        assertThat(s3).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s3).hasToString("div p *[href]");
+    }
+    
+    @Test
+    public void compile_shouldCompileChildCombinator() {
+        Selector s1 = compiler.compile("body > p"); 
+        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s1).hasToString("body > p");
+
+        Selector s2 = compiler.compile("div ol>li p"); 
+        assertThat(s2).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s2).hasToString("div ol > li p");
+    }
+
+    @Test
+    public void compile_shouldCompileAdjacentCombinator() {
+        Selector s1 = compiler.compile("math + p"); 
+        assertThat(s1)
+            .isNotNull()
+            .isInstanceOf(SingleSelector.class)
+            .hasToString("math + p");
+
+        Selector s2 = compiler.compile("h1.opener + h2"); 
+        assertThat(s2)
+            .isNotNull()
+            .isInstanceOf(SingleSelector.class)
+            .hasToString("h1.opener + h2");
+    }
+
+    @Test
+    public void compile_shouldCompileSiblingCombinator() {
+        Selector s1 = compiler.compile("h1 ~ pre"); 
+        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
+        assertThat(s1).hasToString("h1 ~ pre");
+    }
 
     @Test
     public void compile_shouldCompileSelectorsGroup() {
-        Selector s = compiler.compile("li, p"); 
-        assertThat(s).isNotNull().isInstanceOf(SelectorGroup.class);
-        SelectorGroup g = (SelectorGroup)s;
+        Selector s1 = compiler.compile("li, p"); 
+        assertThat(s1).isNotNull().isInstanceOf(SelectorGroup.class);
+        assertThat(s1).hasToString("li, p");
+        SelectorGroup g = (SelectorGroup)s1;
         assertThat(g).hasSize(2);
     }
 }

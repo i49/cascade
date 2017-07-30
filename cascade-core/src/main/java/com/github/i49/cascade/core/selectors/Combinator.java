@@ -16,33 +16,32 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.Set;
-
-import org.w3c.dom.Element;
-
-import com.github.i49.cascade.api.SingleSelector;
-
 /**
- *
+ * Combinators.
  */
-public class DefaultSingleSelector implements SingleSelector {
-    
-    private final Sequence firstSequence;
-    
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
-    }
+public enum Combinator {
+    /** Descendant combinator. */
+    DESCENDANT(" "),
+    /** Child combinators. */
+    CHILD(" > "),
+    /** Adjacent sibling combinator. */
+    ADJACENT(" + "),
+    /** General sibling combinator. */
+    SIBLING(" ~ ")
+    ;
 
-    @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null");
-        }
-        return firstSequence.process(root);
+    private final String symbol;
+    
+    private Combinator(String symbol) {
+        this.symbol = symbol;
     }
     
-    @Override
-    public String toString() {
-        return firstSequence.toString();
+    /**
+     * Returns the symbol representing this combinator.
+     * 
+     * @return the symbol.
+     */
+    public String getSymbol() {
+        return symbol;
     }
 }

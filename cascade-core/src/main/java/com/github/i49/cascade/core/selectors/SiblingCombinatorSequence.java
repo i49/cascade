@@ -16,33 +16,35 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import com.github.i49.cascade.api.SingleSelector;
+import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- *
+ * A sequence preceded by general sibling combinator.
  */
-public class DefaultSingleSelector implements SingleSelector {
-    
-    private final Sequence firstSequence;
-    
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
+public class SiblingCombinatorSequence extends CombinatorSequence {
+
+    public SiblingCombinatorSequence(List<Matcher> matchers) {
+        super(Combinator.SIBLING, matchers);
     }
 
     @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null");
-        }
-        return firstSequence.process(root);
+    protected void traverse(Element e, Set<Element> found) {
+        visitAllSiblingsAfter(e, found);
     }
-    
-    @Override
-    public String toString() {
-        return firstSequence.toString();
+
+    private void visitAllSiblingsAfter(Element e, Set<Element> found) {
+        Node sibling = e.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                match((Element)sibling, found);
+            }
+            sibling = sibling.getNextSibling();
+        }
     }
 }

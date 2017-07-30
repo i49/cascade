@@ -16,14 +16,24 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+
 /**
- *
+ * A sequence preceded by descendant combinator.
  */
-public interface Collector {
-    
-    void collect(Element element, Set<Element> found);
+public class DescendantCombinatorSequence extends CombinatorSequence {
+
+    public DescendantCombinatorSequence(List<Matcher> matchers) {
+        super(Combinator.DESCENDANT, matchers);
+    }
+
+    @Override
+    protected void traverse(Element e, Set<Element> found) {
+        visitDescendantsOf(e, found);
+    }
 }

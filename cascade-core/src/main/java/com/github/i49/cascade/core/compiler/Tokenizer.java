@@ -131,9 +131,17 @@ public class Tokenizer {
         return Token.of(TokenCategory.STRING, value);
     }
     
+    /**
+     * Creates a token of combinators or comma.
+     * 
+     * @param c the first character.
+     * @return created token.
+     */
     private Token separator(int c) {
+        int pos = current();
         if (isWhitespace(c)) {
             skipSpaces();
+            pos = current();
             c = nextChar();
         }
         switch (c) {
@@ -150,6 +158,7 @@ public class Tokenizer {
             skipSpaces();
             return Token.TILDE;
         default:
+            rewind(pos);
             return Token.SPACE;
         }
     }
@@ -222,13 +231,13 @@ public class Tokenizer {
         this.nextIndex = mark;
     }
     
-    private void skipSpaces() {
+    private int skipSpaces() {
         for (;;) {
             int pos = current();
             int c = nextChar();
             if (!isWhitespace(c)) {
                 rewind(pos);
-                break;
+                return c;
             }
         }
     }

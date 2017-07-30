@@ -19,7 +19,7 @@ package com.github.i49.cascade.api;
 /**
  * Exception thrown if the given expression was invalid.
  */
-public class RuntimeExeption extends RuntimeException {
+public class InvalidSelectorExeption extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
     
@@ -33,7 +33,7 @@ public class RuntimeExeption extends RuntimeException {
      * @param expression the input expression.
      * @param position the position in the expression.
      */
-    public RuntimeExeption(String message, String expression, int position) {
+    public InvalidSelectorExeption(String message, String expression, int position) {
         super(message);
         this.expression = expression;
         this.position = position;

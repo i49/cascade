@@ -19,9 +19,10 @@ package com.github.i49.cascade.core.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.i49.cascade.api.RuntimeExeption;
+import com.github.i49.cascade.api.InvalidSelectorExeption;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
+import com.github.i49.cascade.api.SingleSelector;
 import com.github.i49.cascade.core.matchers.ClassMatcher;
 import com.github.i49.cascade.core.matchers.DashMatcher;
 import com.github.i49.cascade.core.matchers.ExactMatcher;
@@ -34,10 +35,15 @@ import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
-import com.github.i49.cascade.core.selectors.Collector;
+import com.github.i49.cascade.core.selectors.AdjacentCombinatorSequence;
+import com.github.i49.cascade.core.selectors.ChildCombinatorSequence;
+import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
-import com.github.i49.cascade.core.selectors.SequenceCollector;
+import com.github.i49.cascade.core.selectors.DescendantCombinatorSequence;
+import com.github.i49.cascade.core.selectors.Sequence;
+import com.github.i49.cascade.core.selectors.SiblingCombinatorSequence;
+import com.github.i49.cascade.core.selectors.StartingSequence;
 
 /**
  * Default implementation of {@link SelectorCompiler}.
@@ -57,22 +63,81 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     }
     
     private Selector selectorGroup() {
-        List<Collector> collectors = new ArrayList<>();
+        List<SingleSelector> selectors = new ArrayList<>();
         
         do {
-            Collector collector = sequenceOfSimpleSelectors();
-            collectors.add(collector);
+            SingleSelector selector = selector();
+            selectors.add(selector);
         } while (currentToken.getCategory() != TokenCategory.EOI);
 
-        if (collectors.size() == 1) {
-            return new DefaultSingleSelector(collectors.get(0));
+        if (selectors.size() == 1) {
+            return selectors.get(0);
         } else {
-            return new DefaultSelectorGroup(collectors);
+            return new DefaultSelectorGroup(selectors);
         }
     }
-
-    private Collector sequenceOfSimpleSelectors() {
-        Matcher composed = null;
+    
+    private SingleSelector selector() {
+        Sequence first = null;
+        Sequence last = null;
+        Combinator combinator = null;
+        do {
+            List<Matcher> matchers = sequence();
+            if (matchers.isEmpty()) {
+                throw newException(Message.UNEXPECTED_END_OF_INPUT);
+            }
+            if (first == null) {
+                first = new StartingSequence(matchers);
+                last = first;
+            } else {
+                Sequence sequence = createCombinatorSequece(combinator, matchers);
+                last.chain(sequence);
+                last = sequence;
+            }
+            combinator = parseCombinatorType(currentToken);
+        } while (combinator != null);
+        
+        return new DefaultSingleSelector(first);
+    }
+    
+    /**
+     * Returns the combinator type of the given token.
+     * 
+     * @param token the token to check.
+     * @return {@code null} if given token is not a combinator.
+     */
+    private Combinator parseCombinatorType(Token token) {
+        switch (token.getCategory()) {
+        case SPACE:
+            return Combinator.DESCENDANT;
+        case GREATER:
+            return Combinator.CHILD;
+        case PLUS:
+            return Combinator.ADJACENT;
+        case TILDE:
+            return Combinator.SIBLING;
+        default:
+            return null;
+        }
+    }
+    
+    private Sequence createCombinatorSequece(Combinator combinator, List<Matcher> matchers) {
+        switch (combinator) {
+        case DESCENDANT:
+            return new DescendantCombinatorSequence(matchers);
+        case CHILD:
+            return new ChildCombinatorSequence(matchers);
+        case ADJACENT:
+            return new AdjacentCombinatorSequence(matchers);
+        case SIBLING:
+            return new SiblingCombinatorSequence(matchers);
+        default:
+            throw internalError();
+        }
+    }
+    
+    private List<Matcher> sequence() {
+        List<Matcher> matchers = new ArrayList<>();
         Token token = null;
         int index = 0;
         while ((token = nextToken()) != null) {
@@ -80,16 +145,9 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             if (matcher == null) {
                 break;
             }
-            if (composed == null) {
-                composed = matcher;
-            } else {
-                composed = composed.and(matcher);
-            }
+            matchers.add(matcher);
         }
-        if (composed == null) {
-            throw newException(Message.UNEXPECTED_END_OF_INPUT);
-        }
-        return new SequenceCollector(composed);
+        return matchers;
     }
     
     private Matcher parseSimpleSelector(Token token, int index) {
@@ -108,6 +166,9 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             return parseAttributeSelector();
         case COMMA:
         case SPACE:
+        case GREATER:
+        case PLUS:
+        case TILDE:
             break;
         case EOI:
             break;
@@ -201,7 +262,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         case SUBSTRING_MATCH:
             return new SubstringMatcher(name, value);
         default:
-            throw new IllegalStateException("Program bug");
+            throw internalError();
         }
     }
     
@@ -218,7 +279,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return token;
     }
     
-    private RuntimeExeption unexpectedToken(Token token) {
+    private InvalidSelectorExeption unexpectedToken(Token token) {
         if (token == Token.EOI) {
             return newException(Message.UNEXPECTED_END_OF_INPUT); 
         } else if (token == Token.UNKNOWN) {
@@ -228,11 +289,15 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
     
-    private RuntimeExeption newException(Object message) {
-        return new RuntimeExeption(
+    private InvalidSelectorExeption newException(Object message) {
+        return new InvalidSelectorExeption(
                 message.toString(), 
                 tokenizer.getInput(), 
                 tokenizer.getCurrentIndex());  
+    }
+    
+    private RuntimeException internalError() {
+        return new RuntimeException("Internal error.");
     }
 }
 

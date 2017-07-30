@@ -20,29 +20,16 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.api.SingleSelector;
-
 /**
- *
+ * A sequence composed of simple selectors.
  */
-public class DefaultSingleSelector implements SingleSelector {
+public interface Sequence {
     
-    private final Sequence firstSequence;
-    
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
-    }
+    Set<Element> process(Element element);
 
-    @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null");
-        }
-        return firstSequence.process(root);
-    }
+    Set<Element> process(Set<Element> elements);
+
+    boolean hasNext();
     
-    @Override
-    public String toString() {
-        return firstSequence.toString();
-    }
+    Sequence chain(Sequence next);
 }

@@ -16,33 +16,36 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.Set;
+import java.util.List;
 
-import org.w3c.dom.Element;
-
-import com.github.i49.cascade.api.SingleSelector;
+import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- *
+ * A sequence preceded by combinator.
  */
-public class DefaultSingleSelector implements SingleSelector {
-    
-    private final Sequence firstSequence;
-    
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
-    }
+public abstract class CombinatorSequence extends AbstractSequence {
 
-    @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null");
-        }
-        return firstSequence.process(root);
+    private final Combinator combinator;
+  
+    protected CombinatorSequence(Combinator combinator, List<Matcher> matchers) {
+        super(matchers);
+        this.combinator = combinator;
     }
     
     @Override
     public String toString() {
-        return firstSequence.toString();
+        StringBuilder b = new StringBuilder();
+        b.append(getCombinator().getSymbol());
+        b.append(super.toString());
+        return b.toString();
+    }
+
+    /**
+     * Returns the combinator type of this sequence.
+     * 
+     * @return the combinator type of this sequence.
+     */
+    public Combinator getCombinator() {
+        return combinator;
     }
 }
