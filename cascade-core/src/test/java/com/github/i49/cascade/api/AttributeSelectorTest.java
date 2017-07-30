@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Set;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,11 +39,6 @@ public class AttributeSelectorTest {
         doc = Documents.load("/attribute-selector-test.html");
     }
 
-    @AfterClass
-    public static void tearDownOnce() {
-        doc = null;
-    }
-    
     @Before
     public void setUp() {
         this.compiler = SelectorCompiler.create();

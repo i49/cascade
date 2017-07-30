@@ -19,7 +19,9 @@ package com.github.i49.cascade.api;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -35,6 +37,8 @@ final class Documents {
     
     private static final ThreadLocal<DocumentBuilder> builders = 
             ThreadLocal.withInitial(Documents::builder);
+    
+    private static final Map<String, Document> documents = new HashMap<>();
 
     /**
      * Loads a document from resource specified by name.
@@ -43,14 +47,10 @@ final class Documents {
      * @return loaded document.
      */
     public static Document load(String resourceName) {
-        Document doc = null;
-        DocumentBuilder b = builders.get();
-        try (InputStream in = Documents.class.getResourceAsStream(resourceName)) {
-            doc = b.parse(in);
-            activateIdentifiers(doc);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            return null;
+        Document doc = documents.get(resourceName);
+        if (doc == null) {
+            doc = loadDocument(resourceName);
+            documents.put(resourceName, doc);
         }
         return doc;
     }
@@ -71,6 +71,18 @@ final class Documents {
             found.add((Element)nodes.item(i));
         }
         return found;
+    }
+    
+    private static Document loadDocument(String resourceName) {
+        Document doc = null;
+        DocumentBuilder b = builders.get();
+        try (InputStream in = Documents.class.getResourceAsStream(resourceName)) {
+            doc = b.parse(in);
+            activateIdentifiers(doc);
+        } catch (Exception e) {
+            throw new RuntimeException("Document not found: " + resourceName);
+        }
+        return doc;
     }
     
     private static void activateIdentifiers(Document doc) {
