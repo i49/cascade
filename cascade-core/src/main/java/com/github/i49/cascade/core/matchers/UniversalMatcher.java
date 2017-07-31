@@ -33,16 +33,13 @@ public class UniversalMatcher implements Matcher {
     }
 
     @Override
+    public MatcherType getType() {
+        return MatcherType.UNIVERSAL;
+    }
+    
+    @Override
     public boolean matches(Element element) {
         return true;
-    }
-
-    @Override
-    public Matcher and(Matcher other) {
-        if (other == null) {
-            return this;
-        }
-        return other;
     }
 
     @Override

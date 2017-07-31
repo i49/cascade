@@ -5,8 +5,9 @@
 Cascade is a pure Java implementation of CSS Selector operating on W3C DOM.
 
 ## How to use programmatically
+
 ```java
 Selector selector = Selector.compile("div p");
-Document doc = /* doc is of org.w3c.dom.Document */
+Document doc = ... /* doc is an instance of org.w3c.dom.Document */
 Set<Element> elements = selector.select(doc.getDocumentElement());
 ```

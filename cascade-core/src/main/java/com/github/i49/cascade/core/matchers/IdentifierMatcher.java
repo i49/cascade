@@ -32,6 +32,11 @@ public class IdentifierMatcher implements Matcher {
     }
 
     @Override
+    public MatcherType getType() {
+        return MatcherType.IDENTIFIER;
+    }
+   
+    @Override
     public boolean matches(Element element) {
         NamedNodeMap map = element.getAttributes();
         for (int i = 0; i < map.getLength(); i++) {

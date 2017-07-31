@@ -18,183 +18,70 @@ package com.github.i49.cascade.api;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.Before;
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-/**
- *
- */
+@RunWith(Parameterized.class)
 public class ParsingTest {
-
-    private SelectorCompiler compiler;
     
-    @Before
-    public void setUp() {
-        compiler = SelectorCompiler.create(); 
-    }
-    
-    @Test
-    public void compile_shouldCompileUniversalSelector() {
-       Selector s = compiler.compile("*"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileTypeSelector() {
-       Selector s = compiler.compile("address"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileIdSelector() {
-       Selector s = compiler.compile("#t1"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileTypeWithId() {
-       Selector s = compiler.compile("li#t2"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileUnversalWithId() {
-       Selector s = compiler.compile("*#t1"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileClassSelector() {
-       Selector s = compiler.compile(".t1"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileTypeWithClass() {
-       Selector s = compiler.compile("li.t1"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            /* universal */
+            { "*", "*" },
+            /* type */
+            { "h1", "h1" },
+            /* class */
+            { ".pastoral", "*.pastoral" },
+            { "h1.pastoral", "h1.pastoral" },
+            { "p.pastoral.marine", "p.pastoral.marine" },
+            /* id */
+            { "#chapter1", "*#chapter1" },
+            { "h1#chapter1", "h1#chapter1" },
+            { "*#z98y", "*#z98y" },
+            /* attribute */
+            { "[title]", "*[title]" },
+            { "[class=example]", "*[class=\"example\"]" },
+            { "[class=\"example\"]", "*[class=\"example\"]" },
+            { "[class=\'example\']", "*[class=\"example\"]" },
+            { "span[hello=\"Cleveland\"][goodbye=\"Columbus\"]", "span[hello=\"Cleveland\"][goodbye=\"Columbus\"]" },
+            { "[rel~=\"copyright\"]", "*[rel~=\"copyright\"]" },
+            { "[hreflang|=\"en\"]", "*[hreflang|=\"en\"]" },
+            { "[type^=\"image/\"]", "*[type^=\"image/\"]" },
+            { "[href$=\".html\"]", "*[href$=\".html\"]" },
+            { "[title*=\"hello\"]", "*[title*=\"hello\"]" },
+            /* combinator */
+            { "h1 em", "h1 em" },
+            { "div * p", "div * p" },
+            { "div p *[href]", "div p *[href]" },
+            { "body > p", "body > p" },
+            { "div ol>li p", "div ol > li p" },
+            { "math + p", "math + p" },
+            { "h1.opener + h2", "h1.opener + h2" },
+            { "h1 ~ pre", "h1 ~ pre" },
+            /* group */
+            { "li, p", "li, p" },
+            { "h1, h2, h3", "h1, h2, h3" } 
+        });
     }
 
-    @Test
-    public void compile_shouldCompileIdWithClass() {
-       Selector s = compiler.compile("*.t1"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
+    private final String expression;
+    private final String result;
+
+    public ParsingTest(String expression, String result) {
+        this.expression = expression;
+        this.result = result;
     }
     
     @Test
-    public void compile_shouldCompileAttributePresenseSelector() {
-       Selector s = compiler.compile("[title]"); 
-       assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-    
-    @Test
-    public void compile_shouldCompileAttributeValueSelector() {
-        Selector s = compiler.compile("[class=example]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileDoubleQuotedAttributeValueSelector() {
-        Selector s = compiler.compile("[class=\"example\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileSingleQuotedAttributeValueSelector() {
-        Selector s = compiler.compile("[class=\'example\']"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-    
-    @Test
-    public void compile_shouldCompleMultipleValueSelector() {
-        Selector s = compiler.compile("span[hello=\"Cleveland\"][goodbye=\"Columbus\"]");
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileIncludesSelector() {
-        Selector s = compiler.compile("[rel~=\"copyright\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileDashMatchSelector() {
-        Selector s = compiler.compile("[hreflang|=\"en\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompilePrefixMatchSelector() {
-        Selector s = compiler.compile("[type^=\"image/\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileSuffixMatchSelector() {
-        Selector s = compiler.compile("[href$=\".html\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-
-    @Test
-    public void compile_shouldCompileSubstringMatchSelector() {
-        Selector s = compiler.compile("[title*=\"hello\"]"); 
-        assertThat(s).isNotNull().isInstanceOf(SingleSelector.class);
-    }
-    
-    @Test
-    public void compile_shouldCompileDescendantCombinator() {
-        Selector s1 = compiler.compile("h1 em"); 
-        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s1).hasToString("h1 em");
-
-        Selector s2 = compiler.compile("div * p"); 
-        assertThat(s2).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s2).hasToString("div * p");
-
-        Selector s3 = compiler.compile("div p *[href]"); 
-        assertThat(s3).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s3).hasToString("div p *[href]");
-    }
-    
-    @Test
-    public void compile_shouldCompileChildCombinator() {
-        Selector s1 = compiler.compile("body > p"); 
-        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s1).hasToString("body > p");
-
-        Selector s2 = compiler.compile("div ol>li p"); 
-        assertThat(s2).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s2).hasToString("div ol > li p");
-    }
-
-    @Test
-    public void compile_shouldCompileAdjacentCombinator() {
-        Selector s1 = compiler.compile("math + p"); 
-        assertThat(s1)
-            .isNotNull()
-            .isInstanceOf(SingleSelector.class)
-            .hasToString("math + p");
-
-        Selector s2 = compiler.compile("h1.opener + h2"); 
-        assertThat(s2)
-            .isNotNull()
-            .isInstanceOf(SingleSelector.class)
-            .hasToString("h1.opener + h2");
-    }
-
-    @Test
-    public void compile_shouldCompileSiblingCombinator() {
-        Selector s1 = compiler.compile("h1 ~ pre"); 
-        assertThat(s1).isNotNull().isInstanceOf(SingleSelector.class);
-        assertThat(s1).hasToString("h1 ~ pre");
-    }
-
-    @Test
-    public void compile_shouldCompileSelectorsGroup() {
-        Selector s1 = compiler.compile("li, p"); 
-        assertThat(s1).isNotNull().isInstanceOf(SelectorGroup.class);
-        assertThat(s1).hasToString("li, p");
-        SelectorGroup g = (SelectorGroup)s1;
-        assertThat(g).hasSize(2);
+    public void compile_shouldParseExpression() {
+        SelectorCompiler compiler = SelectorCompiler.create();
+        Selector s = compiler.compile(this.expression);
+        assertThat(s).hasToString(this.result);
     }
 }

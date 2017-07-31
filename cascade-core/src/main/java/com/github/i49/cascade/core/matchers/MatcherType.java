@@ -16,25 +16,30 @@
 
 package com.github.i49.cascade.core.matchers;
 
-import org.w3c.dom.Element;
-
 /**
- * The base type for performing various kinds of matching against given element.
+ * Matcher types categorized by simple selector types.
  */
-public interface Matcher {
+public enum MatcherType {
+    /** Matcher for type selector. */
+    TYPE,
+    /** Matcher for universal selector. */
+    UNIVERSAL,
+    /** Matcher for attribute selector. */
+    ATTRIBUTE,
+    /** Matcher for class selector. */
+    CLASS,
+    /** Matcher for ID selector. */
+    IDENTIFIER,
+    /** Matcher for pseudo-class. */
+    PSEUDO_CLASS
+    ;
     
     /**
-     * Returns the type of this matcher.
+     * Checks if this type represents a element type.
      * 
-     * @return the type of this matcher.
+     * @return {@code true} if current instance is {@link #TYPE} or {@link #UNIVERSAL}.
      */
-    MatcherType getType();
-
-    /**
-     * Performs matching for given element.
-     * 
-     * @param element the element to check, cannot be {@code null}.
-     * @return {@code true} if given element satisfied the condition, {@code false} otherwise. 
-     */
-    boolean matches(Element element);
+    public boolean representsType() {
+        return this == TYPE || this == UNIVERSAL;
+    }
 }

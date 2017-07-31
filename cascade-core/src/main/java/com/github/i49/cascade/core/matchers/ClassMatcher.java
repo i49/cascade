@@ -30,6 +30,11 @@ public class ClassMatcher implements Matcher {
     }
 
     @Override
+    public MatcherType getType() {
+        return MatcherType.CLASS;
+    }
+    
+    @Override
     public boolean matches(Element element) {
         String valueList = element.getAttribute("class");
         for (String value: valueList.split("\\s+")) {

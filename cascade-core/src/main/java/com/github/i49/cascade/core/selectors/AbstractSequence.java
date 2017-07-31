@@ -63,7 +63,11 @@ abstract class AbstractSequence implements Sequence {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Matcher m: this.matchers) {
+        for (int i = 0; i < this.matchers.size(); i++) {
+            Matcher m = this.matchers.get(i);
+            if (i == 0 && !m.getType().representsType()) {
+                b.append("*");
+            }
             b.append(m.toString());
         }
         if (hasNext()) {

@@ -28,6 +28,11 @@ public class AttributeMatcher implements Matcher {
     public AttributeMatcher(String name) {
         this.name = name;
     }
+    
+    @Override
+    public MatcherType getType() {
+        return MatcherType.ATTRIBUTE;
+    }
 
     @Override
     public boolean matches(Element element) {

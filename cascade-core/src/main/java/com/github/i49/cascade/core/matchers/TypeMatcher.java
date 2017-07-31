@@ -30,6 +30,11 @@ public class TypeMatcher implements Matcher {
     }
 
     @Override
+    public MatcherType getType() {
+        return MatcherType.TYPE;
+    }
+   
+    @Override
     public boolean matches(Element element) {
         return elementName.equals(element.getTagName());
     }
