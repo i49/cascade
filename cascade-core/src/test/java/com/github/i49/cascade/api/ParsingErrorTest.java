@@ -18,47 +18,49 @@ package com.github.i49.cascade.api;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.util.Arrays;
+import java.util.Collection;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+@RunWith(Parameterized.class)
 public class ParsingErrorTest {
 
-    private static SelectorCompiler compiler;
-    
-    @BeforeClass
-    public static void setUpOnce() {
-        compiler = SelectorCompiler.create(); 
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            { null, 0 },
+            { "", 0 },
+            { "p, ", 3 },
+            { ".5cm, ", 1 },
+            { "> p", 0 },
+            { ", p", 0 }
+        });
     }
     
-    @Test
-    public void compile_shouldThrowExceptionIfExpressionIsNull() {
-        Throwable thrown = catchThrowable(()->{
-           compiler.compile(null); 
-        });
-        assertThat(thrown).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void compile_shouldThrowExceptionIfExpressionIsBlank() {
-        Throwable thrown = catchThrowable(()->{
-           compiler.compile(""); 
-        });
-        assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
-    }
-
-    @Test
-    public void compile_shouldThrowExceptionIfUnexpectedEndOfInputOcurred() {
-        Throwable thrown = catchThrowable(()->{
-           compiler.compile("p, "); 
-        });
-        assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
+    private final String expression;
+    private final int position;
+    
+    public ParsingErrorTest(String expression, int position) {
+        this.expression = expression;
+        this.position = position;
     }
     
     @Test
-    public void compile_shoundThrowExceptionIfClassNameIsInvalid() {
+    public void test() {
+        SelectorCompiler compiler = SelectorCompiler.create();
         Throwable thrown = catchThrowable(()->{
-            compiler.compile(".5cm"); 
-         });
-         assertThat(thrown).isInstanceOf(InvalidSelectorExeption.class);
+            compiler.compile(this.expression); 
+        });
+        if (this.expression == null) {
+            assertThat(thrown).isInstanceOf(NullPointerException.class);
+        } else {
+             assertThat(thrown).isInstanceOf(InvalidSelectorException.class);
+             InvalidSelectorException e = (InvalidSelectorException)thrown;
+             assertThat(e.getPosition()).isEqualTo(this.position);
+        }
     }
 }

@@ -20,7 +20,7 @@ import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
 
 /**
- *
+ * Tokenizer for parsing CSS selector expression into classified tokens.
  */
 public class Tokenizer {
     
@@ -32,6 +32,8 @@ public class Tokenizer {
         this.input = input;
         this.nextIndex = 0;
         this.currentIndex = 0;
+        // Skips leading spaces.
+        skipSpaces();
     }
     
     public Token nextToken() {
@@ -157,6 +159,9 @@ public class Tokenizer {
         case '~':
             skipSpaces();
             return Token.TILDE;
+        case -1:
+            // End of input immediate after whitespaces.
+            return Token.EOI;
         default:
             rewind(pos);
             return Token.SPACE;

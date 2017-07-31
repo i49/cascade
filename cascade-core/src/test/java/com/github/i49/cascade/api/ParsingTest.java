@@ -66,7 +66,11 @@ public class ParsingTest {
             { "h1 ~ pre", "h1 ~ pre" },
             /* group */
             { "li, p", "li, p" },
-            { "h1, h2, h3", "h1, h2, h3" } 
+            { "h1, h2, h3", "h1, h2, h3" },
+            /* leading or trailing spaces */
+            { " p ", "p" },
+            { " figure > img ", "figure > img" },
+            { " h1, h2, h3 ", "h1, h2, h3" }
         });
     }
 

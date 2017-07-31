@@ -19,7 +19,7 @@ package com.github.i49.cascade.core.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.i49.cascade.api.InvalidSelectorExeption;
+import com.github.i49.cascade.api.InvalidSelectorException;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
 import com.github.i49.cascade.api.SingleSelector;
@@ -138,14 +138,15 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     
     private List<Matcher> sequence() {
         List<Matcher> matchers = new ArrayList<>();
-        Token token = null;
         int index = 0;
-        while ((token = nextToken()) != null) {
+        Token token = nextNonSpaceToken();
+        for (;;) {
             Matcher matcher = parseSimpleSelector(token, index++);
             if (matcher == null) {
                 break;
             }
             matchers.add(matcher);
+            token = nextToken();
         }
         return matchers;
     }
@@ -279,7 +280,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return token;
     }
     
-    private InvalidSelectorExeption unexpectedToken(Token token) {
+    private InvalidSelectorException unexpectedToken(Token token) {
         if (token == Token.EOI) {
             return newException(Message.UNEXPECTED_END_OF_INPUT); 
         } else if (token == Token.UNKNOWN) {
@@ -289,8 +290,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
     
-    private InvalidSelectorExeption newException(Object message) {
-        return new InvalidSelectorExeption(
+    private InvalidSelectorException newException(Object message) {
+        return new InvalidSelectorException(
                 message.toString(), 
                 tokenizer.getInput(), 
                 tokenizer.getCurrentIndex());  
