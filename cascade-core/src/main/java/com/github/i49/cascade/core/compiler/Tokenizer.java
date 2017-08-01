@@ -236,14 +236,13 @@ public class Tokenizer {
         this.nextIndex = mark;
     }
     
-    private int skipSpaces() {
-        for (;;) {
-            int pos = current();
-            int c = nextChar();
+    private void skipSpaces() {
+        while (nextIndex < input.length()) {
+            char c = input.charAt(nextIndex);
             if (!isWhitespace(c)) {
-                rewind(pos);
-                return c;
+                break;
             }
+            nextIndex++;
         }
     }
     

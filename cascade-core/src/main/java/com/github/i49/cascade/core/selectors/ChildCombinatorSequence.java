@@ -27,7 +27,7 @@ import com.github.i49.cascade.core.matchers.Matcher;
 /**
  * A sequence preceded by child combinator.
  */
-public class ChildCombinatorSequence extends CombinatorSequence {
+public class ChildCombinatorSequence extends AbstractCombinatorSequence {
 
     public ChildCombinatorSequence(List<Matcher> matchers) {
         super(Combinator.CHILD, matchers);

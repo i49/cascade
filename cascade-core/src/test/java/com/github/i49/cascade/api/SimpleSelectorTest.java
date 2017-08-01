@@ -16,92 +16,48 @@
 
 package com.github.i49.cascade.api;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Unit tests for simple selectors.
+ * Tests for universal selector, type selector, identifier selector and class selector.
  */
-public class SimpleSelectorTest {
-
-    private static Document doc;
-    private SelectorCompiler compiler;
+@RunWith(Parameterized.class)
+public class SimpleSelectorTest extends BaseSelectorTest {
     
-    @BeforeClass
-    public static void setUpOnce() {
-        doc = Documents.load("/simple-selector-test.html");
-    }
-    
-    @Before
-    public void setUp() {
-        this.compiler = SelectorCompiler.create();
-    }
-
-    @Test
-    public void typeSelector_shouldSelectElement() {
-        Selector s = compiler.compile("address");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next();
-        assertThat(e.getTagName()).isEqualTo("address");
-    }
-
-    @Test
-    public void typeSelector_shouldSelectRootElement() {
-        Selector s = compiler.compile("html");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next();
-        assertThat(e.getTagName()).isEqualTo("html");
-    }
-   
-    @Test
-    public void typeSelector_shouldSelectMultipleElements() {
-        Selector s = compiler.compile("p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(3);
-    }
-
-    @Test
-    public void typeSelector_shouldSelectNoElements() {
-        Selector s = compiler.compile("object");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void idSelector_shouldSelectElement() {
-        Selector s = compiler.compile("#i2");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next();
-        assertThat(e.getTagName()).isEqualTo("li");
-        assertThat(e.getTextContent()).isEqualTo("list item 2");
-    }
-    
-    @Test
-    public void classSelector_shouldSelectElement() {
-        Selector s = compiler.compile(".c2");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next();
-        assertThat(e.getTagName()).isEqualTo("dt");
-        assertThat(e.getTextContent()).isEqualTo("term2");
-    }
- 
-    @Test
-    public void selector_shouldThrowExceptionIfRootIsNull() {
-        Selector s = compiler.compile("p");
-        Throwable thrown = catchThrowable(()->{
-            s.select(null);
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            /* universal */
+            { "/smallest-xml.xml", "*", 1 },
+            { "/universal-selector-test.html", "*", 10 },
+            /* type */
+            { "/type-selector-test.html", "html", 1 },
+            { "/type-selector-test.html", "h1", 1 },
+            { "/type-selector-test.html", "p", 2 },
+            { "/type-selector-test.html", "nonexistent", 0 },
+            /* identifier */
+            { "/id-selector-test.html", "#content", 1 },
+            { "/id-selector-test.html", "section#content", 1 },
+            { "/id-selector-test.html", "#nonexistent", 0 },
+            /* class */
+            { "/class-selector-test.html", ".warning", 1 },
+            { "/class-selector-test.html", "section.warning", 1 },
+            { "/class-selector-test.html", ".nonexistent", 0 },
         });
-        assertThat(thrown).isInstanceOf(NullPointerException.class);
+    }
+    
+    public SimpleSelectorTest(String resourceName, String expression, int expectedCount) {
+        super(resourceName, expression, expectedCount);
+    }
+    
+    @Test
+    public void select_shouldSelectElements() {
+        test();
     }
 }

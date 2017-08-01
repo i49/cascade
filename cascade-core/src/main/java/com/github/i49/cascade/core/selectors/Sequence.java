@@ -31,5 +31,5 @@ public interface Sequence {
 
     boolean hasNext();
     
-    Sequence chain(Sequence next);
+    Sequence chain(CombinatorSequence next);
 }

@@ -27,7 +27,7 @@ import com.github.i49.cascade.core.matchers.Matcher;
 /**
  * A sequence preceded by general sibling combinator.
  */
-public class SiblingCombinatorSequence extends CombinatorSequence {
+public class SiblingCombinatorSequence extends AbstractCombinatorSequence {
 
     public SiblingCombinatorSequence(List<Matcher> matchers) {
         super(Combinator.SIBLING, matchers);

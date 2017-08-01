@@ -17,23 +17,36 @@
 package com.github.i49.cascade.core.selectors;
 
 import java.util.List;
-import java.util.Set;
-
-import org.w3c.dom.Element;
 
 import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- * A sequence preceded by descendant combinator.
+ * A sequence preceded by combinator.
  */
-public class DescendantCombinatorSequence extends AbstractCombinatorSequence {
+public abstract class AbstractCombinatorSequence extends AbstractSequence implements CombinatorSequence {
 
-    public DescendantCombinatorSequence(List<Matcher> matchers) {
-        super(Combinator.DESCENDANT, matchers);
+    private final Combinator combinator;
+  
+    protected AbstractCombinatorSequence(Combinator combinator, List<Matcher> matchers) {
+        super(matchers);
+        this.combinator = combinator;
+    }
+    
+    /**
+     * Returns the combinator type of this sequence.
+     * 
+     * @return the combinator type of this sequence.
+     */
+    @Override
+    public Combinator getCombinator() {
+        return combinator;
     }
 
     @Override
-    protected void traverse(Element e, Set<Element> found) {
-        visitDescendantsOf(e, found);
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append(getCombinator().getSymbol());
+        b.append(super.toString());
+        return b.toString();
     }
 }

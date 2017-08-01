@@ -55,7 +55,7 @@ abstract class AbstractSequence implements Sequence {
     }
 
     @Override
-    public Sequence chain(Sequence next) {
+    public Sequence chain(CombinatorSequence next) {
         this.nextSequence = next;
         return this;
     }

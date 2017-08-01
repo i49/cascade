@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
+package com.github.i49.cascade.api;
 
-import java.util.List;
-import java.util.Set;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
-import org.w3c.dom.Element;
-
-import com.github.i49.cascade.core.matchers.Matcher;
+import org.junit.Test;
 
 /**
- * A sequence preceded by descendant combinator.
+ *
  */
-public class DescendantCombinatorSequence extends AbstractCombinatorSequence {
+public class SelectorTest {
 
-    public DescendantCombinatorSequence(List<Matcher> matchers) {
-        super(Combinator.DESCENDANT, matchers);
-    }
-
-    @Override
-    protected void traverse(Element e, Set<Element> found) {
-        visitDescendantsOf(e, found);
+    @Test
+    public void selector_shouldThrowExceptionIfRootIsNull() {
+        Selector s = Selector.compile("p");
+        Throwable thrown = catchThrowable(()->{
+            s.select(null);
+        });
+        assertThat(thrown).isInstanceOf(NullPointerException.class);
     }
 }

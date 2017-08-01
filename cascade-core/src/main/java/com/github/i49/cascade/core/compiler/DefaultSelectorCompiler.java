@@ -38,6 +38,7 @@ import com.github.i49.cascade.core.matchers.UniversalMatcher;
 import com.github.i49.cascade.core.selectors.AdjacentCombinatorSequence;
 import com.github.i49.cascade.core.selectors.ChildCombinatorSequence;
 import com.github.i49.cascade.core.selectors.Combinator;
+import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
 import com.github.i49.cascade.core.selectors.DescendantCombinatorSequence;
@@ -90,7 +91,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                 first = new StartingSequence(matchers);
                 last = first;
             } else {
-                Sequence sequence = createCombinatorSequece(combinator, matchers);
+                CombinatorSequence sequence = createCombinatorSequece(combinator, matchers);
                 last.chain(sequence);
                 last = sequence;
             }
@@ -121,7 +122,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
     
-    private Sequence createCombinatorSequece(Combinator combinator, List<Matcher> matchers) {
+    private CombinatorSequence createCombinatorSequece(Combinator combinator, List<Matcher> matchers) {
         switch (combinator) {
         case DESCENDANT:
             return new DescendantCombinatorSequence(matchers);

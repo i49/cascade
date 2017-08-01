@@ -16,52 +16,37 @@
 
 package com.github.i49.cascade.api;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-public class SelectorGroupTest {
+/**
+ * Tests for groups of selectors.
+ */
+@RunWith(Parameterized.class)
+public class SelectorGroupTest extends BaseSelectorTest {
 
-    private static Document doc;
-    private SelectorCompiler compiler;
-    
-    @BeforeClass
-    public static void setUpOnce() {
-        doc = Documents.load("/selector-group-test.html");
-    }
-    
-    @Before
-    public void setUp() {
-        this.compiler = SelectorCompiler.create();
-    }
-    
-    @Test
-    public void selectorGroup_shouldSelectMultipleElements() {
-        Selector s = compiler.compile("li, p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(3);
-        assertThat(found).extracting(Element::getTagName).containsExactly("li", "li", "p");
-    }
-
-    @Test
-    public void selectorGroup_shouldSelectNoElements() {
-        Selector s = compiler.compile("object, map");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void selectorGroup_shouldThrowExceptionIfRootIsNull() {
-        Selector s = compiler.compile("li, p");
-        Throwable thrown = catchThrowable(()->{
-            s.select(null);
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            { "/selector-group-test.html", "li, p", 3 },
+            { "/selector-group-test.html", "li, nonexistent", 2 },
+            { "/selector-group-test.html", "nonexistent, p", 1 },
+            { "/selector-group-test.html", "nonexistent1, nonexistent2", 0 },
+            { "/selector-group-test.html", "li, .example", 3 },
         });
-        assertThat(thrown).isInstanceOf(NullPointerException.class);
+    }
+
+    public SelectorGroupTest(String resourceName, String expression, int expectedCount) {
+        super(resourceName, expression, expectedCount);
+   }
+  
+    @Test
+    public void select_shouldSelectElements() {
+        test();
     }
 }

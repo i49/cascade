@@ -47,9 +47,9 @@ final class Documents {
      * @return loaded document.
      */
     public static Document load(String resourceName) {
-        Document doc = documents.get(resourceName);
+        Document doc = loadFromCache(resourceName);
         if (doc == null) {
-            doc = loadDocument(resourceName);
+            doc = loadFromResource(resourceName);
             documents.put(resourceName, doc);
         }
         return doc;
@@ -73,7 +73,11 @@ final class Documents {
         return found;
     }
     
-    private static Document loadDocument(String resourceName) {
+    private static Document loadFromCache(String resourceName) {
+        return documents.get(resourceName);
+    }
+    
+    private static Document loadFromResource(String resourceName) {
         Document doc = null;
         DocumentBuilder b = builders.get();
         try (InputStream in = Documents.class.getResourceAsStream(resourceName)) {

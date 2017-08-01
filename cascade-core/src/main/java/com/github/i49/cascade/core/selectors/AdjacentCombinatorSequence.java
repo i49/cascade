@@ -27,7 +27,7 @@ import com.github.i49.cascade.core.matchers.Matcher;
 /**
  * A sequence preceded by adjacent sibling combinator.
  */
-public class AdjacentCombinatorSequence extends CombinatorSequence {
+public class AdjacentCombinatorSequence extends AbstractCombinatorSequence {
 
     public AdjacentCombinatorSequence(List<Matcher> matchers) {
         super(Combinator.ADJACENT, matchers);

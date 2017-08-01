@@ -16,36 +16,10 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.List;
-
-import com.github.i49.cascade.core.matchers.Matcher;
-
 /**
- * A sequence preceded by combinator.
+ * A sequence preceded by a combinator.
  */
-public abstract class CombinatorSequence extends AbstractSequence {
+public interface CombinatorSequence extends Sequence {
 
-    private final Combinator combinator;
-  
-    protected CombinatorSequence(Combinator combinator, List<Matcher> matchers) {
-        super(matchers);
-        this.combinator = combinator;
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append(getCombinator().getSymbol());
-        b.append(super.toString());
-        return b.toString();
-    }
-
-    /**
-     * Returns the combinator type of this sequence.
-     * 
-     * @return the combinator type of this sequence.
-     */
-    public Combinator getCombinator() {
-        return combinator;
-    }
+    Combinator getCombinator();
 }

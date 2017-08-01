@@ -50,7 +50,7 @@ public class ParsingErrorTest {
     }
     
     @Test
-    public void test() {
+    public void compile_shouldThrowExceptionIfSyntaxErrorFound() {
         SelectorCompiler compiler = SelectorCompiler.create();
         Throwable thrown = catchThrowable(()->{
             compiler.compile(this.expression); 
