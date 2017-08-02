@@ -19,7 +19,6 @@ package com.github.i49.cascade.api;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -46,18 +45,15 @@ public class SimpleSelectorTest extends BaseSelectorTest {
             { "/id-selector-test.html", "section#content", 1 },
             { "/id-selector-test.html", "#nonexistent", 0 },
             /* class */
-            { "/class-selector-test.html", ".warning", 1 },
-            { "/class-selector-test.html", "section.warning", 1 },
+            { "/class-selector-test.html", ".hello", 3 },
+            { "/class-selector-test.html", ".hello.java", 1 },
+            { "/class-selector-test.html", ".java.hello", 1 },
+            { "/class-selector-test.html", "div.hello", 3 },
             { "/class-selector-test.html", ".nonexistent", 0 },
         });
     }
     
     public SimpleSelectorTest(String resourceName, String expression, int expectedCount) {
         super(resourceName, expression, expectedCount);
-    }
-    
-    @Test
-    public void select_shouldSelectElements() {
-        test();
     }
 }

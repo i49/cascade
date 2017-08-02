@@ -16,95 +16,32 @@
 
 package com.github.i49.cascade.api;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import java.util.Set;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+/**
+ * Tests for selectors with combinators.
+ */
+@RunWith(Parameterized.class)
+public class CombinatorTest extends BaseSelectorTest {
 
-public class CombinatorTest {
-
-    private static Document doc;
-    private SelectorCompiler compiler;
-    
-    @BeforeClass
-    public static void setUpOnce() {
-        doc = Documents.load("/combinator-test.html");
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            { "/descendant-combinator-test.html", "div.main p", 3 },
+            { "/child-combinator-test.html", "div > p", 2 },
+            { "/adjacent-combinator-test-1.html", "h1.opener + h2", 1 },
+            { "/adjacent-combinator-test-2.html", "article > p + p", 2 },
+            { "/sibling-combinator-test-1.html", "h2 ~ pre", 1 },
+            { "/sibling-combinator-test-2.html", "article > p ~ p", 3 }
+        });
     }
     
-    @Before
-    public void setUp() {
-        this.compiler = SelectorCompiler.create();
-    }
-    
-    /* descendant combinator */
-    
-    @Test
-    public void select_shouldSelectDescendantElements() {
-        Selector s = compiler.compile("div.content p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found)
-            .hasSize(3)
-            .extracting(Element::getTextContent)
-            .containsExactly("paragraph 1", "paragraph 2", "paragraph 3");
-    }
-
-    /* child combinator */
-
-    @Test
-    public void select_shouldSelectChildElements() {
-        Selector s = compiler.compile("div > p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found)
-            .hasSize(2)
-            .extracting(Element::getTextContent)
-            .containsExactly("paragraph 1", "paragraph 3");
-    }
-    
-    /* adjacent combinator */
-
-    @Test
-    public void select_shouldSelectAdjacentElement() {
-        Selector s = compiler.compile("h1.opener + h2");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found)
-            .hasSize(1)
-            .extracting(Element::getTextContent)
-            .containsExactly("heading level 2");
-    }
-
-    @Test
-    public void select_shouldSelectMultipleAdjacentElements() {
-        Selector s = compiler.compile("article > p + p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found)
-            .hasSize(2)
-            .extracting(Element::getTextContent)
-            .containsExactly("paragraph b", "paragraph c");
-    }
-
-    /* sibling combinator */
-
-    @Test
-    public void select_shouldSelectSiblingElement() {
-        Selector s = compiler.compile("h2 ~ pre");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next();
-        assertThat(e.getTagName()).isEqualTo("pre");
-    }
-
-    @Test
-    public void select_shouldSelectMultipleSiblingElements() {
-        Selector s = compiler.compile("article > p ~ p");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found)
-            .hasSize(3)
-            .extracting(Element::getTextContent)
-            .containsExactly("paragraph b", "paragraph c", "paragraph d");
+    public CombinatorTest(String resourceName, String expression, int expectedCount) {
+        super(resourceName, expression, expectedCount);
     }
 }

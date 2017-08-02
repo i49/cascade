@@ -19,7 +19,6 @@ package com.github.i49.cascade.api;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -44,9 +43,4 @@ public class SelectorGroupTest extends BaseSelectorTest {
     public SelectorGroupTest(String resourceName, String expression, int expectedCount) {
         super(resourceName, expression, expectedCount);
    }
-  
-    @Test
-    public void select_shouldSelectElements() {
-        test();
-    }
 }

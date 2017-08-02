@@ -16,91 +16,43 @@
 
 package com.github.i49.cascade.api;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for attribute selectors.
  */
-public class AttributeSelectorTest {
+@RunWith(Parameterized.class)
+public class AttributeSelectorTest extends BaseSelectorTest {
 
-    private static Document doc;
-    private SelectorCompiler compiler;
-    
-    @BeforeClass
-    public static void setUpOnce() {
-        doc = Documents.load("/attribute-selector-test.html");
+    @Parameters
+    public static Collection<Object[]> parameters() {
+        return Arrays.asList(new Object[][] {
+            { "/attribute-presence-selector-test.html", "[title]", 1 },
+            /* value */
+            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", 1 },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", 1 },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", 0 },
+            /* dash */
+            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", 2 },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", 0 },
+            /* prefix */
+            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", 1 },
+            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", 1 },
+            /* suffix */
+            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", 1 },
+            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", 1 },
+            /* substring */
+            { "/attribute-value-selector-test.html", "[href*=\"example\"]", 1 },
+            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", 1 },
+        });
     }
-
-    @Before
-    public void setUp() {
-        this.compiler = SelectorCompiler.create();
-    }
-    
-    @Test
-    public void select_shouldSelectElementsByPresence() {
-        Selector s = compiler.compile("[title]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next(); 
-        assertThat(e.getTagName()).isEqualTo("h1");
-    }
-
-    @Test
-    public void select_shouldSelectElementsByValue() {
-        Selector s = compiler.compile("[href=\"http://www.w3.org/\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next(); 
-        assertThat(e.getTextContent()).isEqualTo("link 2");
-    }
-
-    @Test
-    public void select_shouldSelectElementsBySeparatedValue() {
-        Selector s = compiler.compile("[rel~=\"copyright\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next(); 
-        assertThat(e.getTextContent()).isEqualTo("link 3");
-    }
-
-    @Test
-    public void select_shouldSelectElementsByDashValue() {
-        Selector s = compiler.compile("[hreflang|=\"en\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(2);
-        assertThat(found).extracting(Element::getTextContent).contains("link 4", "link 5");
-    }
-
-    @Test
-    public void select_shouldSelectElementsByPrefix() {
-        Selector s = compiler.compile("[type^=\"image/\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next(); 
-        assertThat(e.getTextContent()).isEqualTo("link 6");
-    }
-
-    @Test
-    public void select_shouldSelectElementsBySuffix() {
-        Selector s = compiler.compile("[href$=\".html\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(4);
-    }
-
-    @Test
-    public void select_shouldSelectElementsBySubstring() {
-        Selector s = compiler.compile("[href*=\"example\"]");
-        Set<Element> found = s.select(doc.getDocumentElement());
-        assertThat(found).hasSize(1);
-        Element e = found.iterator().next(); 
-        assertThat(e.getTextContent()).isEqualTo("link 7");
+   
+    public AttributeSelectorTest(String resourceName, String expression, int expectedCount) {
+        super(resourceName, expression, expectedCount);
     }
 }

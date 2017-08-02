@@ -20,10 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-class BaseSelectorTest {
+public abstract class BaseSelectorTest {
 
     private final String resourceName;
     private final String expression;
@@ -35,7 +36,8 @@ class BaseSelectorTest {
         this.expectedCount = expectedCount;
     }
 
-    protected void test() {
+    @Test
+    public void test() {
         Document doc = loadDocument();
         Selector s = Selector.compile(expression);
         Set<Element> found  = s.select(doc.getDocumentElement());
