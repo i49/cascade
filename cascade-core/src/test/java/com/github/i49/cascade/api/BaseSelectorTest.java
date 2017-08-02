@@ -18,8 +18,12 @@ package com.github.i49.cascade.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,11 +33,24 @@ public abstract class BaseSelectorTest {
     private final String resourceName;
     private final String expression;
     private final int expectedCount;
+
+    private static Map<String, Document> documentCache;
     
     protected BaseSelectorTest(String resourceName, String expression, int expectedCount) {
         this.resourceName = resourceName;
         this.expression = expression;
         this.expectedCount = expectedCount;
+    }
+    
+    @BeforeClass
+    public static void setUpOnce() {
+        documentCache = new HashMap<>();
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        documentCache.clear();
+        documentCache = null;
     }
 
     @Test
@@ -45,6 +62,11 @@ public abstract class BaseSelectorTest {
     }
     
     private Document loadDocument() {
-        return Documents.load(this.resourceName);
+        Document doc = documentCache.get(this.resourceName);
+        if (doc == null) {
+            doc = Documents.load(this.resourceName);
+            documentCache.put(this.resourceName, doc);
+        }
+        return doc;
     }
-}
+} 

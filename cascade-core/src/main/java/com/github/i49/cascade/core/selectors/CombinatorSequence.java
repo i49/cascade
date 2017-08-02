@@ -16,10 +16,29 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.List;
+
+import com.github.i49.cascade.core.matchers.Matcher;
+
 /**
  * A sequence preceded by a combinator.
  */
 public interface CombinatorSequence extends Sequence {
 
     Combinator getCombinator();
+    
+    static CombinatorSequence create(Combinator combinator, List<Matcher> matchers) {
+        switch (combinator) {
+        case DESCENDANT:
+            return new DescendantCombinatorSequence(matchers);
+        case CHILD:
+            return new ChildCombinatorSequence(matchers);
+        case ADJACENT:
+            return new AdjacentCombinatorSequence(matchers);
+        case SIBLING:
+            return new SiblingCombinatorSequence(matchers);
+        default:
+            return null;
+        }
+    }
 }

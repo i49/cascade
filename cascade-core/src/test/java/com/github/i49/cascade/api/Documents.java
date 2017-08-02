@@ -19,9 +19,7 @@ package com.github.i49.cascade.api;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,8 +36,6 @@ final class Documents {
     private static final ThreadLocal<DocumentBuilder> builders = 
             ThreadLocal.withInitial(Documents::builder);
     
-    private static final Map<String, Document> documents = new HashMap<>();
-
     /**
      * Loads a document from resource specified by name.
      *  
@@ -47,12 +43,7 @@ final class Documents {
      * @return loaded document.
      */
     public static Document load(String resourceName) {
-        Document doc = loadFromCache(resourceName);
-        if (doc == null) {
-            doc = loadFromResource(resourceName);
-            documents.put(resourceName, doc);
-        }
-        return doc;
+        return loadFromResource(resourceName);
     }
     
     public static Element findOne(Document doc, String tagname) {
@@ -71,10 +62,6 @@ final class Documents {
             found.add((Element)nodes.item(i));
         }
         return found;
-    }
-    
-    private static Document loadFromCache(String resourceName) {
-        return documents.get(resourceName);
     }
     
     private static Document loadFromResource(String resourceName) {

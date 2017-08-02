@@ -17,6 +17,7 @@
 package com.github.i49.cascade.core.selectors;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -27,10 +28,12 @@ import com.github.i49.cascade.api.SingleSelector;
  */
 public class DefaultSingleSelector implements SingleSelector {
     
-    private final Sequence firstSequence;
+    private static final Logger log = Logger.getLogger(DefaultSingleSelector.class.getName());
     
-    public DefaultSingleSelector(Sequence firstSequence) {
-        this.firstSequence = firstSequence;
+    private final Sequence head;
+    
+    public DefaultSingleSelector(Sequence head) {
+        this.head = head;
     }
 
     @Override
@@ -38,11 +41,15 @@ public class DefaultSingleSelector implements SingleSelector {
         if (root == null) {
             throw new NullPointerException("root must not be null");
         }
-        return firstSequence.process(root);
+        SequenceResult result  = head.processAll(root);
+        log.fine(
+            "Visited: " + result.getNumberOfVisitedElements() +
+            " Selected: " + result.getNumberOfSelectedElements()); 
+        return result.getSelected();
     }
     
     @Override
     public String toString() {
-        return firstSequence.toString();
+        return head.toString();
     }
 }

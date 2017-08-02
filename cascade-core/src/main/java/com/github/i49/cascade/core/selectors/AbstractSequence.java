@@ -16,7 +16,6 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,33 +30,38 @@ import com.github.i49.cascade.core.matchers.Matcher;
 abstract class AbstractSequence implements Sequence {
     
     private List<Matcher> matchers;
-    private Sequence nextSequence;
+    private CombinatorSequence nextSequence;
     
     protected AbstractSequence(List<Matcher> matchers) {
         this.matchers = matchers;
     }
     
     @Override
-    public Set<Element> process(Element element) {
-        Set<Element> found = processCurrent(element);
-        return processNext(found);
+    public SequenceResult processAll(Element element) {
+        SequenceResult result = processCurrent(element);
+        processSubsequent(result);
+        return result;
     }
 
     @Override
-    public Set<Element> process(Set<Element> elements) {
-        Set<Element> found = processCurrent(elements);
-        return processNext(found);
+    public void process(SequenceResult result) {
+        Set<Element> selected = result.resetSelected();
+        processCurrent(selected, result);
     }
 
     @Override
     public boolean hasNext() {
-        return this.nextSequence != null;
+        return getNext() != null;
+    }
+    
+    @Override
+    public CombinatorSequence getNext() {
+        return nextSequence;
     }
 
     @Override
-    public Sequence chain(CombinatorSequence next) {
+    public void setNext(CombinatorSequence next) {
         this.nextSequence = next;
-        return this;
     }
     
     @Override
@@ -76,26 +80,26 @@ abstract class AbstractSequence implements Sequence {
         return b.toString();
     }
     
-    protected Set<Element> processCurrent(Element element) {
-        Set<Element> found = new LinkedHashSet<>();
-        traverse(element, found);
-        return found;
+    private SequenceResult processCurrent(Element element) {
+        SequenceResult result = new SequenceResult();
+        traverse(element, result);
+        return result;
     }
     
-    protected Set<Element> processCurrent(Set<Element> elements) {
-        Set<Element> found = new LinkedHashSet<>();
-        for (Element e: elements) {
-            traverse(e, found);
+    private void processCurrent(Set<Element> selected, SequenceResult result) {
+        for (Element element: selected) {
+            traverse(element, result);
         }
-        return found;
     }
     
-    protected Set<Element> processNext(Set<Element> found) {
-        if (hasNext()) {
-            return nextSequence.process(found);
-        } else {
-            return found;
+    private Set<Element> processSubsequent(SequenceResult result) {
+        Sequence current = getNext();
+        Set<Element> selected = result.getSelected();
+        while (current != null && !selected.isEmpty()) {
+            current.process(result);
+            current = current.getNext();
         }
+        return selected;
     }
     
     /**
@@ -105,25 +109,26 @@ abstract class AbstractSequence implements Sequence {
      * @param e the element as the starting point.
      * @param found the elements found matched during the traversal.
      */
-    protected void traverse(Element e, Set<Element> found) {
-        visitElemntAndItsDescendants(e, found);
+    protected void traverse(Element e, SequenceResult result) {
+        visitElemntAndItsDescendants(e, result);
     }
     
-    private void visitElemntAndItsDescendants(Element e, Set<Element> found) {
-        match(e, found);
-        visitDescendantsOf(e, found);
+    private void visitElemntAndItsDescendants(Element e, SequenceResult result) {
+        match(e, result);
+        visitDescendantsOf(e, result);
     }
     
-    protected void match(Element e, Set<Element> found) {
+    protected void match(Element e, SequenceResult result) {
         if (test(e)) {
-            found.add(e);
+            result.select(e);
         }
+        result.addVisited();
     }
     
-    protected void visitDescendantsOf(Element e, Set<Element> found) {
+    protected void visitDescendantsOf(Element e, SequenceResult result) {
         for (Node child = e.getFirstChild(); child != null; child = child.getNextSibling()) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                visitElemntAndItsDescendants((Element)child, found);
+                visitElemntAndItsDescendants((Element)child, result);
             }
         }
     }

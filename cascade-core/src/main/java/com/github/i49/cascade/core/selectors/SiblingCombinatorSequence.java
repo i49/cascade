@@ -17,7 +17,6 @@
 package com.github.i49.cascade.core.selectors;
 
 import java.util.List;
-import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,15 +33,15 @@ public class SiblingCombinatorSequence extends AbstractCombinatorSequence {
     }
 
     @Override
-    protected void traverse(Element e, Set<Element> found) {
-        visitAllSiblingsAfter(e, found);
+    protected void traverse(Element e, SequenceResult result) {
+        visitAllSiblingsAfter(e, result);
     }
 
-    private void visitAllSiblingsAfter(Element e, Set<Element> found) {
+    private void visitAllSiblingsAfter(Element e, SequenceResult result) {
         Node sibling = e.getNextSibling();
         while (sibling != null) {
             if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                match((Element)sibling, found);
+                match((Element)sibling, result);
             }
             sibling = sibling.getNextSibling();
         }

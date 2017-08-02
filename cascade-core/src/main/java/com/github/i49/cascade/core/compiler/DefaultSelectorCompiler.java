@@ -35,15 +35,11 @@ import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
-import com.github.i49.cascade.core.selectors.AdjacentCombinatorSequence;
-import com.github.i49.cascade.core.selectors.ChildCombinatorSequence;
 import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
-import com.github.i49.cascade.core.selectors.DescendantCombinatorSequence;
 import com.github.i49.cascade.core.selectors.Sequence;
-import com.github.i49.cascade.core.selectors.SiblingCombinatorSequence;
 import com.github.i49.cascade.core.selectors.StartingSequence;
 
 /**
@@ -91,8 +87,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                 first = new StartingSequence(matchers);
                 last = first;
             } else {
-                CombinatorSequence sequence = createCombinatorSequece(combinator, matchers);
-                last.chain(sequence);
+                CombinatorSequence sequence = CombinatorSequence.create(combinator, matchers);
+                last.setNext(sequence);
                 last = sequence;
             }
             combinator = parseCombinatorType(currentToken);
@@ -119,21 +115,6 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             return Combinator.SIBLING;
         default:
             return null;
-        }
-    }
-    
-    private CombinatorSequence createCombinatorSequece(Combinator combinator, List<Matcher> matchers) {
-        switch (combinator) {
-        case DESCENDANT:
-            return new DescendantCombinatorSequence(matchers);
-        case CHILD:
-            return new ChildCombinatorSequence(matchers);
-        case ADJACENT:
-            return new AdjacentCombinatorSequence(matchers);
-        case SIBLING:
-            return new SiblingCombinatorSequence(matchers);
-        default:
-            throw internalError();
         }
     }
     

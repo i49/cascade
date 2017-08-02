@@ -17,7 +17,6 @@
 package com.github.i49.cascade.core.selectors;
 
 import java.util.List;
-import java.util.Set;
 
 import org.w3c.dom.Element;
 
@@ -33,7 +32,7 @@ public class DescendantCombinatorSequence extends AbstractCombinatorSequence {
     }
 
     @Override
-    protected void traverse(Element e, Set<Element> found) {
-        visitDescendantsOf(e, found);
+    protected void traverse(Element e, SequenceResult result) {
+        visitDescendantsOf(e, result);
     }
 }
