@@ -26,16 +26,39 @@ public class DepthFirstTraverser implements Traverser {
 
     public static final DepthFirstTraverser SINGLETON = new DepthFirstTraverser();
 
+    private static final DepthFirstTraverser SKIPPABLE = new DepthFirstTraverser() {
+        @Override
+        public void traverse(Element start, Visitor visitor) {
+            visitAllWithSkipping(start, visitor);
+        }
+    };
+
     @Override
     public void traverse(Element start, Visitor visitor) {
-        visit(start, visitor);
+        visitAll(start, visitor);
     }
 
-    private final void visit(Element element, Visitor visitor) {
+    @Override
+    public Traverser skippingDescendantsOfMatched() {
+        return SKIPPABLE;
+    }
+
+    private static void visitAll(Element element, Visitor visitor) {
         visitor.visit(element);
         for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                traverse((Element)node, visitor);
+                visitAll((Element)node, visitor);
+            }
+        }
+    }
+
+    private static void visitAllWithSkipping(Element element, Visitor visitor) {
+        if (visitor.visit(element)) {
+            return;
+        }
+        for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                visitAll((Element)node, visitor);
             }
         }
     }

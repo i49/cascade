@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,42 +27,81 @@ import com.github.i49.cascade.core.traversers.Traverser;
  */
 public enum Combinator {
     /** Descendant combinator. */
-    DESCENDANT(" "),
+    DESCENDANT {
+        @Override
+        public String getSymbol() {
+            return " ";
+        }
+
+        @Override
+        public Traverser getTraverser() {
+            return DescendantTraverser.SINGLETON;
+        }
+
+        @Override
+        public Traverser optimizePreviousTraverser(Traverser traverser) {
+            return traverser.skippingDescendantsOfMatched();
+        }
+    },
     /** Child combinators. */
-    CHILD(" > "),
+    CHILD {
+        @Override
+        public String getSymbol() {
+            return " > ";
+        }
+
+        @Override
+        public Traverser getTraverser() {
+            return ChildTraverser.SINGLETON;
+        }
+    },
     /** Adjacent sibling combinator. */
-    ADJACENT(" + "),
+    ADJACENT {
+        @Override
+        public String getSymbol() {
+            return " + ";
+        }
+
+        @Override
+        public Traverser getTraverser() {
+            return AdjacentTraverser.SINGLETON;
+        }
+    },
     /** General sibling combinator. */
-    SIBLING(" ~ ")
+    SIBLING {
+        @Override
+        public String getSymbol() {
+            return " ~ ";
+        }
+
+        @Override
+        public Traverser getTraverser() {
+            return SiblingTraverser.SINGLETON;
+        }
+    }
     ;
 
-    private final String symbol;
-    
-    private Combinator(String symbol) {
-        this.symbol = symbol;
-    }
-    
     /**
      * Returns the symbol representing this combinator.
-     * 
+     *
      * @return the symbol.
      */
-    public String getSymbol() {
-        return symbol;
-    }
-    
-    public Traverser getTraverser() {
-        switch (this) {
-        case DESCENDANT:
-            return DescendantTraverser.SINGLETON;
-        case CHILD:
-            return ChildTraverser.SINGLETON;
-        case ADJACENT:
-            return AdjacentTraverser.SINGLETON;
-        case SIBLING:
-            return SiblingTraverser.SINGLETON;
-        default:
-            return null;
-        }
+    public abstract String getSymbol();
+
+    /**
+     * Returns the traverser for this combinator.
+     *
+     * @return the traverser.
+     */
+    public abstract Traverser getTraverser();
+
+    /**
+     * Optimizes the traverser used by the previous sequence.
+     *
+     * @param traverser the traverser to optimize.
+     * @return optimized traverser.
+     */
+    public Traverser optimizePreviousTraverser(Traverser traverser) {
+        return traverser;
     }
 }

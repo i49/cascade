@@ -40,8 +40,16 @@ abstract class AbstractSequence implements Sequence {
 
     protected AbstractSequence(MatcherList matchers) {
         this.matchers = this.originalMatchers = matchers;
-        this.traverser = DepthFirstTraverser.SINGLETON;
-        optimize(matchers);
+
+        Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
+        if (found != null) {
+            String identifier = ((IdentifierMatcher)found).getIdentifier();
+            this.traverser = new FastIdentifierTraverser(identifier);
+            this.matchers = matchers.without(found);
+        } else {
+            this.traverser = DepthFirstTraverser.SINGLETON;
+            this.matchers = matchers;
+        }
     }
 
     protected AbstractSequence(MatcherList matchers, Traverser traverser) {
@@ -77,7 +85,9 @@ abstract class AbstractSequence implements Sequence {
 
     @Override
     public void setNext(CombinatorSequence next) {
+        Combinator combinator = next.getCombinator();
         this.nextSequence = next;
+        this.traverser = combinator.optimizePreviousTraverser(this.traverser);
     }
 
     @Override
@@ -88,14 +98,5 @@ abstract class AbstractSequence implements Sequence {
             b.append(nextSequence.toString());
         }
         return b.toString();
-    }
-
-    private void optimize(MatcherList matchers) {
-        Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
-        if (found != null) {
-            String identifier = ((IdentifierMatcher)found).getIdentifier();
-            this.traverser = new FastIdentifierTraverser(identifier);
-            this.matchers = matchers.without(found);
-        }
     }
 }
