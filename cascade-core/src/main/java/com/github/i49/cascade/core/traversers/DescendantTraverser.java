@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
-
-import java.util.List;
+package com.github.i49.cascade.core.traversers;
 
 import org.w3c.dom.Element;
-
-import com.github.i49.cascade.core.matchers.Matcher;
+import org.w3c.dom.Node;
 
 /**
- * A sequence preceded by descendant combinator.
+ *
  */
-public class DescendantCombinatorSequence extends AbstractCombinatorSequence {
+public class DescendantTraverser implements Traverser {
 
-    public DescendantCombinatorSequence(List<Matcher> matchers) {
-        super(Combinator.DESCENDANT, matchers);
-    }
-
+    public static final DescendantTraverser SINGLETON = new DescendantTraverser();
+    
     @Override
-    protected void traverse(Element e, SequenceResult result) {
-        visitDescendantsOf(e, result);
+    public final void traverse(Element start, Visitor visitor) {
+        for (Node node = start.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element)node;
+                visitor.visit(element);
+                traverse(element, visitor);
+            }
+        }
     }
 }

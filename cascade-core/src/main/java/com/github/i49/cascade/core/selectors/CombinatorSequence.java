@@ -16,29 +16,33 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.List;
-
-import com.github.i49.cascade.core.matchers.Matcher;
+import com.github.i49.cascade.core.matchers.MatcherList;
 
 /**
  * A sequence preceded by a combinator.
  */
-public interface CombinatorSequence extends Sequence {
-
-    Combinator getCombinator();
+public class CombinatorSequence extends AbstractSequence {
     
-    static CombinatorSequence create(Combinator combinator, List<Matcher> matchers) {
-        switch (combinator) {
-        case DESCENDANT:
-            return new DescendantCombinatorSequence(matchers);
-        case CHILD:
-            return new ChildCombinatorSequence(matchers);
-        case ADJACENT:
-            return new AdjacentCombinatorSequence(matchers);
-        case SIBLING:
-            return new SiblingCombinatorSequence(matchers);
-        default:
-            return null;
-        }
+    private final Combinator combinator;
+    
+    private CombinatorSequence(Combinator combinator, MatcherList matchers) {
+        super(matchers, combinator.getTraverser());
+        this.combinator = combinator;
+    }
+
+    public Combinator getCombinator() {
+        return combinator;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append(getCombinator().getSymbol());
+        b.append(super.toString());
+        return b.toString();
+    }
+
+    public static CombinatorSequence create(Combinator combinator, MatcherList matchers) {
+        return new CombinatorSequence(combinator, matchers);
     }
 }

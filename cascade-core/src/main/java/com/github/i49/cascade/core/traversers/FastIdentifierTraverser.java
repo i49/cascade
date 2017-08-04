@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.traversers;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.github.i49.cascade.core.dom.Elements;
 
 /**
  *
  */
-public class TypeMatcher implements Matcher {
+public class FastIdentifierTraverser extends DepthFirstTraverser {
 
-    private final String elementName;
+    private final String identifier;
 
-    public TypeMatcher(String elementName) {
-        this.elementName = elementName;
+    public FastIdentifierTraverser(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
-    public MatcherType getType() {
-        return MatcherType.TYPE;
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        return elementName.equals(element.getTagName());
-    }
-
-    @Override
-    public String toString() {
-        return elementName;
-    }
-
-    public String getElementName() {
-        return elementName;
+    public void traverse(Element start, Visitor visitor) {
+        if (!Elements.isRoot(start)) {
+            super.traverse(start, visitor);
+            return;
+        }
+        Document doc = start.getOwnerDocument();
+        Element found = doc.getElementById(identifier);
+        if (found != null) {
+            visitor.visit(found);
+        }
     }
 }

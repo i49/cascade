@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
-
-import java.util.Set;
+package com.github.i49.cascade.core.dom;
 
 import org.w3c.dom.Element;
 
 /**
- * Result of a sequence of simple selectors.
+ *
  */
-public interface SequenceResult {
+public final class Elements {
 
-    Set<Element> getSelected();
+    public static boolean isRoot(Element element) {
+        return element.getOwnerDocument().getDocumentElement() == element;
+    }
 
-    int getNumberOfVisitedElements();
-
-    default int getNumberOfSelectedElements() {
-        return getSelected().size();
+    private Elements() {
     }
 }

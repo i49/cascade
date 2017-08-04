@@ -16,6 +16,8 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.Set;
+
 import org.w3c.dom.Element;
 
 /**
@@ -23,9 +25,9 @@ import org.w3c.dom.Element;
  */
 public interface Sequence {
     
-    SequenceResult processAll(Element element);
+    SequenceResult process(Element element);
 
-    void process(SequenceResult result);
+    SequenceResult process(Set<Element> element);
 
     boolean hasNext();
     

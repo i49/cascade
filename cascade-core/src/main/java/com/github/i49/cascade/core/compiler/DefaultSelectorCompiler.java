@@ -29,6 +29,7 @@ import com.github.i49.cascade.core.matchers.ExactMatcher;
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.IncludeMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
+import com.github.i49.cascade.core.matchers.MatcherList;
 import com.github.i49.cascade.core.matchers.PrefixMatcher;
 import com.github.i49.cascade.core.matchers.SubstringMatcher;
 import com.github.i49.cascade.core.matchers.SuffixMatcher;
@@ -40,7 +41,7 @@ import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
 import com.github.i49.cascade.core.selectors.Sequence;
-import com.github.i49.cascade.core.selectors.StartingSequence;
+import com.github.i49.cascade.core.selectors.HeadSequence;
 
 /**
  * Default implementation of {@link SelectorCompiler}.
@@ -79,12 +80,12 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         Sequence last = null;
         Combinator combinator = null;
         do {
-            List<Matcher> matchers = sequence();
+            MatcherList matchers = sequence();
             if (matchers.isEmpty()) {
                 throw newException(Message.UNEXPECTED_END_OF_INPUT);
             }
             if (first == null) {
-                first = new StartingSequence(matchers);
+                first = new HeadSequence(matchers);
                 last = first;
             } else {
                 CombinatorSequence sequence = CombinatorSequence.create(combinator, matchers);
@@ -118,8 +119,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
     
-    private List<Matcher> sequence() {
-        List<Matcher> matchers = new ArrayList<>();
+    private MatcherList sequence() {
+        MatcherList matchers = new MatcherList();
         int index = 0;
         Token token = nextNonSpaceToken();
         for (;;) {

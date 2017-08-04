@@ -41,10 +41,20 @@ public class DefaultSingleSelector implements SingleSelector {
         if (root == null) {
             throw new NullPointerException("root must not be null");
         }
-        SequenceResult result  = head.processAll(root);
+        
+        int totalVisited = 0;
+        SequenceResult result = this.head.process(root);
+        Sequence sequence = this.head.getNext();
+        while (sequence != null) {
+            result = sequence.process(result.getSelected());
+            totalVisited += result.getNumberOfVisitedElements();
+            sequence = sequence.getNext();
+        }
+        
         log.fine(
-            "Visited: " + result.getNumberOfVisitedElements() +
+            "Visited: " + totalVisited +
             " Selected: " + result.getNumberOfSelectedElements()); 
+        
         return result.getSelected();
     }
     

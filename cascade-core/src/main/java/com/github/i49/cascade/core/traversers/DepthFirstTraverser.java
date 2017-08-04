@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.traversers;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- *
+ * A basic depth-first traverser.
  */
-public class TypeMatcher implements Matcher {
+public class DepthFirstTraverser implements Traverser {
 
-    private final String elementName;
-
-    public TypeMatcher(String elementName) {
-        this.elementName = elementName;
-    }
+    public static final DepthFirstTraverser SINGLETON = new DepthFirstTraverser();
 
     @Override
-    public MatcherType getType() {
-        return MatcherType.TYPE;
+    public void traverse(Element start, Visitor visitor) {
+        visit(start, visitor);
     }
 
-    @Override
-    public boolean matches(Element element) {
-        return elementName.equals(element.getTagName());
-    }
-
-    @Override
-    public String toString() {
-        return elementName;
-    }
-
-    public String getElementName() {
-        return elementName;
+    private final void visit(Element element, Visitor visitor) {
+        visitor.visit(element);
+        for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                traverse((Element)node, visitor);
+            }
+        }
     }
 }

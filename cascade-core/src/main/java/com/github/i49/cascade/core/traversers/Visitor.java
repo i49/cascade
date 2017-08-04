@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
+package com.github.i49.cascade.core.traversers;
 
-import java.util.List;
-
-import com.github.i49.cascade.core.matchers.Matcher;
+import org.w3c.dom.Element;
 
 /**
- *
+ * Visitor who visits each element in the document tree.
  */
-public class StartingSequence extends AbstractSequence {
+public interface Visitor {
     
-    public StartingSequence(List<Matcher> matchers) {
-        super(matchers);
-    }
+    boolean visit(Element element);
 }

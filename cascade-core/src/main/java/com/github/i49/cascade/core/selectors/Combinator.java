@@ -16,6 +16,12 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import com.github.i49.cascade.core.traversers.AdjacentTraverser;
+import com.github.i49.cascade.core.traversers.ChildTraverser;
+import com.github.i49.cascade.core.traversers.DescendantTraverser;
+import com.github.i49.cascade.core.traversers.SiblingTraverser;
+import com.github.i49.cascade.core.traversers.Traverser;
+
 /**
  * Combinators.
  */
@@ -43,5 +49,20 @@ public enum Combinator {
      */
     public String getSymbol() {
         return symbol;
+    }
+    
+    public Traverser getTraverser() {
+        switch (this) {
+        case DESCENDANT:
+            return DescendantTraverser.SINGLETON;
+        case CHILD:
+            return ChildTraverser.SINGLETON;
+        case ADJACENT:
+            return AdjacentTraverser.SINGLETON;
+        case SIBLING:
+            return SiblingTraverser.SINGLETON;
+        default:
+            return null;
+        }
     }
 }

@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
-
-import java.util.Set;
-
-import org.w3c.dom.Element;
-
 /**
- * Result of a sequence of simple selectors.
+ * Provides helper classes for DOM manipulation.
  */
-public interface SequenceResult {
-
-    Set<Element> getSelected();
-
-    int getNumberOfVisitedElements();
-
-    default int getNumberOfSelectedElements() {
-        return getSelected().size();
-    }
-}
+package com.github.i49.cascade.core.dom;
