@@ -76,7 +76,10 @@ public class ParsingTest {
             /* leading or trailing spaces */
             { " p ", "p" },
             { " figure > img ", "figure > img" },
-            { " h1, h2, h3 ", "h1, h2, h3" }
+            { " h1, h2, h3 ", "h1, h2, h3" },
+            /* escape */
+            { "\\002193", "\u2193" },
+            //{ "\\26 B", "&B" }
         });
     }
 

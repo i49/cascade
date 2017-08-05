@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,11 +23,11 @@ import static java.lang.Character.isDigit;
  * Tokenizer for parsing CSS selector expression into classified tokens.
  */
 public class Tokenizer {
-    
+
     private final String input;
     private int currentIndex;
     private int nextIndex;
-    
+
     public Tokenizer(String input) {
         this.input = input;
         this.nextIndex = 0;
@@ -35,7 +35,7 @@ public class Tokenizer {
         // Skips leading spaces.
         skipSpaces();
     }
-    
+
     public Token nextToken() {
         this.currentIndex = this.nextIndex;
         int c = nextChar();
@@ -56,21 +56,21 @@ public class Tokenizer {
         } else if (isHash(c)) {
             return Token.of(TokenCategory.HASH, hash());
         } else if (isIdent(c)) {
-            return Token.of(TokenCategory.IDENT, ident(c));
+            return Token.of(TokenCategory.IDENTITY, ident(c));
         } if (c == '*') {
-            return Token.WILDCARD;
+            return Token.ASTERISK;
         }
         return Token.UNKNOWN;
     }
-    
+
     public String getInput() {
         return input;
     }
-    
+
     public int getCurrentIndex() {
         return currentIndex;
     }
-    
+
     private boolean isIdent(int c) {
         if (c == '-') {
             int pos = current();
@@ -79,14 +79,14 @@ public class Tokenizer {
         }
         return isFirstLetter(c);
     }
-    
+
     private String ident(int c) {
         StringBuilder b = new StringBuilder();
         b.append((char)c);
         b.append(name());
         return b.toString();
     }
-    
+
     private String name() {
         StringBuilder b = new StringBuilder();
         for (;;) {
@@ -101,7 +101,7 @@ public class Tokenizer {
         }
         return b.toString();
     }
-    
+
     private boolean isHash(int c) {
         if (c != '#') {
             return false;
@@ -109,16 +109,16 @@ public class Tokenizer {
         int pos = current();
         c = nextChar();
         rewind(pos);
-        return isNameLetter(c); 
+        return isNameLetter(c);
     }
-    
+
     private String hash() {
         StringBuilder b = new StringBuilder();
         b.append("#");
         b.append(name());
         return b.toString();
     }
-    
+
     private Token string(int quote) {
         StringBuilder b = new StringBuilder();
         b.append((char)quote);
@@ -132,10 +132,10 @@ public class Tokenizer {
         String value = b.append((char)quote).toString();
         return Token.of(TokenCategory.STRING, value);
     }
-    
+
     /**
      * Creates a token of combinators or comma.
-     * 
+     *
      * @param c the first character.
      * @return created token.
      */
@@ -167,33 +167,37 @@ public class Tokenizer {
             return Token.SPACE;
         }
     }
-    
+
     private static boolean isFirstLetter(int c) {
         return c == '_' ||
                isAlphabetic(c) ||
-               isNoAscii(c);
+               isNoAscii(c) ||
+               c == '\\'
+               ;
     }
-    
+
     private static boolean isNameLetter(int c) {
-        return c == '_' || 
+        return c == '_' ||
                c == '-' ||
                isAlphabetic(c) ||
                isDigit(c) ||
-               isNoAscii(c);
+               isNoAscii(c) ||
+               c == '\\'
+               ;
     }
-    
+
     private static boolean isNoAscii(int c) {
         return c >= 128;
     }
-    
+
     private static boolean isWhitespace(int c) {
         return c == 0x20 || c == '\t' || c == '\r' || c == '\n' || c == '\f';
     }
-    
+
     private static boolean isSeparator(int c) {
         return isWhitespace(c) || c == '+' || c == '>' || c == ',' || c == '~';
     }
-    
+
     private boolean isEqualSign(int c) {
         if (c == '=') {
             return true;
@@ -206,7 +210,7 @@ public class Tokenizer {
             return false;
         }
     }
-    
+
     private Token equalSign(int c) {
         if (c == '=') {
             return Token.EXACT_MATCH;
@@ -227,15 +231,15 @@ public class Tokenizer {
             throw new IllegalStateException();
         }
     }
-    
+
     private int current() {
         return nextIndex;
     }
-    
+
     private void rewind(int mark) {
         this.nextIndex = mark;
     }
-    
+
     private void skipSpaces() {
         while (nextIndex < input.length()) {
             char c = input.charAt(nextIndex);
@@ -245,7 +249,7 @@ public class Tokenizer {
             nextIndex++;
         }
     }
-    
+
     private int nextChar() {
         if (nextIndex >= input.length()) {
             return -1;
