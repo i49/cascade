@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -1,12 +1,12 @@
-/*
+/* 
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,27 +24,23 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Test with HTML5 file.
+ * Tests for groups of selectors.
  */
 @RunWith(Parameterized.class)
-public class Html5Test extends BaseSelectorTest {
+public class SelectorGroupTest extends BaseSelectorTest {
 
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            /* simple selectors */
-            { "/html5-test.html", "#forms__action", 1 },
-            { "/html5-test.html", "article", 16 },
-            /* combinator */
-            { "/html5-test.html", "* article", 16 },
-            { "/html5-test.html", "* * article", 16 },
-            { "/html5-test.html", "* ~ article", 16 },
-            { "/html5-test.html", "* * ~ article", 16 },
-            { "/html5-test.html", "* ~ * ~ article", 14 },
+            { "/selector-group-test.html", "li, p", 3 },
+            { "/selector-group-test.html", "li, nonexistent", 2 },
+            { "/selector-group-test.html", "nonexistent, p", 1 },
+            { "/selector-group-test.html", "nonexistent1, nonexistent2", 0 },
+            { "/selector-group-test.html", "li, .example", 3 },
         });
     }
 
-    public Html5Test(String resourceName, String expression, int expectedCount) {
+    public SelectorGroupTest(String resourceName, String expression, int expectedCount) {
         super(resourceName, expression, expectedCount);
-    }
+   }
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.benchmark;
 
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,7 +29,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-@Ignore
+import com.github.i49.cascade.api.Selector;
+import com.github.i49.cascade.tests.Documents;
+
 @RunWith(Parameterized.class)
 public class BenchmarkTest {
 

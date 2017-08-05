@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,23 +24,24 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Tests for groups of selectors.
+ * Tests for selectors with combinators.
  */
 @RunWith(Parameterized.class)
-public class SelectorGroupTest extends BaseSelectorTest {
+public class CombinatorTest extends BaseSelectorTest {
 
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/selector-group-test.html", "li, p", 3 },
-            { "/selector-group-test.html", "li, nonexistent", 2 },
-            { "/selector-group-test.html", "nonexistent, p", 1 },
-            { "/selector-group-test.html", "nonexistent1, nonexistent2", 0 },
-            { "/selector-group-test.html", "li, .example", 3 },
+            { "/descendant-combinator-test.html", "div.main p", 3 },
+            { "/child-combinator-test.html", "div > p", 2 },
+            { "/adjacent-combinator-test-1.html", "h1.opener + h2", 1 },
+            { "/adjacent-combinator-test-2.html", "article > p + p", 2 },
+            { "/sibling-combinator-test-1.html", "h2 ~ pre", 1 },
+            { "/sibling-combinator-test-2.html", "article > p ~ p", 3 }
         });
     }
-
-    public SelectorGroupTest(String resourceName, String expression, int expectedCount) {
+    
+    public CombinatorTest(String resourceName, String expression, int expectedCount) {
         super(resourceName, expression, expectedCount);
-   }
+    }
 }

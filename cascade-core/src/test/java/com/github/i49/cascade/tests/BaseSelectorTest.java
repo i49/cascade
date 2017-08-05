@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.github.i49.cascade.api.Selector;
 
 public abstract class BaseSelectorTest {
 

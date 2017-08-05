@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.examples;
 
 import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.github.i49.cascade.api.Selector;
 
 public class Examples {
     

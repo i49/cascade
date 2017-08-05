@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,21 +31,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-final class Documents {
-    
-    private static final ThreadLocal<DocumentBuilder> builders = 
+public final class Documents {
+
+    private static final ThreadLocal<DocumentBuilder> builders =
             ThreadLocal.withInitial(Documents::builder);
-    
+
     /**
      * Loads a document from resource specified by name.
-     *  
+     *
      * @param resourceName the name of the resource.
      * @return loaded document.
      */
     public static Document load(String resourceName) {
         return loadFromResource(resourceName);
     }
-    
+
     public static Element findOne(Document doc, String tagname) {
         NodeList nodes = doc.getElementsByTagName(tagname);
         if (nodes.getLength() > 0) {
@@ -54,7 +54,7 @@ final class Documents {
             return null;
         }
     }
-    
+
     public static Collection<Element> findAll(Document doc) {
         NodeList nodes = doc.getElementsByTagName("*");
         List<Element> found = new ArrayList<>();
@@ -63,7 +63,7 @@ final class Documents {
         }
         return found;
     }
-    
+
     private static Document loadFromResource(String resourceName) {
         Document doc = null;
         DocumentBuilder b = builders.get();
@@ -75,7 +75,7 @@ final class Documents {
         }
         return doc;
     }
-    
+
     private static void activateIdentifiers(Document doc) {
         visitElement(doc.getDocumentElement(), e->{
             if (e.hasAttribute("id")) {
@@ -83,7 +83,7 @@ final class Documents {
             }
         });
     }
-    
+
     private static void visitElement(Element e, Consumer<Element> consumer) {
         consumer.accept(e);
         Node child = e.getFirstChild();
@@ -104,7 +104,7 @@ final class Documents {
             return null;
         }
     }
-    
+
     private Documents() {
     }
 }

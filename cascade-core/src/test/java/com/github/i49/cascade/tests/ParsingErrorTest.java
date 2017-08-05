@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.api;
+package com.github.i49.cascade.tests;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -25,6 +25,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import com.github.i49.cascade.api.InvalidSelectorException;
+import com.github.i49.cascade.api.SelectorCompiler;
 
 @RunWith(Parameterized.class)
 public class ParsingErrorTest {
