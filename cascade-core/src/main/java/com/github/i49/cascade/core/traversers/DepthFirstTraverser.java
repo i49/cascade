@@ -24,41 +24,77 @@ import org.w3c.dom.Node;
  */
 public class DepthFirstTraverser implements Traverser {
 
+    // The one and only instance of this traverser.
     public static final DepthFirstTraverser SINGLETON = new DepthFirstTraverser();
 
-    private static final DepthFirstTraverser SKIPPABLE = new DepthFirstTraverser() {
+    // The traverser which skips descendants of matched elements.
+    private static final DepthFirstTraverser DESCENDANT_SKIPPABLE = new DepthFirstTraverser() {
         @Override
         public void traverse(Element start, Visitor visitor) {
-            visitAllWithSkipping(start, visitor);
+            if (!visitor.visit(start)) {
+                visitExcludingDescendantsOfMatched(start, visitor);
+            }
         }
     };
 
+    // The traverser which skips siblings of matched elements.
+    private static final DepthFirstTraverser SIBLING_SKIPPABLE = new DepthFirstTraverser() {
+        @Override
+        public void traverse(Element start, Visitor visitor) {
+            visitor.visit(start);
+            visitExcludingSiblingsOfMatched(start, visitor);
+        }
+    };
+
+    protected DepthFirstTraverser() {
+    }
+
     @Override
     public void traverse(Element start, Visitor visitor) {
-        visitAll(start, visitor);
+        visitor.visit(start);
+        visitDescendants(start, visitor);
     }
 
     @Override
     public Traverser skippingDescendantsOfMatched() {
-        return SKIPPABLE;
+        return DESCENDANT_SKIPPABLE;
     }
 
-    private static void visitAll(Element element, Visitor visitor) {
-        visitor.visit(element);
+    @Override
+    public Traverser skippingSiblingsOfMatched() {
+        return SIBLING_SKIPPABLE;
+    }
+
+    protected static void visitDescendants(Element element, Visitor visitor) {
         for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                visitAll((Element)node, visitor);
+                Element child = (Element)node;
+                visitor.visit(child);
+                visitDescendants((Element)node, visitor);
             }
         }
     }
 
-    private static void visitAllWithSkipping(Element element, Visitor visitor) {
-        if (visitor.visit(element)) {
-            return;
-        }
+    protected static void visitExcludingDescendantsOfMatched(Element element, Visitor visitor) {
         for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                visitAll((Element)node, visitor);
+                Element child = (Element)node;
+                if (!visitor.visit(child)) {
+                    visitExcludingDescendantsOfMatched(child, visitor);
+                }
+            }
+        }
+    }
+
+    protected static void visitExcludingSiblingsOfMatched(Element element, Visitor visitor) {
+        boolean skipSibling = false;
+        for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element child = (Element)node;
+                if (!skipSibling) {
+                    skipSibling = visitor.visit(child);
+                }
+                visitExcludingSiblingsOfMatched(child, visitor);
             }
         }
     }

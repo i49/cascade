@@ -17,21 +17,33 @@
 package com.github.i49.cascade.core.traversers;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
- *
+ * Depth-first traverser ignoring the starting element.
  */
-public class DescendantTraverser implements Traverser {
+public class DescendantTraverser extends DepthFirstTraverser {
 
+    // The one and only instance of this traverser.
     public static final DescendantTraverser SINGLETON = new DescendantTraverser();
 
-    private static final DescendantTraverser SKIPPABLE = new DescendantTraverser() {
+    // The traverser which skips descendants of matched elements.
+    private static final DescendantTraverser DESCENDANT_SKIPPABLE = new DescendantTraverser() {
         @Override
         public void traverse(Element start, Visitor visitor) {
-            visitDescendantsWithSkippping(start, visitor);
+            visitExcludingDescendantsOfMatched(start, visitor);
         }
     };
+
+    // The traverser which skips siblings of matched elements.
+       private static final DescendantTraverser SIBLING_SKIPPABLE = new DescendantTraverser() {
+        @Override
+        public void traverse(Element start, Visitor visitor) {
+            visitExcludingSiblingsOfMatched(start, visitor);
+        }
+    };
+
+    private DescendantTraverser() {
+    }
 
     @Override
     public void traverse(Element start, Visitor visitor) {
@@ -40,27 +52,11 @@ public class DescendantTraverser implements Traverser {
 
     @Override
     public Traverser skippingDescendantsOfMatched() {
-        return SKIPPABLE;
+        return DESCENDANT_SKIPPABLE;
     }
 
-    private static void visitDescendants(Element element, Visitor visitor) {
-        for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element child = (Element)node;
-                visitor.visit(child);
-                visitDescendants(child, visitor);
-            }
-        }
-    }
-
-    private static void visitDescendantsWithSkippping(Element element, Visitor visitor) {
-        for (Node node = element.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element child = (Element)node;
-                if (!visitor.visit(child)) {
-                    visitDescendants(child, visitor);
-                }
-            }
-        }
+    @Override
+    public Traverser skippingSiblingsOfMatched() {
+        return SIBLING_SKIPPABLE;
     }
 }

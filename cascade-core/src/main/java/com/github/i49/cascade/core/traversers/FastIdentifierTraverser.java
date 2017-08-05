@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 import com.github.i49.cascade.core.dom.Elements;
 
 /**
- *
+ * Fast traverser accelerated by {@link Document#getElementById(String)} method.
  */
 public class FastIdentifierTraverser extends DepthFirstTraverser {
 

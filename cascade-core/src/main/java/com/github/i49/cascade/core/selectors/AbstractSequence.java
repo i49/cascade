@@ -33,14 +33,12 @@ import com.github.i49.cascade.core.traversers.Traverser;
  */
 abstract class AbstractSequence implements Sequence {
 
-    private MatcherList matchers;
+    private final MatcherList matchers;
     private final MatcherList originalMatchers;
     private CombinatorSequence nextSequence;
     private Traverser traverser;
 
     protected AbstractSequence(MatcherList matchers) {
-        this.matchers = this.originalMatchers = matchers;
-
         Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
         if (found != null) {
             String identifier = ((IdentifierMatcher)found).getIdentifier();
@@ -50,6 +48,7 @@ abstract class AbstractSequence implements Sequence {
             this.traverser = DepthFirstTraverser.SINGLETON;
             this.matchers = matchers;
         }
+        this.originalMatchers = matchers;
     }
 
     protected AbstractSequence(MatcherList matchers, Traverser traverser) {
@@ -85,9 +84,9 @@ abstract class AbstractSequence implements Sequence {
 
     @Override
     public void setNext(CombinatorSequence next) {
-        Combinator combinator = next.getCombinator();
         this.nextSequence = next;
-        this.traverser = combinator.optimizePreviousTraverser(this.traverser);
+        Combinator combinator = next.getCombinator();
+        this.traverser = combinator.convertPreviousTraverser(this.traverser);
     }
 
     @Override

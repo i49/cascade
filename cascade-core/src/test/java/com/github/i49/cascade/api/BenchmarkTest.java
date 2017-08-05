@@ -23,20 +23,31 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 @Ignore
+@RunWith(Parameterized.class)
 public class BenchmarkTest {
 
     private static final Logger log = Logger.getLogger(BenchmarkTest.class.getName());
 
     private static Document doc;
 
+    private final String expression;
+    private long startTime;
+
+    public BenchmarkTest(String expression) {
+        this.expression = expression;
+    }
+
     @BeforeClass
     public static void setUpOnce() {
-        doc = Documents.load("/index.html");
+        doc = Documents.load("/html5-test.html");
     }
 
     @AfterClass
@@ -44,7 +55,38 @@ public class BenchmarkTest {
         doc = null;
     }
 
-    private long startTime;
+    @Parameters
+    public static Object[] parameters() {
+        return new Object[] {
+                "#forms__action",
+                "article",
+                "* article",
+                "* * article",
+                "* ~ article",
+                "* * ~ article",
+                "* ~ * ~ article",
+        };
+    }
+
+    @Test
+    public void benchmark() {
+        Selector s = Selector.compile(expression);
+        Element root = doc.getDocumentElement();
+        long elapsed = profile(()->{
+            s.select(root);
+        });
+
+        log.info("\"" + expression + "\": " + elapsed + " [ms]");
+    }
+
+    private long profile(Runnable runnable) {
+        start();
+        int i = 10000;
+        while (i-- > 0) {
+            runnable.run();
+        }
+        return stop();
+    }
 
     private void start() {
         this.startTime = System.nanoTime();
@@ -55,75 +97,38 @@ public class BenchmarkTest {
         return elapsed;
     }
 
-    @Test
-    public void benchmark_idSelector() {
-       String id = "forms__action";
-       String expression = "#" + id;
+    // Not used.
+    public void compareWithGetElementById() {
+        String id = "forms__action";
+        String expression = "#" + id;
 
-       long elapsed1 = benchmark(()->doc.getElementById(id));
-
-       Selector s = Selector.compile(expression);
-       Element root = doc.getDocumentElement();
-       long elapsed2 = benchmark(()->{
-           s.select(root).iterator().next();
-       });
-
-       log.info("\"" + expression + "\": " + elapsed1 + " : " + elapsed2);
-    }
-
-    @Test
-    public void benchmark_typeSelector() {
-        String expression = "article";
-
-        long elapsed1 = benchmark(()->{
-            NodeList nodeList = doc.getElementsByTagName(expression);
-            nodeList.getLength();
-        });
+        long elapsed1 = profile(()->doc.getElementById(id));
 
         Selector s = Selector.compile(expression);
         Element root = doc.getDocumentElement();
-        long elapsed2 = benchmark(()->{
-            Set<Element> selected = s.select(root);
-            selected.size();
+        long elapsed2 = profile(()->{
+            s.select(root).iterator().next();
         });
 
         log.info("\"" + expression + "\": " + elapsed1 + " : " + elapsed2);
-    }
+     }
 
-    @Test
-    public void benchmark_descendantCombinator() {
-        String expression = "* article";
+    // Not used.
+     public void compareWithGetElementsByTagName() {
+         String expression = "article";
 
-        Selector s = Selector.compile(expression);
-        Element root = doc.getDocumentElement();
-        long elapsed = benchmark(()->{
-            Set<Element> selected = s.select(root);
-            selected.size();
-        });
+         long elapsed1 = profile(()->{
+             NodeList nodeList = doc.getElementsByTagName(expression);
+             nodeList.getLength();
+         });
 
-        log.info("\"" + expression + "\": " + elapsed);
-    }
+         Selector s = Selector.compile(expression);
+         Element root = doc.getDocumentElement();
+         long elapsed2 = profile(()->{
+             Set<Element> selected = s.select(root);
+             selected.size();
+         });
 
-    @Test
-    public void benchmark_doubleDescendantCombinator() {
-        String expression = "* * article";
-
-        Selector s = Selector.compile(expression);
-        Element root = doc.getDocumentElement();
-        long elapsed = benchmark(()->{
-            Set<Element> selected = s.select(root);
-            selected.size();
-        });
-
-        log.info("\"" + expression + "\": " + elapsed);
-    }
-
-    private long benchmark(Runnable runnable) {
-        start();
-        int i = 10000;
-        while (i-- > 0) {
-            runnable.run();
-        }
-        return stop();
-    }
+         log.info("\"" + expression + "\": " + elapsed1 + " : " + elapsed2);
+     }
 }

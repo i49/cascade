@@ -39,7 +39,7 @@ public enum Combinator {
         }
 
         @Override
-        public Traverser optimizePreviousTraverser(Traverser traverser) {
+        public Traverser convertPreviousTraverser(Traverser traverser) {
             return traverser.skippingDescendantsOfMatched();
         }
     },
@@ -78,6 +78,11 @@ public enum Combinator {
         public Traverser getTraverser() {
             return SiblingTraverser.SINGLETON;
         }
+
+        @Override
+        public Traverser convertPreviousTraverser(Traverser traverser) {
+            return traverser.skippingSiblingsOfMatched();
+        }
     }
     ;
 
@@ -96,12 +101,12 @@ public enum Combinator {
     public abstract Traverser getTraverser();
 
     /**
-     * Optimizes the traverser used by the previous sequence.
+     * Converts the traverser used by the previous sequence.
      *
      * @param traverser the traverser to optimize.
-     * @return optimized traverser.
+     * @return converted traverser.
      */
-    public Traverser optimizePreviousTraverser(Traverser traverser) {
+    public Traverser convertPreviousTraverser(Traverser traverser) {
         return traverser;
     }
 }
