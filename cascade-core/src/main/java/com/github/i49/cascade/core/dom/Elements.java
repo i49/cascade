@@ -17,6 +17,7 @@
 package com.github.i49.cascade.core.dom;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -29,6 +30,28 @@ public final class Elements {
 
     public static boolean hasParent(Element element) {
         return element.getParentNode() != null;
+    }
+
+    public static boolean hasSiblingBefore(Element element) {
+        Node sibling = element.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return false;
+    }
+
+    public static boolean hasSiblingAfter(Element element) {
+        Node sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+            sibling = sibling.getNextSibling();
+        }
+        return false;
     }
 
     private Elements() {

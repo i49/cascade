@@ -17,9 +17,9 @@
 package com.github.i49.cascade.core.matchers.pseudo;
 
 import static com.github.i49.cascade.core.dom.Elements.hasParent;
+import static com.github.i49.cascade.core.dom.Elements.hasSiblingBefore;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Matcher for :first-child pseudo-class selector.
@@ -33,17 +33,7 @@ public class FirstChildMatcher extends PseudoClassMatcher {
 
     @Override
     public boolean matches(Element element) {
-        if (!hasParent(element)) {
-            return false;
-        }
-        Node sibling = element.getPreviousSibling();
-        while (sibling != null) {
-            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                return true;
-            }
-            sibling = sibling.getPreviousSibling();
-        }
-        return true;
+        return hasParent(element) && !hasSiblingBefore(element);
     }
 
     @Override

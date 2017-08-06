@@ -17,9 +17,10 @@
 package com.github.i49.cascade.core.matchers.pseudo;
 
 import static com.github.i49.cascade.core.dom.Elements.hasParent;
+import static com.github.i49.cascade.core.dom.Elements.hasSiblingBefore;
+import static com.github.i49.cascade.core.dom.Elements.hasSiblingAfter;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Matcher for :empty pseudo-class selector.
@@ -33,29 +34,9 @@ public class OnlyChildMatcher extends PseudoClassMatcher {
 
     @Override
     public boolean matches(Element element) {
-        if (!hasParent(element)) {
-            return false;
-        }
-
-        // No sibling before the given element.
-        Node sibling = element.getPreviousSibling();
-        while (sibling != null) {
-            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                return true;
-            }
-            sibling = sibling.getPreviousSibling();
-        }
-
-        // No sibling after the given element.
-        sibling = element.getNextSibling();
-        while (sibling != null) {
-            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-                return true;
-            }
-            sibling = sibling.getNextSibling();
-        }
-
-       return true;
+        return hasParent(element) &&
+               !hasSiblingBefore(element) &&
+               !hasSiblingAfter(element);
     }
 
     @Override
