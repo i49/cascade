@@ -16,27 +16,38 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import org.w3c.dom.Element;
+import static com.github.i49.cascade.core.dom.Elements.hasParent;
 
-import com.github.i49.cascade.core.dom.Elements;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * Matcher for :root pseudo-class selector.
+ * Matcher for :last-child pseudo-class selector.
  */
-public class RootMatcher extends PseudoClassMatcher {
+public class LastChildMatcher extends PseudoClassMatcher {
 
-    public static final RootMatcher SINGLETON = new RootMatcher();
+    public static final LastChildMatcher SINGLETON = new LastChildMatcher();
 
-    private RootMatcher() {
+    private LastChildMatcher() {
     }
 
     @Override
     public boolean matches(Element element) {
-        return Elements.isRoot(element);
+        if (!hasParent(element)) {
+            return false;
+        }
+        Node sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+            sibling = sibling.getNextSibling();
+        }
+        return true;
     }
 
     @Override
     public String getClassName() {
-        return "root";
+        return "last-child";
     }
 }

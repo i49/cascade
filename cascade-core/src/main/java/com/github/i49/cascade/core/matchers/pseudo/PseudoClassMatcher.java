@@ -27,11 +27,15 @@ import com.github.i49.cascade.core.matchers.MatcherType;
  */
 public abstract class PseudoClassMatcher implements Matcher {
 
-    @SuppressWarnings("serial")
-    private static final Map<String, PseudoClassMatcher> classes = new HashMap<String, PseudoClassMatcher>() {{
-        put("root", RootMatcher.SINGLETON);
-        put("empty", EmptyMatcher.SINGLETON);
-    }};
+    private static final Map<String, PseudoClassMatcher> classes = new HashMap<>();
+
+    static {
+        add(RootMatcher.SINGLETON);
+        add(EmptyMatcher.SINGLETON);
+        add(FirstChildMatcher.SINGLETON);
+        add(LastChildMatcher.SINGLETON);
+        add(OnlyChildMatcher.SINGLETON);
+    }
 
     public static PseudoClassMatcher of(String className) {
         return classes.get(className);
@@ -40,5 +44,16 @@ public abstract class PseudoClassMatcher implements Matcher {
     @Override
     public MatcherType getType() {
         return MatcherType.PSEUDO_CLASS;
+    }
+
+    @Override
+    public String toString() {
+        return ":" + getClassName();
+    }
+
+    public abstract String getClassName();
+
+    private static void add(PseudoClassMatcher matcher) {
+        classes.put(matcher.getClassName(), matcher);
     }
 }

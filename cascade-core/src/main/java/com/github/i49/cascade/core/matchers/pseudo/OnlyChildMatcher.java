@@ -16,39 +16,50 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
+import static com.github.i49.cascade.core.dom.Elements.hasParent;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
  * Matcher for :empty pseudo-class selector.
  */
-public class EmptyMatcher extends PseudoClassMatcher {
+public class OnlyChildMatcher extends PseudoClassMatcher {
 
-    public static final EmptyMatcher SINGLETON = new EmptyMatcher();
+    public static final OnlyChildMatcher SINGLETON = new OnlyChildMatcher();
 
-    private EmptyMatcher() {
+    private OnlyChildMatcher() {
     }
 
     @Override
     public boolean matches(Element element) {
-        for (Node child = element.getFirstChild(); child != null; child = child.getNextSibling()) {
-            short type = child.getNodeType();
-            if (type == Node.ELEMENT_NODE) {
-                return false;
-            } else if (type == Node.TEXT_NODE ||
-                       type == Node.CDATA_SECTION_NODE ||
-                       type == Node.ENTITY_REFERENCE_NODE) {
-                String content = child.getTextContent();
-                if (content != null && !content.isEmpty()) {
-                    return false;
-                }
-            }
+        if (!hasParent(element)) {
+            return false;
         }
-        return true;
+
+        // No sibling before the given element.
+        Node sibling = element.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+
+        // No sibling after the given element.
+        sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+            sibling = sibling.getNextSibling();
+        }
+
+       return true;
     }
 
     @Override
     public String getClassName() {
-        return "empty";
+        return "only-child";
     }
 }

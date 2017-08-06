@@ -27,6 +27,10 @@ public final class Elements {
         return element.getOwnerDocument().getDocumentElement() == element;
     }
 
+    public static boolean hasParent(Element element) {
+        return element.getParentNode() != null;
+    }
+
     private Elements() {
     }
 }

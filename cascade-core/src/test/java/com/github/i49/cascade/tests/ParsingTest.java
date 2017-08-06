@@ -96,6 +96,9 @@ public class ParsingTest {
             // pseudo-class
             { ":root", "*:root" },
             { "style:empty", "style:empty" },
+            { "tr:first-child", "tr:first-child" },
+            { "tr:last-child", "tr:last-child" },
+            { "tr:only-child", "tr:only-child" },
         });
     }
 
