@@ -50,6 +50,8 @@ public class ParsingTest {
             { "#chapter1", "*#chapter1" },
             { "h1#chapter1", "h1#chapter1" },
             { "*#z98y", "*#z98y" },
+            { "#-a-b-c-", "*#-a-b-c-" },
+            { "#\u00a9", "*#\u00a9" },
             /* attribute */
             { "[title]", "*[title]" },
             { "[class=example]", "*[class=\"example\"]" },
@@ -79,7 +81,10 @@ public class ParsingTest {
             { " h1, h2, h3 ", "h1, h2, h3" },
             /* escape */
             { "\\002193", "\u2193" },
-            //{ "\\26 B", "&B" }
+            { "\\2193 B", "\u2193B" },
+            { ".\\3A \\`\\(", "*.:`(" },
+            { ".\\31 a2b3c", "*.1a2b3c" },
+            { "#\\#fake-id", "*##fake-id" },
         });
     }
 

@@ -16,8 +16,9 @@
 
 package com.github.i49.cascade.core.compiler;
 
+import static com.github.i49.cascade.core.compiler.Letters.*;
+
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Tokens to be extracted from selector expression.
@@ -100,13 +101,6 @@ public class Token {
 
     private static class EncodedToken extends Token {
 
-        private static final String UNICODE =
-                "\\\\[0-9a-fA-F]{1,6}(\r\n|[ \n\r\t\f])?";
-
-        private static final Pattern ESCAPED = Pattern.compile(
-                UNICODE
-                );
-
         private final String decodedText;
 
         public EncodedToken(TokenCategory category, String rawText) {
@@ -120,11 +114,12 @@ public class Token {
         }
 
         private String decode(String rawValue) {
-            Matcher m = ESCAPED.matcher(rawValue);
+            Matcher m = ESCAPE_PATTERN.matcher(rawValue);
             StringBuffer buffer = new StringBuffer();
             while (m.find()) {
                 String matched = m.group();
-                String replacement = isUnicode(matched) ? unicode(matched) : null;
+                String replacement = isUnicode(matched)
+                        ? unescapeUnicode(matched) : unescape(matched);
                 m.appendReplacement(buffer, replacement);
             }
             m.appendTail(buffer);
@@ -132,16 +127,19 @@ public class Token {
         }
 
         private boolean isUnicode(String rawValue) {
-            char c = rawValue.charAt(1);
-            return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f');
+            return isHexDigit(rawValue.charAt(1));
         }
 
-        private String unicode(String rawValue) {
+        private String unescapeUnicode(String rawValue) {
             rawValue = rawValue.toLowerCase();
             String[] parts = rawValue.split("\\s");
             String hex = parts[0].substring(1);
             char c = (char)Integer.parseInt(hex, 16);
             return String.valueOf(c);
+        }
+
+        private String unescape(String rawValue) {
+            return rawValue.substring(1);
         }
     }
 

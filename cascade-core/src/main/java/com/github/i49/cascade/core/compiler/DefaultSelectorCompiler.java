@@ -56,7 +56,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         if (expression == null) {
             throw new NullPointerException("expression must not be null.");
         }
-        this.tokenizer = new Tokenizer(expression);
+        this.tokenizer = new SelectorTokenizer(expression);
         return selectorGroup();
     }
 
@@ -155,7 +155,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         case PERIOD:
             token = nextToken();
             if (token.getCategory() == TokenCategory.IDENTITY) {
-                return classSelector(token.getRawText());
+                return classSelector(token.getText());
             }
             throw newException(Message.CLASS_NAME_IS_MISSING);
         case OPENING_BRACKET:
