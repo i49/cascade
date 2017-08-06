@@ -38,6 +38,7 @@ public class Token {
     public static final Token PREFIX_MATCH = new Token(TokenCategory.PREFIX_MATCH, "^=");
     public static final Token SUFFIX_MATCH = new Token(TokenCategory.SUFFIX_MATCH, "$=");
     public static final Token SUBSTRING_MATCH = new Token(TokenCategory.SUBSTRING_MATCH, "*=");
+    public static final Token COLON = new Token(TokenCategory.COLON, ":");
 
     private final TokenCategory category;
     private final String rawText;

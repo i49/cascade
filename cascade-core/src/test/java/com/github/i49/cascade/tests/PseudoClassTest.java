@@ -24,30 +24,22 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Test with HTML5 file.
+ * Tests for pseudo-class selectors.
  */
 @RunWith(Parameterized.class)
-public class Html5Test extends BaseSelectorTest {
+public class PseudoClassTest extends BaseSelectorTest {
 
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            // simple selectors
-            { "/html5-test.html", "#forms__action", 1 },
-            { "/html5-test.html", "article", 16 },
-            // combinator
-            { "/html5-test.html", "* article", 16 },
-            { "/html5-test.html", "* * article", 16 },
-            { "/html5-test.html", "* ~ article", 16 },
-            { "/html5-test.html", "* * ~ article", 16 },
-            { "/html5-test.html", "* ~ * ~ article", 14 },
-            // pseudo class
-            { "/html5-test.html", ":root", 1 },
-            { "/html5-test.html", "meta:empty", 2 },
+            // root
+            { "/empty-pseudo-class-test.html", ":root", 1 },
+            // empty
+            { "/empty-pseudo-class-test.html", "p:empty", 1 },
         });
     }
 
-    public Html5Test(String resourceName, String expression, int expectedCount) {
+    public PseudoClassTest(String resourceName, String expression, int expectedCount) {
         super(resourceName, expression, expectedCount);
     }
 }

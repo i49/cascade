@@ -33,5 +33,5 @@ public interface Sequence {
     
     CombinatorSequence getNext();
     
-    void setNext(CombinatorSequence next);
+    void combine(CombinatorSequence next);
 }

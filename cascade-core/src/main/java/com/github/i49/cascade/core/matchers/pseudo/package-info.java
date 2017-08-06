@@ -14,34 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.compiler;
-
 /**
- * Categories of tokens.
+ * Provides matchers for pseudo class selectors.
  */
-public enum TokenCategory {
-    /** Unknown category. */
-    UNKNOWN,
-    /** End of input. */
-    EOI,
-    /* Sequence of whitespaces. */
-    SPACE,
-    IDENTITY,
-    HASH,
-    PLUS,
-    GREATER,
-    COMMA,
-    TILDE,
-    ASTERISK,
-    PERIOD,
-    OPENING_BRACKET,
-    CLOSING_BRACKET,
-    STRING,
-    EXACT_MATCH,
-    INCLUDES,
-    DASH_MATCH,
-    PREFIX_MATCH,
-    SUFFIX_MATCH,
-    SUBSTRING_MATCH,
-    COLON
-}
+package com.github.i49.cascade.core.matchers.pseudo;

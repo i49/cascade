@@ -58,6 +58,11 @@ public class ParsingErrorTest {
             { "[*=test]", 1 },
             { "##", 0 },
             { "[title=two words]", 11 },
+            // pseudo-class
+            { ":", 1 },
+            { ":foo", 1 },
+            // pseudo-element
+            { "::first-line", 1 }
         });
     }
 

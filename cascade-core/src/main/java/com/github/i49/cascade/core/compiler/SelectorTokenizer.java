@@ -53,6 +53,9 @@ class SelectorTokenizer implements Tokenizer {
         case ']':
             newToken(Token.CLOSING_BRACKET);
             return currentToken;
+        case ':':
+            newToken(Token.COLON);
+            return currentToken;
         }
 
         if (string(index) ||

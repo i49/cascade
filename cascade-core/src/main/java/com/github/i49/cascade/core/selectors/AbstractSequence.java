@@ -83,7 +83,7 @@ abstract class AbstractSequence implements Sequence {
     }
 
     @Override
-    public void setNext(CombinatorSequence next) {
+    public void combine(CombinatorSequence next) {
         this.nextSequence = next;
         Combinator combinator = next.getCombinator();
         this.traverser = combinator.convertPreviousTraverser(this.traverser);

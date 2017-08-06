@@ -38,23 +38,23 @@ public class ParsingTest {
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            /* universal */
+            // universal
             { "*", "*" },
-            /* type */
+            // type
             { "h1", "h1" },
-            /* class */
+            // class
             { ".pastoral", "*.pastoral" },
             { "h1.pastoral", "h1.pastoral" },
             { "p.pastoral.marine", "p.pastoral.marine" },
             { ".two\\ words",  "*.two words" },
             { ".one\\.word", "*.one.word" },
-            /* id */
+            // id
             { "#chapter1", "*#chapter1" },
             { "h1#chapter1", "h1#chapter1" },
             { "*#z98y", "*#z98y" },
             { "#-a-b-c-", "*#-a-b-c-" },
             { "#\u00a9", "*#\u00a9" },
-            /* attribute */
+            // attribute
             { "[title]", "*[title]" },
             { "[class=example]", "*[class=\"example\"]" },
             { "[class=\"example\"]", "*[class=\"example\"]" },
@@ -68,7 +68,7 @@ public class ParsingTest {
             { "[title=two\\ words]", "*[title=\"two words\"]" },
             { "[title=\"hop \\\"step\\\" jump\"]", "*[title=\"hop \"step\" jump\"]" },
             { "[title=\"two\\\nlines\"]", "*[title=\"two\nlines\"]" },
-            /* combinator */
+            // combinator
             { "h1 em", "h1 em" },
             { "div * p", "div * p" },
             { "div p *[href]", "div p *[href]" },
@@ -77,14 +77,14 @@ public class ParsingTest {
             { "math + p", "math + p" },
             { "h1.opener + h2", "h1.opener + h2" },
             { "h1 ~ pre", "h1 ~ pre" },
-            /* group */
+            // group
             { "li, p", "li, p" },
             { "h1, h2, h3", "h1, h2, h3" },
-            /* leading or trailing spaces */
+            // leading or trailing spaces
             { " p ", "p" },
             { " figure > img ", "figure > img" },
             { " h1, h2, h3 ", "h1, h2, h3" },
-            /* escape */
+            // escape
             { "\\0000a9", "\u00a9" },
             { "\\0000a912", "\u00a912" },
             { "\\00a9 B", "\u00a9B" },
@@ -93,6 +93,9 @@ public class ParsingTest {
             { "#\\#fake-id", "*##fake-id" },
             { "one\\ two", "one two" },
             { "[rel=\"\\00a9  2017\"]", "*[rel=\"\u00a9 2017\"]" },
+            // pseudo-class
+            { ":root", "*:root" },
+            { "style:empty", "style:empty" },
         });
     }
 

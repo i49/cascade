@@ -36,6 +36,7 @@ import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
+import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
 import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
@@ -64,7 +65,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         List<SingleSelector> selectors = new ArrayList<>();
 
         do {
-            SingleSelector selector = selector();
+            SingleSelector selector = singleSelector();
             selectors.add(selector);
         } while (currentToken.getCategory() != TokenCategory.EOI);
 
@@ -75,7 +76,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private SingleSelector selector() {
+    private SingleSelector singleSelector() {
         Sequence first = null;
         Sequence last = null;
         Combinator combinator = null;
@@ -89,7 +90,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                 last = first;
             } else {
                 CombinatorSequence sequence = CombinatorSequence.create(combinator, matchers);
-                last.setNext(sequence);
+                last.combine(sequence);
                 last = sequence;
             }
             combinator = parseCombinatorType(currentToken);
@@ -158,6 +159,14 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                 return classSelector(token.getText());
             }
             throw newException(Message.CLASS_NAME_IS_MISSING);
+        case COLON:
+            token = nextToken();
+            if (token == Token.COLON) {
+                throw newException(Message.PSEUDO_ELEMENTS_ARE_NOT_SUPPORTED);
+            } else if (token.getCategory() == TokenCategory.IDENTITY) {
+                return pseudoClassSelector(token.getText());
+            }
+            throw newException(Message.PSEUDO_CLASS_NAME_IS_MISSING);
         case OPENING_BRACKET:
             return parseAttributeSelector();
         case SPACE:
@@ -189,7 +198,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             }
             return typeSelector(token.getText());
         } else if (type == TokenCategory.HASH) {
-            return idSelector(token.getText().substring(1));
+            return idSelector(token.getText());
         }
         return null;
     }
@@ -202,12 +211,22 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return new TypeMatcher(selector);
     }
 
-    private Matcher idSelector(String identifier) {
+    private Matcher idSelector(String selector) {
+        String identifier = selector.substring(1);
         return new IdentifierMatcher(identifier);
     }
 
     private Matcher classSelector(String className) {
         return new ClassMatcher(className);
+    }
+
+    private Matcher pseudoClassSelector(String className) {
+        Matcher matcher = PseudoClassMatcher.of(className);
+        if (matcher == null) {
+            String selector = ":" + className;
+            throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(selector));
+        }
+        return matcher;
     }
 
     private Matcher parseAttributeSelector() {
