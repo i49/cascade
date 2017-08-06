@@ -85,20 +85,35 @@ class SelectorTokenizer implements Tokenizer {
 
     private boolean string(int index) {
         int q = input.charAt(index);
-        if (q != '\'' && q != '\"') {
+        if (!isQuote(q)) {
             return false;
         }
         StringBuilder b = new StringBuilder();
         b.append((char)q);
-        int c = 0;
-        while ((c = input.charAt(++index)) != q) {
+        index++;
+        for (;;) {
+            int c = input.charAt(index);
             if (c < 0) {
                 return false;
+            } else if (c == '\\') {
+                String matched = input.match(STRING_ESCAPE_PATTERN, index);
+                if (matched != null) {
+                    b.append(matched);
+                    index += matched.length();
+                } else {
+                    return false;
+                }
+            } else if ("\n\r\f".indexOf(c) >= 0) {
+                return false;
+            } else {
+                b.append((char)c);
+                index++;
+                if (c == q) {
+                    break;
+                }
             }
-            b.append((char)c);
         }
-        String quoted = b.append((char)q).toString();
-        return newToken(Token.of(TokenCategory.STRING, quoted));
+        return newToken(Token.of(TokenCategory.STRING, b.toString()));
     }
 
     private boolean equalityOperator(int index) {

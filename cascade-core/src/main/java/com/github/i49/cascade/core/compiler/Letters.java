@@ -29,8 +29,16 @@ class Letters {
     public static final String UNICODE_ESCAPE =
             "\\\\[0-9a-fA-F]{1,6}(\r\n|[ \n\r\t\f])?";
 
+    public static final String CHARACTER_ESCAPE = "\\\\[^\\n\\r\\f0-9a-fA-F]";
+
     public static final Pattern ESCAPE_PATTERN = Pattern.compile(
-            UNICODE_ESCAPE + "|\\\\[^\\n\\r\\f0-9a-fA-F]"
+            UNICODE_ESCAPE + "|" + CHARACTER_ESCAPE
+            );
+
+    public static final String NEWLINE_ESCAPE = "\\\\(\\n|\\r\\n|\\r|\\f)";
+
+    public static final Pattern STRING_ESCAPE_PATTERN = Pattern.compile(
+            NEWLINE_ESCAPE + "|" + UNICODE_ESCAPE + "|" + CHARACTER_ESCAPE
             );
 
     public static boolean isWhitespace(int c) {
@@ -51,6 +59,10 @@ class Letters {
 
     public static boolean isNameLetter(int c) {
         return isIdentifierStart(c) || c == '-' || isDigit(c);
+    }
+
+    public static boolean isQuote(int c) {
+        return c == '\'' || c == '\"';
     }
 
      private Letters() {

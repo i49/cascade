@@ -46,6 +46,8 @@ public class ParsingTest {
             { ".pastoral", "*.pastoral" },
             { "h1.pastoral", "h1.pastoral" },
             { "p.pastoral.marine", "p.pastoral.marine" },
+            { ".two\\ words",  "*.two words" },
+            { ".one\\.word", "*.one.word" },
             /* id */
             { "#chapter1", "*#chapter1" },
             { "h1#chapter1", "h1#chapter1" },
@@ -63,6 +65,9 @@ public class ParsingTest {
             { "[type^=\"image/\"]", "*[type^=\"image/\"]" },
             { "[href$=\".html\"]", "*[href$=\".html\"]" },
             { "[title*=\"hello\"]", "*[title*=\"hello\"]" },
+            { "[title=two\\ words]", "*[title=\"two words\"]" },
+            { "[title=\"hop \\\"step\\\" jump\"]", "*[title=\"hop \"step\" jump\"]" },
+            { "[title=\"two\\\nlines\"]", "*[title=\"two\nlines\"]" },
             /* combinator */
             { "h1 em", "h1 em" },
             { "div * p", "div * p" },
@@ -80,11 +85,14 @@ public class ParsingTest {
             { " figure > img ", "figure > img" },
             { " h1, h2, h3 ", "h1, h2, h3" },
             /* escape */
-            { "\\002193", "\u2193" },
-            { "\\2193 B", "\u2193B" },
+            { "\\0000a9", "\u00a9" },
+            { "\\0000a912", "\u00a912" },
+            { "\\00a9 B", "\u00a9B" },
             { ".\\3A \\`\\(", "*.:`(" },
             { ".\\31 a2b3c", "*.1a2b3c" },
             { "#\\#fake-id", "*##fake-id" },
+            { "one\\ two", "one two" },
+            { "[rel=\"\\00a9  2017\"]", "*[rel=\"\u00a9 2017\"]" },
         });
     }
 

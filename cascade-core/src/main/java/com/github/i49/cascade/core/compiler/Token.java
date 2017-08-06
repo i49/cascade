@@ -16,10 +16,6 @@
 
 package com.github.i49.cascade.core.compiler;
 
-import static com.github.i49.cascade.core.compiler.Letters.*;
-
-import java.util.regex.Matcher;
-
 /**
  * Tokens to be extracted from selector expression.
  */
@@ -52,7 +48,7 @@ public class Token {
             return new StringToken(rawText);
         case IDENTITY:
         case HASH:
-            return new EncodedToken(category, rawText);
+            return new EscapedToken(category, rawText);
         default:
             return new Token(category, rawText);
         }
@@ -91,7 +87,7 @@ public class Token {
     }
 
     public String getValue() {
-        return getRawText();
+        return getText();
     }
 
     @Override
@@ -99,47 +95,15 @@ public class Token {
         return getRawText() + "@" + getCategory().name();
     }
 
-    private static class EncodedToken extends Token {
+    private static class EscapedToken extends Token {
 
-        private final String decodedText;
-
-        public EncodedToken(TokenCategory category, String rawText) {
+        public EscapedToken(TokenCategory category, String rawText) {
             super(category, rawText);
-            this.decodedText = decode(rawText);
         }
 
         @Override
         public String getText() {
-            return decodedText;
-        }
-
-        private String decode(String rawValue) {
-            Matcher m = ESCAPE_PATTERN.matcher(rawValue);
-            StringBuffer buffer = new StringBuffer();
-            while (m.find()) {
-                String matched = m.group();
-                String replacement = isUnicode(matched)
-                        ? unescapeUnicode(matched) : unescape(matched);
-                m.appendReplacement(buffer, replacement);
-            }
-            m.appendTail(buffer);
-            return buffer.toString();
-        }
-
-        private boolean isUnicode(String rawValue) {
-            return isHexDigit(rawValue.charAt(1));
-        }
-
-        private String unescapeUnicode(String rawValue) {
-            rawValue = rawValue.toLowerCase();
-            String[] parts = rawValue.split("\\s");
-            String hex = parts[0].substring(1);
-            char c = (char)Integer.parseInt(hex, 16);
-            return String.valueOf(c);
-        }
-
-        private String unescape(String rawValue) {
-            return rawValue.substring(1);
+            return Escaper.unescape(getRawText());
         }
     }
 
@@ -147,10 +111,15 @@ public class Token {
      * Specialized token which represents strings.
      *
      */
-    private static class StringToken extends EncodedToken {
+    private static class StringToken extends EscapedToken {
 
         public StringToken(String rawValue) {
             super(TokenCategory.STRING, rawValue);
+        }
+
+        @Override
+        public String getText() {
+            return Escaper.unescapeQuotedString(getRawText());
         }
 
         @Override

@@ -57,6 +57,7 @@ public class ParsingErrorTest {
             { "[class=\"", 7 },
             { "[*=test]", 1 },
             { "##", 0 },
+            { "[title=two words]", 11 },
         });
     }
 
