@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- *
+ * Traverser which will visit only next element of the specified one.
  */
 public class AdjacentTraverser implements Traverser {
 

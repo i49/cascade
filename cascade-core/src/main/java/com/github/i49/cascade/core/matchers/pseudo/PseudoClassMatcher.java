@@ -27,18 +27,24 @@ import com.github.i49.cascade.core.matchers.MatcherType;
  */
 public abstract class PseudoClassMatcher implements Matcher {
 
-    private static final Map<String, PseudoClassMatcher> classes = new HashMap<>();
+    private static final Map<String, PseudoClassMatcher> registry = new HashMap<>();
 
     static {
-        add(RootMatcher.SINGLETON);
-        add(EmptyMatcher.SINGLETON);
-        add(FirstChildMatcher.SINGLETON);
-        add(LastChildMatcher.SINGLETON);
-        add(OnlyChildMatcher.SINGLETON);
+        register(RootMatcher.SINGLETON);
+        register(EmptyMatcher.SINGLETON);
+        register(FirstChildMatcher.SINGLETON);
+        register(LastChildMatcher.SINGLETON);
+        register(OnlyChildMatcher.SINGLETON);
     }
 
-    public static PseudoClassMatcher of(String className) {
-        return classes.get(className);
+    /**
+     * Returns the matcher of the specified pseudo-class name.
+     *
+     * @param className the name of the pseudo-class.
+     * @return found matcher.
+     */
+    public static PseudoClassMatcher byName(String className) {
+        return registry.get(className);
     }
 
     @Override
@@ -53,7 +59,7 @@ public abstract class PseudoClassMatcher implements Matcher {
 
     public abstract String getClassName();
 
-    private static void add(PseudoClassMatcher matcher) {
-        classes.put(matcher.getClassName(), matcher);
+    private static void register(PseudoClassMatcher matcher) {
+        registry.put(matcher.getClassName(), matcher);
     }
 }

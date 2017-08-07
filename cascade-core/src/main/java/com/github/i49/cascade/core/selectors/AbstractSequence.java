@@ -26,6 +26,7 @@ import com.github.i49.cascade.core.matchers.MatcherList;
 import com.github.i49.cascade.core.matchers.MatcherType;
 import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
 import com.github.i49.cascade.core.traversers.FastIdentifierTraverser;
+import com.github.i49.cascade.core.traversers.RootTraverser;
 import com.github.i49.cascade.core.traversers.Traverser;
 
 /**
@@ -40,13 +41,16 @@ abstract class AbstractSequence implements Sequence {
 
     protected AbstractSequence(MatcherList matchers) {
         Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
+        if (found == null) {
+            found = matchers.findFirst(MatcherType.ROOT_PSEUDO_CLASS);
+        }
+
         if (found != null) {
-            String identifier = ((IdentifierMatcher)found).getIdentifier();
-            this.traverser = new FastIdentifierTraverser(identifier);
             this.matchers = matchers.without(found);
+            this.traverser = createTraverserFor(found);
         } else {
-            this.traverser = DepthFirstTraverser.SINGLETON;
             this.matchers = matchers;
+            this.traverser = DepthFirstTraverser.SINGLETON;
         }
         this.originalMatchers = matchers;
     }
@@ -97,5 +101,17 @@ abstract class AbstractSequence implements Sequence {
             b.append(nextSequence.toString());
         }
         return b.toString();
+    }
+
+    private static Traverser createTraverserFor(Matcher matcher) {
+        switch (matcher.getType()) {
+        case IDENTIFIER:
+            String identifier = ((IdentifierMatcher)matcher).getIdentifier();
+            return new FastIdentifierTraverser(identifier);
+        case ROOT_PSEUDO_CLASS:
+            return RootTraverser.SINGLETON;
+        default:
+            return DepthFirstTraverser.SINGLETON;
+        }
     }
 }

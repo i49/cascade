@@ -66,6 +66,7 @@ public class BenchmarkTest {
                 "* ~ article",
                 "* * ~ article",
                 "* ~ * ~ article",
+                "*:root",
         };
     }
 
@@ -77,7 +78,7 @@ public class BenchmarkTest {
             s.select(root);
         });
 
-        log.info("\"" + expression + "\": " + elapsed + " [ms]");
+        log.info("selector = \"" + expression + "\", elapsed = " + elapsed + " [ms]");
     }
 
     private long profile(Runnable runnable) {

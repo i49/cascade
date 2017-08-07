@@ -221,7 +221,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     }
 
     private Matcher pseudoClassSelector(String className) {
-        Matcher matcher = PseudoClassMatcher.of(className);
+        Matcher matcher = PseudoClassMatcher.byName(className);
         if (matcher == null) {
             String selector = ":" + className;
             throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(selector));
@@ -255,8 +255,13 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
 
     private Matcher parseAttributeValueSelector(String name, Token operator) {
         Token token = nextNonSpaceToken();
-        TokenCategory category = token.getCategory();
-        if (category != TokenCategory.IDENTITY && category != TokenCategory.STRING) {
+        switch (token.getCategory()) {
+        case IDENTITY:
+        case STRING:
+            break;
+        case INVALID_STRING:
+            throw newException(Message.STRING_IS_NOT_CLOSED);
+        default:
             throw newException(Message.ATTRIBUTE_VALUE_IS_MISSING);
         }
         String value = token.getValue();

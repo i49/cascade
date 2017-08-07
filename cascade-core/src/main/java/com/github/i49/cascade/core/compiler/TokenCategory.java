@@ -24,7 +24,7 @@ public enum TokenCategory {
     UNKNOWN,
     /** End of input. */
     EOI,
-    /* Sequence of whitespaces. */
+    /** Sequence of whitespaces. */
     SPACE,
     IDENTITY,
     HASH,
@@ -37,6 +37,7 @@ public enum TokenCategory {
     OPENING_BRACKET,
     CLOSING_BRACKET,
     STRING,
+    INVALID_STRING,
     EXACT_MATCH,
     INCLUDES,
     DASH_MATCH,

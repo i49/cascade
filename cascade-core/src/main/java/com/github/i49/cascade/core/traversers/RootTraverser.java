@@ -14,35 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers.pseudo;
+package com.github.i49.cascade.core.traversers;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.core.dom.Elements;
-import com.github.i49.cascade.core.matchers.MatcherType;
-
 /**
- * Matcher for :root pseudo-class selector.
+ * Traverser which will visit only specified element.
  */
-public class RootMatcher extends PseudoClassMatcher {
+public class RootTraverser implements Traverser {
 
-    public static final RootMatcher SINGLETON = new RootMatcher();
+    // The one and only instance of this traverser.
+    public static final RootTraverser SINGLETON = new RootTraverser();
 
-    private RootMatcher() {
+    private RootTraverser() {
     }
 
     @Override
-    public MatcherType getType() {
-        return MatcherType.ROOT_PSEUDO_CLASS;
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        return Elements.isRoot(element);
-    }
-
-    @Override
-    public String getClassName() {
-        return "root";
+    public void traverse(Element start, Visitor visitor) {
+        visitor.visit(start);
     }
 }

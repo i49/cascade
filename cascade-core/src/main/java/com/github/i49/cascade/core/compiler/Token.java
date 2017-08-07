@@ -47,6 +47,8 @@ public class Token {
         switch (category) {
         case STRING:
             return new StringToken(rawText);
+        case INVALID_STRING:
+            return new InvalidStringToken(rawText);
         case IDENTITY:
         case HASH:
             return new EscapedToken(category, rawText);
@@ -110,12 +112,15 @@ public class Token {
 
     /**
      * Specialized token which represents strings.
-     *
      */
     private static class StringToken extends EscapedToken {
 
         public StringToken(String rawValue) {
-            super(TokenCategory.STRING, rawValue);
+            this(TokenCategory.STRING, rawValue);
+        }
+
+        public StringToken(TokenCategory category, String rawValue) {
+            super(category, rawValue);
         }
 
         @Override
@@ -131,5 +136,21 @@ public class Token {
         private static String unquote(String s) {
             return s.substring(1, s.length() - 1);
         }
+    }
+
+    /**
+     * Specialized token which represents invalid strings.
+     */
+    private static class InvalidStringToken extends StringToken {
+
+        public InvalidStringToken(String rawValue) {
+            super(TokenCategory.INVALID_STRING, rawValue);
+        }
+
+        @Override
+        public String getValue() {
+            throw new UnsupportedOperationException();
+        }
+
     }
 }

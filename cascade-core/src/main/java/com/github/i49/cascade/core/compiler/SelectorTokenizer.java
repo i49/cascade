@@ -96,8 +96,8 @@ class SelectorTokenizer implements Tokenizer {
         index++;
         for (;;) {
             int c = input.charAt(index);
-            if (c < 0) {
-                return false;
+            if (c < 0 || c == '\n' || c == '\r' || c == '\f') {
+                return newToken(Token.of(TokenCategory.INVALID_STRING, b.toString()));
             } else if (c == '\\') {
                 String matched = input.match(STRING_ESCAPE_PATTERN, index);
                 if (matched != null) {
@@ -106,8 +106,6 @@ class SelectorTokenizer implements Tokenizer {
                 } else {
                     return false;
                 }
-            } else if ("\n\r\f".indexOf(c) >= 0) {
-                return false;
             } else {
                 b.append((char)c);
                 index++;

@@ -93,6 +93,7 @@ public class ParsingTest {
             { "#\\#fake-id", "*##fake-id" },
             { "one\\ two", "one two" },
             { "[rel=\"\\00a9  2017\"]", "*[rel=\"\u00a9 2017\"]" },
+            { "[title=\" !#$%&'()*+,-./:;<=>?@[]^_`{|}~\"]", "*[title=\" !#$%&'()*+,-./:;<=>?@[]^_`{|}~\"]" },
             // pseudo-class
             { ":root", "*:root" },
             { "style:empty", "style:empty" },
