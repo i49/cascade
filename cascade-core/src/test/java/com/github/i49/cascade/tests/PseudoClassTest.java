@@ -33,13 +33,14 @@ public class PseudoClassTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // root
-            { "/empty-pseudo-class-test.html", ":root", 1 },
+            { "/empty-pseudo-class-test.html", 0, ":root", 1 },
+            { "/empty-pseudo-class-test.html", 4, ":root", 0 },
             // empty
-            { "/empty-pseudo-class-test.html", "p:empty", 1 },
+            { "/empty-pseudo-class-test.html", 0, "p:empty", 1 },
         });
     }
 
-    public PseudoClassTest(String resourceName, String expression, int expectedCount) {
-        super(resourceName, expression, expectedCount);
+    public PseudoClassTest(String resourceName, int startIndex, String expression, int expectedCount) {
+        super(resourceName, startIndex, expression, expectedCount);
     }
 }

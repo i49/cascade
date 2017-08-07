@@ -48,6 +48,6 @@ public class Html5Test extends BaseSelectorTest {
     }
 
     public Html5Test(String resourceName, String expression, int expectedCount) {
-        super(resourceName, expression, expectedCount);
+        super(resourceName, 0, expression, expectedCount);
     }
 }

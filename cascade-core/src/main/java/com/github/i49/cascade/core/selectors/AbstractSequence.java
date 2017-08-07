@@ -40,19 +40,21 @@ abstract class AbstractSequence implements Sequence {
     private Traverser traverser;
 
     protected AbstractSequence(MatcherList matchers) {
-        Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
-        if (found == null) {
-            found = matchers.findFirst(MatcherType.ROOT_PSEUDO_CLASS);
-        }
-
-        if (found != null) {
-            this.matchers = matchers.without(found);
-            this.traverser = createTraverserFor(found);
-        } else {
-            this.matchers = matchers;
-            this.traverser = DepthFirstTraverser.SINGLETON;
-        }
         this.originalMatchers = matchers;
+        Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
+        if (found != null) {
+            this.traverser = createTraverserFor(found);
+            this.matchers = matchers.without(found);
+        } else {
+            found = matchers.findFirst(MatcherType.ROOT_PSEUDO_CLASS);
+            if (found != null) {
+                this.traverser = createTraverserFor(found);
+                this.matchers = matchers;
+            } else {
+                this.traverser = DepthFirstTraverser.SINGLETON;
+                this.matchers = matchers;
+            }
+        }
     }
 
     protected AbstractSequence(MatcherList matchers, Traverser traverser) {
