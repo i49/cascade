@@ -37,17 +37,19 @@ import com.github.i49.cascade.api.Selector;
 public abstract class BaseSelectorTest {
 
     private final String resourceName;
-    private final int startIndex;
+    private final String startElement;
     private final String expression;
+    private final int[] expectedIndices;
     private final int expectedCount;
 
     private static Map<String, Document> documentCache;
 
-    protected BaseSelectorTest(String resourceName, int startIndex, String expression, int expectedCount) {
+    protected BaseSelectorTest(String resourceName, String startElement, String expression, int[] indices) {
         this.resourceName = resourceName;
-        this.startIndex = startIndex;
+        this.startElement = startElement;
         this.expression = expression;
-        this.expectedCount = expectedCount;
+        this.expectedCount = -1;
+        this.expectedIndices = indices;
     }
 
     @BeforeClass
@@ -66,7 +68,21 @@ public abstract class BaseSelectorTest {
         Document doc = loadDocument();
         Selector selector = Selector.compile(expression);
         Set<Element> selected  = selector.select(startingElement(doc));
-        assertThat(selected).hasSize(expectedCount);
+        if (expectedIndices != null) {
+            assertThat(selected).hasSize(expectedIndices.length);
+            NodeList nodes = doc.getElementsByTagName("*");
+            int i = 0;
+            for (Element actual: selected) {
+                Element expected = (Element)nodes.item(expectedIndices[i++]);
+                assertThat(actual).isSameAs(expected);
+            }
+        } else {
+            assertThat(selected).hasSize(expectedCount);
+        }
+    }
+
+    protected static int[] expect(int... indices) {
+        return indices;
     }
 
     private Document loadDocument() {
@@ -79,11 +95,14 @@ public abstract class BaseSelectorTest {
     }
 
     private Element startingElement(Document doc) {
-        if (startIndex == 0) {
+        if (startElement == null) {
             return doc.getDocumentElement();
         }
-        NodeList nodes = doc.getElementsByTagNameNS("*", "*");
-        Element element = (Element)nodes.item(startIndex);
+        NodeList nodes = doc.getElementsByTagName(startElement);
+        Element element = (Element)nodes.item(0);
+        if (element == null) {
+            throw new IllegalArgumentException("Starting element " + startElement + " was not found.");
+        }
         return element;
     }
 }

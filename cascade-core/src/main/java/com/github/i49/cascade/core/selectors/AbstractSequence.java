@@ -34,44 +34,32 @@ import com.github.i49.cascade.core.traversers.Traverser;
  */
 abstract class AbstractSequence implements Sequence {
 
-    private final MatcherList matchers;
-    private final MatcherList originalMatchers;
-    private CombinatorSequence nextSequence;
+    private final Matcher originalMatcher;
+    private final Matcher matcherToApply;
     private Traverser traverser;
+    private CombinatorSequence nextSequence;
 
     protected AbstractSequence(MatcherList matchers) {
-        this.originalMatchers = matchers;
-        Matcher found = matchers.findFirst(MatcherType.IDENTIFIER);
-        if (found != null) {
-            this.traverser = createTraverserFor(found);
-            this.matchers = matchers.without(found);
-        } else {
-            found = matchers.findFirst(MatcherType.ROOT_PSEUDO_CLASS);
-            if (found != null) {
-                this.traverser = createTraverserFor(found);
-                this.matchers = matchers;
-            } else {
-                this.traverser = DepthFirstTraverser.SINGLETON;
-                this.matchers = matchers;
-            }
-        }
+        this.originalMatcher = matchers;
+        this.matcherToApply = matchers.simplify();
+        this.traverser = createTraverserFor(matchers);
     }
 
     protected AbstractSequence(MatcherList matchers, Traverser traverser) {
-        this.matchers = this.originalMatchers = matchers;
+        this.matcherToApply = this.originalMatcher = matchers;
         this.traverser = traverser;
     }
 
     @Override
     public SequenceResult process(Element element) {
-        MatchingVisitor visitor = new MatchingVisitor(matchers);
+        MatchingVisitor visitor = new MatchingVisitor(matcherToApply);
         traverser.traverse(element, visitor);
         return visitor;
     }
 
     @Override
     public SequenceResult process(Set<Element> elements) {
-        MatchingVisitor visitor = new MatchingVisitor(matchers);
+        MatchingVisitor visitor = new MatchingVisitor(matcherToApply);
         for (Element element: elements) {
             traverser.traverse(element, visitor);
         }
@@ -98,22 +86,21 @@ abstract class AbstractSequence implements Sequence {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(originalMatchers.toString());
+        b.append(originalMatcher.toString());
         if (hasNext()) {
             b.append(nextSequence.toString());
         }
         return b.toString();
     }
 
-    private static Traverser createTraverserFor(Matcher matcher) {
-        switch (matcher.getType()) {
-        case IDENTIFIER:
+    private static Traverser createTraverserFor(MatcherList matchers) {
+        if (matchers.contains(MatcherType.IDENTIFIER)) {
+            Matcher matcher = matchers.findFirst(MatcherType.IDENTIFIER);
             String identifier = ((IdentifierMatcher)matcher).getIdentifier();
             return new FastIdentifierTraverser(identifier);
-        case ROOT_PSEUDO_CLASS:
+        } else if (matchers.contains(MatcherType.ROOT_PSEUDO_CLASS)) {
             return RootTraverser.SINGLETON;
-        default:
-            return DepthFirstTraverser.SINGLETON;
         }
+        return DepthFirstTraverser.SINGLETON;
     }
 }

@@ -32,15 +32,15 @@ public class SelectorGroupTest extends BaseSelectorTest {
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/selector-group-test.html", "li, p", 3 },
-            { "/selector-group-test.html", "li, nonexistent", 2 },
-            { "/selector-group-test.html", "nonexistent, p", 1 },
-            { "/selector-group-test.html", "nonexistent1, nonexistent2", 0 },
-            { "/selector-group-test.html", "li, .example", 3 },
+            { "/selector-group-test.html", "li, p", expect(6, 7, 8) },
+            { "/selector-group-test.html", "li, nonexistent", expect(6, 7) },
+            { "/selector-group-test.html", "nonexistent, p", expect(8) },
+            { "/selector-group-test.html", "nonexistent1, nonexistent2", expect() },
+            { "/selector-group-test.html", "li, .example", expect(6, 7, 8) },
         });
     }
 
-    public SelectorGroupTest(String resourceName, String expression, int expectedCount) {
-        super(resourceName, 0, expression, expectedCount);
+    public SelectorGroupTest(String resourceName, String expression, int[] indices) {
+        super(resourceName, null, expression, indices);
    }
 }

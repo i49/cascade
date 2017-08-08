@@ -32,27 +32,27 @@ public class AttributeSelectorTest extends BaseSelectorTest {
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/attribute-presence-selector-test.html", "[title]", 1 },
+            { "/attribute-presence-selector-test.html", "[title]", expect(5) },
             /* value */
-            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", 1 },
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", 1 },
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", 0 },
+            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", expect(8) },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", expect(10) },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", expect() },
             /* dash */
-            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", 2 },
-            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", 0 },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", expect(12, 14) },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", expect() },
             /* prefix */
-            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", 1 },
-            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", 1 },
+            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", expect(16) },
+            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", expect(16) },
             /* suffix */
-            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", 1 },
-            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", 1 },
+            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", expect(18) },
+            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", expect(18) },
             /* substring */
-            { "/attribute-value-selector-test.html", "[href*=\"example\"]", 1 },
-            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", 1 },
+            { "/attribute-value-selector-test.html", "[href*=\"example\"]", expect(20) },
+            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", expect(20) },
         });
     }
 
-    public AttributeSelectorTest(String resourceName, String expression, int expectedCount) {
-        super(resourceName, 0, expression, expectedCount);
+    public AttributeSelectorTest(String resourceName, String expression, int[] indices) {
+        super(resourceName, null, expression, indices);
     }
 }

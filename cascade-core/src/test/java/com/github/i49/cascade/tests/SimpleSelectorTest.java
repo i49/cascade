@@ -33,27 +33,28 @@ public class SimpleSelectorTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             /* universal */
-            { "/smallest-xml.xml", "*", 1 },
-            { "/universal-selector-test.html", "*", 10 },
+            { "/smallest-xml.xml", null, "*", expect(0) },
+            { "/universal-selector-test.html", null, "*", expect(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
             /* type */
-            { "/type-selector-test.html", "html", 1 },
-            { "/type-selector-test.html", "h1", 1 },
-            { "/type-selector-test.html", "p", 2 },
-            { "/type-selector-test.html", "nonexistent", 0 },
+            { "/type-selector-test.html", null, "html", expect(0) },
+            { "/type-selector-test.html", null, "h1", expect(5) },
+            { "/type-selector-test.html", null, "p", expect(6, 7) },
+            { "/type-selector-test.html", null, "nonexistent", expect() },
             /* identifier */
-            { "/id-selector-test.html", "#content", 1 },
-            { "/id-selector-test.html", "section#content", 1 },
-            { "/id-selector-test.html", "#nonexistent", 0 },
+            { "/id-selector-test.html", null, "#content", expect(6) },
+            { "/id-selector-test.html", "body", "#content", expect(6) },
+            { "/id-selector-test.html", null, "section#content", expect(6) },
+            { "/id-selector-test.html", null, "#nonexistent", expect() },
             /* class */
-            { "/class-selector-test.html", ".hello", 3 },
-            { "/class-selector-test.html", ".hello.java", 1 },
-            { "/class-selector-test.html", ".java.hello", 1 },
-            { "/class-selector-test.html", "div.hello", 3 },
-            { "/class-selector-test.html", ".nonexistent", 0 },
+            { "/class-selector-test.html", null, ".hello", expect(6, 8, 10) },
+            { "/class-selector-test.html", null, ".hello.java", expect(8) },
+            { "/class-selector-test.html", null, ".java.hello", expect(8) },
+            { "/class-selector-test.html", null, "div.hello", expect(6, 8, 10) },
+            { "/class-selector-test.html", null, ".nonexistent", expect() },
         });
     }
 
-    public SimpleSelectorTest(String resourceName, String expression, int expectedCount) {
-        super(resourceName, 0, expression, expectedCount);
+    public SimpleSelectorTest(String resourceName, String startElement, String expression, int[] indices) {
+        super(resourceName, startElement, expression, indices);
     }
 }

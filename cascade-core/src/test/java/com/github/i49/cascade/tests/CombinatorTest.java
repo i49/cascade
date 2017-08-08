@@ -32,16 +32,16 @@ public class CombinatorTest extends BaseSelectorTest {
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/descendant-combinator-test.html", "div.main p", 3 },
-            { "/child-combinator-test.html", "div > p", 2 },
-            { "/adjacent-combinator-test-1.html", "h1.opener + h2", 1 },
-            { "/adjacent-combinator-test-2.html", "article > p + p", 2 },
-            { "/sibling-combinator-test-1.html", "h2 ~ pre", 1 },
-            { "/sibling-combinator-test-2.html", "article > p ~ p", 3 }
+            { "/descendant-combinator-test.html", "div.main p", expect(7, 12, 14) },
+            { "/child-combinator-test.html", "div > p", expect(7, 14) },
+            { "/adjacent-combinator-test-1.html", "h1.opener + h2", expect(6) },
+            { "/adjacent-combinator-test-2.html", "article > p + p", expect(7, 8) },
+            { "/sibling-combinator-test-1.html", "h2 ~ pre", expect(8) },
+            { "/sibling-combinator-test-2.html", "article > p ~ p", expect(8, 9, 11) }
         });
     }
 
-    public CombinatorTest(String resourceName, String expression, int expectedCount) {
-        super(resourceName, 0, expression, expectedCount);
+    public CombinatorTest(String resourceName, String expression, int[] indices) {
+        super(resourceName, null, expression, indices);
     }
 }

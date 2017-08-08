@@ -64,10 +64,27 @@ public class MatcherList extends ArrayList<Matcher> implements Matcher {
         return null;
     }
 
+    public boolean contains(MatcherType type) {
+        for (Matcher m: this) {
+            if (m.getType() == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public MatcherList without(Matcher matcher) {
         MatcherList newList = new MatcherList();
         newList.addAll(this);
         newList.remove(matcher);
         return newList;
+    }
+
+    @Override
+    public Matcher simplify() {
+        if (size() == 1) {
+            return get(0);
+        }
+        return this;
     }
 }
