@@ -37,6 +37,8 @@ public class PseudoClassMatcherFactory {
         switch (pseudoClass) {
         case NTH_CHILD:
             return (parity == Parity.ODD) ? NthChildMatcher.ODD : NthChildMatcher.EVEN;
+        case NTH_LAST_CHILD:
+            return (parity == Parity.ODD) ? NthLastChildMatcher.ODD : NthLastChildMatcher.EVEN;
         default:
             return null;
         }
@@ -46,6 +48,8 @@ public class PseudoClassMatcherFactory {
         switch (pseudoClass) {
         case NTH_CHILD:
             return NthChildMatcher.of(a, b);
+        case NTH_LAST_CHILD:
+            return NthLastChildMatcher.of(a, b);
         default:
             return null;
         }

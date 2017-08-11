@@ -100,8 +100,6 @@ public class ParsingTest {
             { "tr:first-child", "tr:first-child" },
             { "tr:last-child", "tr:last-child" },
             { "tr:only-child", "tr:only-child" },
-            { "tr:nth-child(odd)", "tr:nth-child(odd)" },
-            { "tr:nth-child(even)", "tr:nth-child(even)" },
             { "tr:nth-child(2n+1)", "tr:nth-child(2n + 1)" },
             { "tr:nth-child(2n+0)", "tr:nth-child(2n)" },
             { "tr:nth-child(10n-1)", "tr:nth-child(10n - 1)" },
@@ -118,6 +116,12 @@ public class ParsingTest {
             { "tr:nth-child( -n+ 6)", "tr:nth-child(-n + 6)" },
             { "tr:nth-child( +6 )", "tr:nth-child(6)" },
             { "tr:nth-child(-n+6)", "tr:nth-child(-n + 6)" },
+            { "tr:nth-child(n-1)", "tr:nth-child(n - 1)" },
+            { "tr:nth-child(odd)", "tr:nth-child(odd)" },
+            { "tr:nth-child(even)", "tr:nth-child(even)" },
+            { "tr:nth-last-child(-n+2)", "tr:nth-last-child(-n + 2)" },
+            { "tr:nth-last-child(odd)", "tr:nth-last-child(odd)" },
+            { "tr:nth-last-child(even)", "tr:nth-last-child(even)" },
         });
     }
 

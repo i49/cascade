@@ -73,6 +73,7 @@ public class ParsingErrorTest {
             { ":nth-child(1.2n)", 11 },
             { ":nth-child(.1n)", 11 },
             { ":nth-child(2n+1.2)", 14 },
+            { ":nth-child(2n-1.2)", 15 },
             { ":nth-child(2n+.1)", 14 },
             // pseudo-element
             { "::first-line", 1 }

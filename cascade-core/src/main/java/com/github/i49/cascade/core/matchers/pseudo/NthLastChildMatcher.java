@@ -16,47 +16,47 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import static com.github.i49.cascade.core.dom.Elements.countSiblingsBefore;
+import static com.github.i49.cascade.core.dom.Elements.countSiblingsAfter;
 
 import org.w3c.dom.Element;
 
 /**
  * Matcher for :nth-child pseudo-class selector.
  */
-public class NthChildMatcher extends OrdinalPositionMatcher {
+public class NthLastChildMatcher extends OrdinalPositionMatcher {
 
-    public static final NthChildMatcher ODD = new NthChildMatcher(Parity.ODD);
-    public static final NthChildMatcher EVEN = new NthChildMatcher(Parity.EVEN);
+    public static final NthLastChildMatcher ODD = new NthLastChildMatcher(Parity.ODD);
+    public static final NthLastChildMatcher EVEN = new NthLastChildMatcher(Parity.EVEN);
 
-    private static final NthChildMatcher NEVER = new NthChildMatcher(0, 0) {
+    private static final NthLastChildMatcher NEVER = new NthLastChildMatcher(0, 0) {
         @Override
         public boolean matches(Element element) {
             return false;
         }
     };
 
-    public static NthChildMatcher of(int a, int b) {
+    public static NthLastChildMatcher of(int a, int b) {
         if (a == 0 && b == 0) {
             return NEVER;
         }
-        return new NthChildMatcher(a, b);
+        return new NthLastChildMatcher(a, b);
     }
 
-    private NthChildMatcher(int a, int b) {
+    private NthLastChildMatcher(int a, int b) {
         super(a, b);
     }
 
-    private NthChildMatcher(Parity parity) {
+    private NthLastChildMatcher(Parity parity) {
         super(parity);
     }
 
     @Override
     protected int getOrdinal(Element element) {
-        return countSiblingsBefore(element) + 1;
+        return countSiblingsAfter(element) + 1;
     }
 
     @Override
     public PseudoClass getPseudoClass() {
-        return PseudoClass.NTH_CHILD;
+        return PseudoClass.NTH_LAST_CHILD;
     }
 }

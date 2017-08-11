@@ -49,8 +49,6 @@ public class Token {
         switch (category) {
         case NUMBER:
             return new NumberToken(rawText);
-        case DIMENSION:
-            return new DimensionToken(rawText);
         case STRING:
             return new StringToken(rawText);
         case INVALID_STRING:

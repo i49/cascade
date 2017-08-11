@@ -33,10 +33,23 @@ public class PseudoClassTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // root
-            { "/root-pseudo-class-test.html", null, ":root", expect(0) },
-            { "/root-pseudo-class-test.html", "body", ":root", expect() },
+            { "/root-test.html", null, ":root", expect(0) },
+            { "/root-test.html", "body", ":root", expect() },
             // empty
-            { "/empty-pseudo-class-test.html", null, "p:empty", expect(6) },
+            { "/empty-test.html", null, "p:empty", expect(6) },
+            // nth-child
+            { "/nth-child-test.html", null, "li:nth-child(2n)", expect(8, 10, 12, 15, 17, 19) },
+            { "/nth-child-test.html", null, "li:nth-child(2n+1)", expect(7, 9, 11, 14, 16, 18) },
+            { "/nth-child-test.html", null, "li:nth-child(3n)", expect(9, 12, 16, 19) },
+            { "/nth-child-test.html", null, "li:nth-child(3n+1)", expect(7, 10, 14, 17) },
+            { "/nth-child-test.html", null, "li:nth-child(3n+2)", expect(8, 11, 15, 18) },
+            { "/nth-child-test.html", null, "li:nth-child(3n-1)", expect(8, 11, 15, 18) },
+            { "/nth-child-test.html", null, "li:nth-child(3n-2)", expect(7, 10, 14, 17) },
+            { "/nth-child-test.html", null, "li:nth-child(1)", expect(7, 14) },
+            { "/nth-child-test.html", null, "li:nth-child(6)", expect(12, 19) },
+            { "/nth-child-test.html", null, "li:nth-child(0)", expect() },
+            { "/nth-child-test.html", null, "li:nth-child(even)", expect(8, 10, 12, 15, 17, 19) },
+            { "/nth-child-test.html", null, "li:nth-child(odd)", expect(7, 9, 11, 14, 16, 18) },
         });
     }
 

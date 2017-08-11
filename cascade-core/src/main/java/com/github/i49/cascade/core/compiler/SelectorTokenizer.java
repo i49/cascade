@@ -119,11 +119,10 @@ class SelectorTokenizer implements Tokenizer {
 
     private boolean dimension(int index, Token number) {
         index += number.getRawText().length();
-        int c = input.charAt(index);
-        if (c != 'n' && c != 'N') {
+        if (!identity(index)) {
             return false;
         }
-        String text = number.getRawText() + (char)c;
+        String text = number.getRawText() + currentToken.getRawText();
         return newToken(Token.create(TokenCategory.DIMENSION, text));
     }
 

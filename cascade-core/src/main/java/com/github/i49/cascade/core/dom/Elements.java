@@ -54,6 +54,30 @@ public final class Elements {
         return false;
     }
 
+    public static int countSiblingsBefore(Element element) {
+        int count = 0;
+        Node sibling = element.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                ++count;
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return count;
+    }
+
+    public static int countSiblingsAfter(Element element) {
+        int count = 0;
+        Node sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                ++count;
+            }
+            sibling = sibling.getNextSibling();
+        }
+        return count;
+    }
+
     private Elements() {
     }
 }

@@ -318,7 +318,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             }
             // for "n"
         }
-        return parseLinearFunctionalPseudoClass(pseudoClass, token);
+        return parseOrdinalPseudoClass(pseudoClass, token);
     }
 
     private Matcher parseParityFunctionalPseudoClass(PseudoClass pseudoClass, Parity parity) {
@@ -330,79 +330,10 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private Matcher parseLinearFunctionalPseudoClass(PseudoClass pseudoClass, Token token) {
-        int a = 0, b = 0;
-        int sign = 1;
-
-        // a or b
-
-        if (token == Token.PLUS) {
-            token = nextToken();
-        } else if (token == Token.MINUS) {
-            sign = -1;
-            token = nextToken();
-        }
-        if (token.getCategory() == TokenCategory.IDENTITY) {
-            if (token.getText().equalsIgnoreCase("n")) {
-                a = sign;
-                // continues to b
-            } else {
-                throw unexpectedToken(token);
-            }
-        } else if (token.getCategory() == TokenCategory.NUMBER) {
-            b = parseInteger((NumberToken)token) * sign;
-            token = nextNonSpaceToken();
-            if (token == Token.CLOSING_PARENTHESIS) {
-                return newFunctionalPseudoClassSelector(pseudoClass, 0, b);
-            } else {
-                throw unexpectedToken(token);
-            }
-            // never reach here
-        } else if (token.getCategory() == TokenCategory.DIMENSION) {
-            DimensionToken dimension = (DimensionToken)token;
-            if (!dimension.getIdentityPart().equalsIgnoreCase("n")) {
-                throw unexpectedTokenInFunction(token);
-            }
-            a = parseInteger(dimension) * sign;
-            // continues to b
-        } else {
-            throw unexpectedTokenInFunction(token);
-        }
-
-        // after "n"
-
-        token = nextNonSpaceToken();
-        if (token == Token.CLOSING_PARENTHESIS) {
-            b = 0;
-        } else {
-            if (token == Token.PLUS) {
-                sign = 1;
-            } else if (token == Token.MINUS) {
-                sign = -1;
-            } else {
-                throw unexpectedTokenInFunction(token);
-            }
-            token = nextNonSpaceToken();
-            if (token.getCategory() == TokenCategory.NUMBER) {
-                b = parseInteger((NumberToken)token) * sign;
-                token = nextNonSpaceToken();
-                if (token != Token.CLOSING_PARENTHESIS) {
-                    throw unexpectedTokenInFunction(token);
-                }
-            } else {
-                throw unexpectedTokenInFunction(token);
-            }
-        }
-
-        return newFunctionalPseudoClassSelector(pseudoClass, a, b);
-    }
-
-    private int parseInteger(NumberToken token) {
-        if (token.isIntegral()) {
-            return token.intValue();
-        } else{
-            throw newException(Message.NUMBER_IS_NOT_INTEGER.with(token.getNumericPart()));
-        }
+    private Matcher parseOrdinalPseudoClass(PseudoClass pseudoClass, Token token) {
+        OrdinalPositionParser parser = new OrdinalPositionParser();
+        parser.parse(token);
+        return newFunctionalPseudoClassSelector(pseudoClass, parser.a, parser.b);
     }
 
     /* selector creators */
@@ -490,6 +421,109 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
 
     private RuntimeException internalError() {
         return new RuntimeException("Internal error.");
+    }
+
+    private class OrdinalPositionParser {
+
+        private int a;
+        private int b;
+
+        public void parse(Token token) {
+            a = b = 0;
+            int sign = 1;
+
+            // a or b
+
+            if (token == Token.PLUS) {
+                token = nextToken();
+            } else if (token == Token.MINUS) {
+                sign = -1;
+                token = nextToken();
+            }
+
+            switch (token.getCategory()) {
+            case IDENTITY:
+            case DIMENSION:
+                if (parseOrdinalPosition(sign, token)) {
+                    expectClosingParenthesis();
+                    return;
+                }
+                break;
+            case NUMBER:
+                b = parseInteger(token.getRawText()) * sign;
+                expectClosingParenthesis();
+                return;
+            default:
+                throw unexpectedTokenInFunction(token);
+            }
+
+            // after "n"
+
+            token = nextNonSpaceToken();
+            if (token == Token.CLOSING_PARENTHESIS) {
+                b = 0;
+            } else {
+                if (token == Token.PLUS) {
+                    sign = 1;
+                } else if (token == Token.MINUS) {
+                    sign = -1;
+                } else {
+                    throw unexpectedTokenInFunction(token);
+                }
+                token = nextNonSpaceToken();
+                if (token.getCategory() == TokenCategory.NUMBER) {
+                    b = parseInteger(token.getRawText()) * sign;
+                    expectClosingParenthesis();
+                } else {
+                    throw unexpectedTokenInFunction(token);
+                }
+            }
+        }
+
+        private boolean parseOrdinalPosition(int sign, Token token) {
+            String[] parts = token.getRawText().split("-", 2);
+            java.util.regex.Matcher m = Letters.NUMBER_PATTERN.matcher(parts[0]);
+            String variable = null;
+            if (m.lookingAt()) {
+                String numeric = m.group();
+                variable = parts[0].substring(numeric.length());
+                a = parseInteger(numeric) * sign;
+            } else {
+                variable = parts[0];
+                a = sign;
+            }
+
+            if (!variable.equalsIgnoreCase("n")) {
+                throw unexpectedToken(token);
+            }
+
+            if (parts.length == 1) {
+                return false;
+            }
+
+            m = Letters.NUMBER_PATTERN.matcher(parts[1]);
+            if (m.matches()) {
+                b = -parseInteger(parts[1]);
+                return true;
+            } else {
+                throw unexpectedToken(token);
+            }
+        }
+
+        private void expectClosingParenthesis() {
+            Token token = nextNonSpaceToken();
+            if (token != Token.CLOSING_PARENTHESIS) {
+                throw unexpectedToken(token);
+            }
+        }
+
+        private int parseInteger(String value) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                throw newException(Message.NUMBER_IS_NOT_INTEGER.with(value));
+            }
+        }
     }
 }
 

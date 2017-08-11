@@ -16,28 +16,49 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-public abstract class PositionalMatcher extends FunctionalPseudoClassMatcher {
+import static com.github.i49.cascade.core.dom.Elements.hasParent;
 
+import org.w3c.dom.Element;
+
+public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatcher {
+
+    private final String expression;
     protected final int a;
     protected final int b;
-    private final String expression;
 
-    protected PositionalMatcher(int a, int b) {
-        this.a = a;
-        this.b = b;
+    protected OrdinalPositionMatcher(int a, int b) {
         this.expression = buildExpression(a, b);
+        this.a = a;
+        this.b = (b >= 0) ? b : (a + b);
     }
 
-    protected PositionalMatcher(Parity parity) {
+    protected OrdinalPositionMatcher(Parity parity) {
         this.a = 2;
-        this.b = parity == Parity.EVEN ? 0 : 1;
+        this.b = (parity == Parity.EVEN) ? 0 : 1;
         this.expression = parity.name().toLowerCase();
+    }
+
+    @Override
+    public boolean matches(Element element) {
+        if (!hasParent(element)) {
+            return false;
+        }
+        if (a == 0) {
+            if (b == 0) {
+                return false;
+            }
+            return getOrdinal(element) == b;
+        } else{
+            return (getOrdinal(element) % a) == b;
+        }
     }
 
     @Override
     protected String getExpression() {
         return expression;
     }
+
+    protected abstract int getOrdinal(Element element);
 
     private static String buildExpression(int a, int b) {
          StringBuilder builder = new StringBuilder();
