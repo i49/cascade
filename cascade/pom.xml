@@ -15,6 +15,7 @@
     
     <modules>
         <module>../cascade-api</module>
+        <module>../cascade-tests</module>
         <module>../cascade-core</module>
     </modules>
 
