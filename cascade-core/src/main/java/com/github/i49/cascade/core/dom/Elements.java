@@ -54,6 +54,32 @@ public final class Elements {
         return false;
     }
 
+    public static boolean hasSameTypeBefore(Element element) {
+        Node sibling = element.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                if (isSameType(element, (Element)sibling)) {
+                    return true;
+                }
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return false;
+    }
+
+    public static boolean hasSameTypeAfter(Element element) {
+        Node sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                if (isSameType(element, (Element)sibling)) {
+                    return true;
+                }
+            }
+            sibling = sibling.getNextSibling();
+        }
+        return false;
+    }
+
     public static int countSiblingsBefore(Element element) {
         int count = 0;
         Node sibling = element.getPreviousSibling();
@@ -76,6 +102,48 @@ public final class Elements {
             sibling = sibling.getNextSibling();
         }
         return count;
+    }
+
+    public static int countSameTypeBefore(Element element) {
+        int count = 0;
+        Node sibling = element.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                if (isSameType(element, (Element)sibling)) {
+                    ++count;
+                }
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return count;
+    }
+
+    public static int countSameTypeAfter(Element element) {
+        int count = 0;
+        Node sibling = element.getNextSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                if (isSameType(element, (Element)sibling)) {
+                    ++count;
+                }
+            }
+            sibling = sibling.getNextSibling();
+        }
+        return count;
+    }
+
+    public static boolean isSameType(Element a, Element b) {
+        String namespace = a.getNamespaceURI();
+        if (namespace == null) {
+            if (b.getNamespaceURI() != null) {
+                return false;
+            }
+        } else {
+            if (!namespace.equals(b.getNamespaceURI())) {
+                return false;
+            }
+        }
+        return a.getLocalName().equals(b.getLocalName());
     }
 
     private Elements() {

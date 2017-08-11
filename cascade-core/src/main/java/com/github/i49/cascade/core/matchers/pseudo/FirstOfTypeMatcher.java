@@ -16,37 +16,28 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import static com.github.i49.cascade.core.dom.Elements.countSiblingsAfter;
+import static com.github.i49.cascade.core.dom.Elements.hasParent;
+import static com.github.i49.cascade.core.dom.Elements.hasSameTypeBefore;
 
 import org.w3c.dom.Element;
 
 /**
- * Matcher for :nth-child pseudo-class selector.
+ * Matcher for :first-of-type pseudo-class selector.
  */
-public class NthLastChildMatcher extends OrdinalPositionMatcher {
+public class FirstOfTypeMatcher extends PseudoClassMatcher {
 
-    public static final NthLastChildMatcher ODD = new NthLastChildMatcher(Parity.ODD);
-    public static final NthLastChildMatcher EVEN = new NthLastChildMatcher(Parity.EVEN);
+    public static final FirstOfTypeMatcher SINGLETON = new FirstOfTypeMatcher();
 
-    public static NthLastChildMatcher of(int a, int b) {
-        return new NthLastChildMatcher(a, b);
-    }
-
-    private NthLastChildMatcher(int a, int b) {
-        super(a, b);
-    }
-
-    private NthLastChildMatcher(Parity parity) {
-        super(parity);
+    private FirstOfTypeMatcher() {
     }
 
     @Override
-    protected int countSiblingsAround(Element element) {
-        return countSiblingsAfter(element);
+    public boolean matches(Element element) {
+        return hasParent(element) && !hasSameTypeBefore(element);
     }
 
     @Override
     public PseudoClass getPseudoClass() {
-        return PseudoClass.NTH_LAST_CHILD;
+        return PseudoClass.FIRST_OF_TYPE;
     }
 }

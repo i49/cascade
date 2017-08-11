@@ -60,7 +60,10 @@ public class PseudoClassMatcherFactory {
         register(EmptyMatcher.SINGLETON);
         register(FirstChildMatcher.SINGLETON);
         register(LastChildMatcher.SINGLETON);
+        register(FirstOfTypeMatcher.SINGLETON);
+        register(LastOfTypeMatcher.SINGLETON);
         register(OnlyChildMatcher.SINGLETON);
+        register(OnlyOfTypeMatcher.SINGLETON);
     }
 
     private void register(PseudoClassMatcher matcher) {

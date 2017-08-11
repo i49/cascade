@@ -16,37 +16,31 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import static com.github.i49.cascade.core.dom.Elements.countSiblingsAfter;
+import static com.github.i49.cascade.core.dom.Elements.hasParent;
+import static com.github.i49.cascade.core.dom.Elements.hasSameTypeBefore;
+import static com.github.i49.cascade.core.dom.Elements.hasSameTypeAfter;
 
 import org.w3c.dom.Element;
 
 /**
- * Matcher for :nth-child pseudo-class selector.
+ * Matcher for :empty pseudo-class selector.
  */
-public class NthLastChildMatcher extends OrdinalPositionMatcher {
+public class OnlyOfTypeMatcher extends PseudoClassMatcher {
 
-    public static final NthLastChildMatcher ODD = new NthLastChildMatcher(Parity.ODD);
-    public static final NthLastChildMatcher EVEN = new NthLastChildMatcher(Parity.EVEN);
+    public static final OnlyOfTypeMatcher SINGLETON = new OnlyOfTypeMatcher();
 
-    public static NthLastChildMatcher of(int a, int b) {
-        return new NthLastChildMatcher(a, b);
-    }
-
-    private NthLastChildMatcher(int a, int b) {
-        super(a, b);
-    }
-
-    private NthLastChildMatcher(Parity parity) {
-        super(parity);
+    private OnlyOfTypeMatcher() {
     }
 
     @Override
-    protected int countSiblingsAround(Element element) {
-        return countSiblingsAfter(element);
+    public boolean matches(Element element) {
+        return hasParent(element) &&
+               !hasSameTypeBefore(element) &&
+               !hasSameTypeAfter(element);
     }
 
     @Override
     public PseudoClass getPseudoClass() {
-        return PseudoClass.NTH_LAST_CHILD;
+        return PseudoClass.ONLY_OF_TYPE;
     }
 }

@@ -47,10 +47,10 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
             if (b == 0) {
                 return false;
             }
-            return countSiblings(element) == b - 1;
+            return countSiblingsAround(element) == b - 1;
         }
 
-        final int count = countSiblings(element);
+        final int count = countSiblingsAround(element);
         if (a > 0) {
             int step = a;
             for (int i = b - 1; i <= count; i += step) {
@@ -79,7 +79,13 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
         return expression;
     }
 
-    protected abstract int countSiblings(Element element);
+    /**
+     * Counts siblings before or after given element.
+     *
+     * @param element the element of current interest.
+     * @return the number of siblings.
+     */
+    protected abstract int countSiblingsAround(Element element);
 
     private static String buildExpression(int a, int b) {
          StringBuilder builder = new StringBuilder();

@@ -16,6 +16,9 @@
 
 package com.github.i49.cascade.core.compiler;
 
+/**
+ * Token representing numbers.
+ */
 class NumberToken extends Token {
 
     public NumberToken(String rawText) {
@@ -32,9 +35,5 @@ class NumberToken extends Token {
 
     public int intValue() {
         return Integer.parseInt(getRawText());
-    }
-
-    public String getNumericPart() {
-        return getRawText();
     }
 }

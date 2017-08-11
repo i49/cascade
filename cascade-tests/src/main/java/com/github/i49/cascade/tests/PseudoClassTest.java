@@ -70,11 +70,18 @@ public class PseudoClassTest extends BaseSelectorTest {
             { "/nth-child-test.html", null, "li:nth-last-child(even)", expect(7, 9, 11, 14, 16, 18) },
             { "/nth-child-test.html", null, "li:nth-last-child(odd)", expect(8, 10, 12, 15, 17, 19) },
             // :first-child
+            { "/first-child-test.html", null, "div > p:first-child", expect(8) },
             { "/nth-child-test.html", null, "li:first-child", expect(7, 14) },
             // :last-child
             { "/nth-child-test.html", null, "li:last-child", expect(12, 19) },
+            // :first-of-type
+            { "/first-of-type-test.html", null, "dl dt:first-of-type", expect(7, 10) },
+            // :last-of-type
+            { "/last-of-type-test.html", null, "address:last-of-type", expect(9) },
             // :only-child
             { "/only-child-test.html", null, "p:only-child", expect(8) },
+            // :only-of-type
+            { "/only-of-type-test.html", null, ".example :only-of-type", expect(8) },
         });
     }
 

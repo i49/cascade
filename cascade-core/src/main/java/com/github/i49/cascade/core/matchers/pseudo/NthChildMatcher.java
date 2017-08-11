@@ -41,7 +41,7 @@ public class NthChildMatcher extends OrdinalPositionMatcher {
     }
 
     @Override
-    protected int countSiblings(Element element) {
+    protected int countSiblingsAround(Element element) {
         return countSiblingsBefore(element);
     }
 
