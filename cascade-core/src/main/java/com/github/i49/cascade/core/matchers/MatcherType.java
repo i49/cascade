@@ -32,8 +32,8 @@ public enum MatcherType {
     IDENTIFIER,
     /** Matcher for pseudo-class. */
     PSEUDO_CLASS,
-    /** Matcher for root pseudo-class. */
-    ROOT_PSEUDO_CLASS
+    /** Matcher which never match any element. */
+    NEVER
     ;
 
     /**

@@ -28,17 +28,7 @@ public class NthLastChildMatcher extends OrdinalPositionMatcher {
     public static final NthLastChildMatcher ODD = new NthLastChildMatcher(Parity.ODD);
     public static final NthLastChildMatcher EVEN = new NthLastChildMatcher(Parity.EVEN);
 
-    private static final NthLastChildMatcher NEVER = new NthLastChildMatcher(0, 0) {
-        @Override
-        public boolean matches(Element element) {
-            return false;
-        }
-    };
-
     public static NthLastChildMatcher of(int a, int b) {
-        if (a == 0 && b == 0) {
-            return NEVER;
-        }
         return new NthLastChildMatcher(a, b);
     }
 
@@ -51,8 +41,8 @@ public class NthLastChildMatcher extends OrdinalPositionMatcher {
     }
 
     @Override
-    protected int getOrdinal(Element element) {
-        return countSiblingsAfter(element) + 1;
+    protected int countSiblings(Element element) {
+        return countSiblingsAfter(element);
     }
 
     @Override

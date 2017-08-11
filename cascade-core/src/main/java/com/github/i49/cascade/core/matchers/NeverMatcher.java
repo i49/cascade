@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers.pseudo;
+package com.github.i49.cascade.core.matchers;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.core.dom.Elements;
-
 /**
- * Matcher for :root pseudo-class selector.
+ * The matcher which never match any element
+ * used for matcher optimization.
  */
-public class RootMatcher extends PseudoClassMatcher {
+public class NeverMatcher implements Matcher {
 
-    public static final RootMatcher SINGLETON = new RootMatcher();
+    private static final NeverMatcher SINGLETON = new NeverMatcher();
 
-    private RootMatcher() {
+    public static Matcher getInstance() {
+        return SINGLETON;
+    }
+
+    private NeverMatcher() {
+    }
+
+    @Override
+    public MatcherType getType() {
+        return MatcherType.NEVER;
     }
 
     @Override
     public boolean matches(Element element) {
-        return Elements.isRoot(element);
-    }
-
-     @Override
-    public PseudoClass getPseudoClass() {
-        return PseudoClass.ROOT;
+        return false;
     }
 }

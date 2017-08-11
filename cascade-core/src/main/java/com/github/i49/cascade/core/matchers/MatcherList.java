@@ -55,24 +55,6 @@ public class MatcherList extends ArrayList<Matcher> implements Matcher {
         return b.toString();
     }
 
-    public Matcher findFirst(MatcherType type) {
-        for (Matcher m: this) {
-            if (m.getType() == type) {
-                return m;
-            }
-        }
-        return null;
-    }
-
-    public boolean contains(MatcherType type) {
-        for (Matcher m: this) {
-            if (m.getType() == type) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public MatcherList without(Matcher matcher) {
         MatcherList newList = new MatcherList();
         newList.addAll(this);
@@ -82,6 +64,11 @@ public class MatcherList extends ArrayList<Matcher> implements Matcher {
 
     @Override
     public Matcher optimum() {
+        for (Matcher m: this) {
+            if (m.isNever()) {
+                return NeverMatcher.getInstance();
+            }
+        }
         if (size() == 1) {
             return get(0);
         }

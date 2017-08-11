@@ -29,7 +29,7 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
     protected OrdinalPositionMatcher(int a, int b) {
         this.expression = buildExpression(a, b);
         this.a = a;
-        this.b = (b >= 0) ? b : (a + b);
+        this.b = (b >= 0) ? b : (a - (-b % a));
     }
 
     protected OrdinalPositionMatcher(Parity parity) {
@@ -47,10 +47,31 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
             if (b == 0) {
                 return false;
             }
-            return getOrdinal(element) == b;
-        } else{
-            return (getOrdinal(element) % a) == b;
+            return countSiblings(element) == b - 1;
         }
+
+        final int count = countSiblings(element);
+        if (a > 0) {
+            int step = a;
+            for (int i = b - 1; i <= count; i += step) {
+                if (i == count) {
+                    return true;
+                }
+            }
+        } else {
+            int step = -a;
+            for (int i = b - 1; i >= 0; i -= step) {
+                if (i == count) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isNever() {
+        return a == 0 && b == 0;
     }
 
     @Override
@@ -58,7 +79,7 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
         return expression;
     }
 
-    protected abstract int getOrdinal(Element element);
+    protected abstract int countSiblings(Element element);
 
     private static String buildExpression(int a, int b) {
          StringBuilder builder = new StringBuilder();

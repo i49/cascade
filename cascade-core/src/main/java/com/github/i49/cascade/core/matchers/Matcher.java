@@ -39,6 +39,15 @@ public interface Matcher {
     boolean matches(Element element);
 
     /**
+     * Checks if this matcher never match any element.
+     *
+     * @return {@code true} if this matcher never match any element, {@code false} otherwise.
+     */
+    default boolean isNever() {
+        return false;
+    }
+
+    /**
      * Returns the optimum matcher of this one.
      *
      * @return the optimum matcher.

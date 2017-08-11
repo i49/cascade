@@ -24,6 +24,8 @@ import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherList;
 import com.github.i49.cascade.core.matchers.MatcherType;
+import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
+import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
 import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
 import com.github.i49.cascade.core.traversers.FastIdentifierTraverser;
 import com.github.i49.cascade.core.traversers.RootTraverser;
@@ -46,7 +48,8 @@ abstract class AbstractSequence implements Sequence {
     }
 
     protected AbstractSequence(MatcherList matchers, Traverser traverser) {
-        this.matcherToApply = this.originalMatcher = matchers;
+        this.originalMatcher = matchers;
+        this.matcherToApply = matchers.optimum();
         this.traverser = traverser;
     }
 
@@ -94,12 +97,16 @@ abstract class AbstractSequence implements Sequence {
     }
 
     private static Traverser createTraverserFor(MatcherList matchers) {
-        if (matchers.contains(MatcherType.IDENTIFIER)) {
-            Matcher matcher = matchers.findFirst(MatcherType.IDENTIFIER);
-            String identifier = ((IdentifierMatcher)matcher).getIdentifier();
-            return new FastIdentifierTraverser(identifier);
-        } else if (matchers.contains(MatcherType.ROOT_PSEUDO_CLASS)) {
-            return RootTraverser.SINGLETON;
+        for (Matcher matcher: matchers) {
+            MatcherType type = matcher.getType();
+            if (type == MatcherType.IDENTIFIER) {
+                String identifier = ((IdentifierMatcher)matcher).getIdentifier();
+                return new FastIdentifierTraverser(identifier);
+            } else if (type == MatcherType.PSEUDO_CLASS) {
+                if (((PseudoClassMatcher)matcher).getPseudoClass() == PseudoClass.ROOT) {
+                    return RootTraverser.SINGLETON;
+                }
+            }
         }
         return DepthFirstTraverser.SINGLETON;
     }
