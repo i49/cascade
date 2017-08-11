@@ -81,7 +81,7 @@ public class MatcherList extends ArrayList<Matcher> implements Matcher {
     }
 
     @Override
-    public Matcher simplify() {
+    public Matcher optimum() {
         if (size() == 1) {
             return get(0);
         }

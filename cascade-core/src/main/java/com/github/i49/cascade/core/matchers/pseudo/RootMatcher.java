@@ -41,8 +41,8 @@ public class RootMatcher extends PseudoClassMatcher {
         return Elements.isRoot(element);
     }
 
-    @Override
-    public String getClassName() {
-        return "root";
+     @Override
+    public PseudoClass getPseudoClass() {
+        return PseudoClass.ROOT;
     }
 }

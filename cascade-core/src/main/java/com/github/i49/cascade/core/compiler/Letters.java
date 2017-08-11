@@ -17,7 +17,6 @@
 package com.github.i49.cascade.core.compiler;
 
 import static java.lang.Character.isAlphabetic;
-import static java.lang.Character.isDigit;
 
 import java.util.regex.Pattern;
 
@@ -41,12 +40,20 @@ class Letters {
             NEWLINE_ESCAPE + "|" + UNICODE_ESCAPE + "|" + CHARACTER_ESCAPE
             );
 
+    public static final Pattern NUMBER_PATTERN = Pattern.compile(
+            "[0-9]*\\.[0-9]+|[0-9]+"
+            );
+
     public static boolean isWhitespace(int c) {
         return c == 0x20 || c == '\t' || c == '\r' || c == '\n' || c == '\f';
     }
 
     public static boolean isAscii(int c) {
         return 0 <= c && c <= 127;
+    }
+
+    public static boolean isDigit(int c) {
+        return Character.isDigit(c);
     }
 
     public static boolean isHexDigit(int c) {

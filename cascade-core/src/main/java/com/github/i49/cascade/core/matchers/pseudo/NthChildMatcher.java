@@ -17,27 +17,37 @@
 package com.github.i49.cascade.core.matchers.pseudo;
 
 import static com.github.i49.cascade.core.dom.Elements.hasParent;
-import static com.github.i49.cascade.core.dom.Elements.hasSiblingAfter;
+import static com.github.i49.cascade.core.dom.Elements.hasSiblingBefore;
 
 import org.w3c.dom.Element;
 
 /**
- * Matcher for :last-child pseudo-class selector.
+ * Matcher for :nth-child pseudo-class selector.
  */
-public class LastChildMatcher extends PseudoClassMatcher {
+public class NthChildMatcher extends PositionalMatcher {
 
-    public static final LastChildMatcher SINGLETON = new LastChildMatcher();
+    public static final NthChildMatcher ODD = new NthChildMatcher(Parity.ODD);
+    public static final NthChildMatcher EVEN = new NthChildMatcher(Parity.EVEN);
 
-    private LastChildMatcher() {
+    public static NthChildMatcher of(int a, int b) {
+        return new NthChildMatcher(a, b);
+    }
+
+    private NthChildMatcher(int a, int b) {
+        super(a, b);
+    }
+
+    private NthChildMatcher(Parity parity) {
+        super(parity);
     }
 
     @Override
     public boolean matches(Element element) {
-        return hasParent(element) && !hasSiblingAfter(element);
+        return hasParent(element) && !hasSiblingBefore(element);
     }
 
     @Override
     public PseudoClass getPseudoClass() {
-        return PseudoClass.LAST_CHILD;
+        return PseudoClass.NTH_CHILD;
     }
 }

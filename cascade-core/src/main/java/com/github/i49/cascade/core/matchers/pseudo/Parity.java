@@ -16,28 +16,20 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import static com.github.i49.cascade.core.dom.Elements.hasParent;
-import static com.github.i49.cascade.core.dom.Elements.hasSiblingAfter;
-
-import org.w3c.dom.Element;
-
 /**
- * Matcher for :last-child pseudo-class selector.
+ * Odd or even.
  */
-public class LastChildMatcher extends PseudoClassMatcher {
+public enum Parity {
+    ODD,
+    EVEN
+    ;
 
-    public static final LastChildMatcher SINGLETON = new LastChildMatcher();
-
-    private LastChildMatcher() {
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        return hasParent(element) && !hasSiblingAfter(element);
-    }
-
-    @Override
-    public PseudoClass getPseudoClass() {
-        return PseudoClass.LAST_CHILD;
+    public static Parity byName(String name) {
+        if (name.equalsIgnoreCase("odd")) {
+            return ODD;
+        } else if (name.equalsIgnoreCase("even")) {
+            return EVEN;
+        }
+        return null;
     }
 }

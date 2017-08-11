@@ -41,7 +41,7 @@ abstract class AbstractSequence implements Sequence {
 
     protected AbstractSequence(MatcherList matchers) {
         this.originalMatcher = matchers;
-        this.matcherToApply = matchers.simplify();
+        this.matcherToApply = matchers.optimum();
         this.traverser = createTraverserFor(matchers);
     }
 

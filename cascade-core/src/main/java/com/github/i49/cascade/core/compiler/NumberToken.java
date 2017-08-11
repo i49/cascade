@@ -16,38 +16,25 @@
 
 package com.github.i49.cascade.core.compiler;
 
-/**
- * Categories of tokens.
- */
-public enum TokenCategory {
-    /** Unknown category. */
-    UNKNOWN,
-    /** End of input. */
-    EOI,
-    /** Sequence of whitespaces. */
-    SPACE,
-    IDENTITY,
-    HASH,
-    PLUS,
-    MINUS,
-    GREATER,
-    COMMA,
-    TILDE,
-    ASTERISK,
-    PERIOD,
-    OPENING_BRACKET,
-    CLOSING_BRACKET,
-    STRING,
-    INVALID_STRING,
-    EXACT_MATCH,
-    INCLUDES,
-    DASH_MATCH,
-    PREFIX_MATCH,
-    SUFFIX_MATCH,
-    SUBSTRING_MATCH,
-    COLON,
-    FUNCTION,
-    CLOSING_PARENTHESIS,
-    NUMBER,
-    DIMENSION
+class NumberToken extends Token {
+
+    public NumberToken(String rawText) {
+        super(TokenCategory.NUMBER, rawText);
+    }
+
+    protected NumberToken(TokenCategory category, String rawText) {
+        super(category, rawText);
+    }
+
+    public boolean isIntegral() {
+        return getRawText().indexOf('.') < 0;
+    }
+
+    public int intValue() {
+        return Integer.parseInt(getRawText());
+    }
+
+    public String getNumericPart() {
+        return getRawText();
+    }
 }

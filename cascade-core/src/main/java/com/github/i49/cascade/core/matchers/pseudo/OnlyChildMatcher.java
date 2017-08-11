@@ -40,7 +40,7 @@ public class OnlyChildMatcher extends PseudoClassMatcher {
     }
 
     @Override
-    public String getClassName() {
-        return "only-child";
+    public PseudoClass getPseudoClass() {
+        return PseudoClass.ONLY_CHILD;
     }
 }

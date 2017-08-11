@@ -28,6 +28,7 @@ class SelectorTokenizer implements Tokenizer {
     private int currentIndex;
     private int nextIndex;
     private Token currentToken;
+    private int currentTokenLength;
 
     public SelectorTokenizer(String text) {
         this.input = new TextInput(text);
@@ -35,42 +36,9 @@ class SelectorTokenizer implements Tokenizer {
 
     @Override
     public Token nextToken() {
-        int index = currentIndex = nextIndex;
-        currentToken = Token.UNKNOWN;
-
-        if (!input.hasChar(index)) {
-            return Token.EOI;
-        }
-
-        int c = input.charAt(index);
-        switch (c) {
-        case '.':
-            newToken(Token.PERIOD);
-            return currentToken;
-        case '[':
-            newToken(Token.OPENING_BRACKET);
-            return currentToken;
-        case ']':
-            newToken(Token.CLOSING_BRACKET);
-            return currentToken;
-        case ':':
-            newToken(Token.COLON);
-            return currentToken;
-        }
-
-        if (string(index) ||
-            equalityOperator(index) ||
-            separator(index) ||
-            hash(index) ||
-            identity(index)
-            ) {
-            return currentToken;
-        }
-
-        if (c == '*') {
-            newToken(Token.ASTERISK);
-        }
-
+        fetchToken();
+        nextIndex = currentIndex + currentTokenLength;
+        currentTokenLength = 0;
         return currentToken;
     }
 
@@ -84,7 +52,80 @@ class SelectorTokenizer implements Tokenizer {
         return currentIndex;
     }
 
-    // tokens
+    private boolean fetchToken() {
+        // default token
+        currentToken = Token.UNKNOWN;
+
+        int index = currentIndex = nextIndex;
+
+        if (!input.hasChar(index)) {
+            return newToken(Token.EOI);
+        }
+
+        if (number(index)) {
+            dimension(index, currentToken);
+            return true;
+        }
+
+        int c = input.charAt(index);
+        switch (c) {
+        case '.':
+            return newToken(Token.PERIOD);
+        case '[':
+            return newToken(Token.OPENING_BRACKET);
+        case ']':
+            return newToken(Token.CLOSING_BRACKET);
+        case ':':
+            return newToken(Token.COLON);
+        case ')':
+            return newToken(Token.CLOSING_PARENTHESIS);
+        case '-':
+            return newToken(Token.MINUS);
+        }
+
+        if (string(index) ||
+            equalityOperator(index) ||
+            separator(index) ||
+            hash(index) ||
+            identity(index)
+            ) {
+
+            if (currentToken.getCategory() == TokenCategory.IDENTITY) {
+                function(index, currentToken);
+            }
+            return true;
+        }
+
+        if (c == '*') {
+            newToken(Token.ASTERISK);
+        }
+        return true;
+    }
+
+    // token generators
+
+    private boolean number(int index) {
+        int c = input.charAt(index);
+        if (c == '.') {
+            if (!isDigit(input.charAt(index + 1))) {
+                return false;
+            }
+        } else if (!isDigit(c)) {
+            return false;
+        }
+        String text = input.match(index, NUMBER_PATTERN);
+        return newToken(Token.create(TokenCategory.NUMBER, text));
+    }
+
+    private boolean dimension(int index, Token number) {
+        index += number.getRawText().length();
+        int c = input.charAt(index);
+        if (c != 'n' && c != 'N') {
+            return false;
+        }
+        String text = number.getRawText() + (char)c;
+        return newToken(Token.create(TokenCategory.DIMENSION, text));
+    }
 
     private boolean string(int index) {
         int q = input.charAt(index);
@@ -97,9 +138,9 @@ class SelectorTokenizer implements Tokenizer {
         for (;;) {
             int c = input.charAt(index);
             if (c < 0 || c == '\n' || c == '\r' || c == '\f') {
-                return newToken(Token.of(TokenCategory.INVALID_STRING, b.toString()));
+                return newToken(Token.create(TokenCategory.INVALID_STRING, b.toString()));
             } else if (c == '\\') {
-                String matched = input.match(STRING_ESCAPE_PATTERN, index);
+                String matched = input.match(index, STRING_ESCAPE_PATTERN);
                 if (matched != null) {
                     b.append(matched);
                     index += matched.length();
@@ -114,7 +155,7 @@ class SelectorTokenizer implements Tokenizer {
                 }
             }
         }
-        return newToken(Token.of(TokenCategory.STRING, b.toString()));
+        return newToken(Token.create(TokenCategory.STRING, b.toString()));
     }
 
     private boolean equalityOperator(int index) {
@@ -154,12 +195,6 @@ class SelectorTokenizer implements Tokenizer {
             return false;
         }
 
-        if ("+>~,".indexOf(c) >= 0) {
-            while (isWhitespace(input.charAt(++index))) {
-                ++length;
-            }
-        }
-
         switch (c) {
         case '+':
             return newToken(Token.PLUS, length);
@@ -169,8 +204,6 @@ class SelectorTokenizer implements Tokenizer {
             return newToken(Token.TILDE, length);
         case ',':
             return newToken(Token.COMMA, length);
-        case -1:
-            return newToken(Token.EOI, --length);
         default:
             return newToken(Token.SPACE, --length);
         }
@@ -189,8 +222,9 @@ class SelectorTokenizer implements Tokenizer {
         } else if (!isNameLetter(c)) {
             return false;
         }
-        String rawText = "#" + name(index);
-        return newToken(Token.of(TokenCategory.HASH, rawText));
+        StringBuilder b = new StringBuilder("#");
+        name(index, b);
+        return newToken(Token.create(TokenCategory.HASH, b.toString()));
     }
 
     private boolean identity(int index) {
@@ -202,13 +236,24 @@ class SelectorTokenizer implements Tokenizer {
         } else if (!isIdentifierStart(c)) {
             return false;
         }
-        return newToken(Token.of(TokenCategory.IDENTITY, name(index)));
+        StringBuilder b = new StringBuilder();
+        name(index, b);
+        return newToken(Token.create(TokenCategory.IDENTITY, b.toString()));
     }
 
-    // helper
+    private boolean function(int index, Token identity) {
+        index += identity.getRawText().length();
+        int c = input.charAt(index);
+        if (c != '(') {
+            return false;
+        }
+        String text = identity.getRawText() + "(";
+        return newToken(Token.create(TokenCategory.FUNCTION, text));
+    }
 
-    private String name(int index) {
-        StringBuilder b = new StringBuilder();
+    // helper methods
+
+    private int name(int index, StringBuilder builder) {
         int c;
         while ((c = input.charAt(index)) != -1) {
             if (c == '\\') {
@@ -216,20 +261,20 @@ class SelectorTokenizer implements Tokenizer {
                 if (escape == null) {
                     break;
                 }
-                b.append(escape);
+                builder.append(escape);
                 index += escape.length();
             } else if (isNameLetter(c)) {
-                b.append((char)c);
+                builder.append((char)c);
                 ++index;
             } else {
                 break;
             }
         }
-        return b.toString();
+        return index;
     }
 
     private String escaped(int index) {
-        return input.match(ESCAPE_PATTERN, index);
+        return input.match(index, ESCAPE_PATTERN);
     }
 
     private boolean newToken(Token token) {
@@ -239,7 +284,7 @@ class SelectorTokenizer implements Tokenizer {
 
     private boolean newToken(Token token, int length) {
         this.currentToken = token;
-        this.nextIndex = this.currentIndex + length;
+        this.currentTokenLength = length;
         return true;
     }
 }

@@ -41,7 +41,7 @@ public class ParsingErrorTest {
             { null, 0 },
             { "", 0 },
             { "p, ", 3 },
-            { ".5cm, ", 1 },
+            { ".5cm, ", 0 },
             { "> p", 0 },
             { "+ p", 0 },
             { "~ p", 0 },
@@ -62,6 +62,18 @@ public class ParsingErrorTest {
             // pseudo-class
             { ":", 1 },
             { ":foo", 1 },
+            // functional pseudo-class
+            { ":nth-child", 1 },
+            { ":nth-child(odd", 14 },
+            { ":nth-child(foo)", 11 },
+            { ":nth-child(10n+-1)", 15 },
+            { ":nth-child(3 n)", 13 },
+            { ":nth-child(+ 2n)", 12 },
+            { ":nth-child(+ 2)", 12 },
+            { ":nth-child(1.2n)", 11 },
+            { ":nth-child(.1n)", 11 },
+            { ":nth-child(2n+1.2)", 14 },
+            { ":nth-child(2n+.1)", 14 },
             // pseudo-element
             { "::first-line", 1 }
         });

@@ -1,0 +1,61 @@
+/*
+ * Copyright 2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.i49.cascade.core.matchers.pseudo;
+
+public abstract class PositionalMatcher extends FunctionalPseudoClassMatcher {
+
+    protected final int a;
+    protected final int b;
+    private final String expression;
+
+    protected PositionalMatcher(int a, int b) {
+        this.a = a;
+        this.b = b;
+        this.expression = buildExpression(a, b);
+    }
+
+    protected PositionalMatcher(Parity parity) {
+        this.a = 2;
+        this.b = parity == Parity.EVEN ? 0 : 1;
+        this.expression = parity.name().toLowerCase();
+    }
+
+    @Override
+    protected String getExpression() {
+        return expression;
+    }
+
+    private static String buildExpression(int a, int b) {
+         StringBuilder builder = new StringBuilder();
+         if (a == 1) {
+             builder.append("n");
+         } else if (a == -1) {
+             builder.append("-n");
+         } else if (a != 0) {
+             builder.append(a).append("n");
+         }
+
+         if (a == 0) {
+             builder.append(b);
+         } else if (b > 0) {
+             builder.append(" + ").append(b);
+         } else if (b < 0) {
+             builder.append(" - ").append(-b);
+         }
+        return builder.toString();
+    }
+}

@@ -39,11 +39,11 @@ public interface Matcher {
     boolean matches(Element element);
 
     /**
-     * Simplifies this matcher.
+     * Returns the optimum matcher of this one.
      *
-     * @return simplified matcher.
+     * @return the optimum matcher.
      */
-    default Matcher simplify() {
+    default Matcher optimum() {
         return this;
     }
 }

@@ -16,28 +16,17 @@
 
 package com.github.i49.cascade.core.matchers.pseudo;
 
-import static com.github.i49.cascade.core.dom.Elements.hasParent;
-import static com.github.i49.cascade.core.dom.Elements.hasSiblingAfter;
-
-import org.w3c.dom.Element;
-
-/**
- * Matcher for :last-child pseudo-class selector.
- */
-public class LastChildMatcher extends PseudoClassMatcher {
-
-    public static final LastChildMatcher SINGLETON = new LastChildMatcher();
-
-    private LastChildMatcher() {
-    }
+abstract class FunctionalPseudoClassMatcher extends PseudoClassMatcher {
 
     @Override
-    public boolean matches(Element element) {
-        return hasParent(element) && !hasSiblingAfter(element);
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        return b.append(super.toString())
+                .append("(")
+                .append(getExpression())
+                .append(")")
+                .toString();
     }
 
-    @Override
-    public PseudoClass getPseudoClass() {
-        return PseudoClass.LAST_CHILD;
-    }
+    protected abstract String getExpression();
 }

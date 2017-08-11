@@ -37,7 +37,7 @@ public class FirstChildMatcher extends PseudoClassMatcher {
     }
 
     @Override
-    public String getClassName() {
-        return "first-child";
+    public PseudoClass getPseudoClass() {
+        return PseudoClass.FIRST_CHILD;
     }
 }

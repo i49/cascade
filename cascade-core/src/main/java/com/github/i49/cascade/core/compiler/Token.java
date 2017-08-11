@@ -24,6 +24,7 @@ public class Token {
     public static final Token UNKNOWN = new Token(TokenCategory.UNKNOWN, "");
     public static final Token EOI = new Token(TokenCategory.EOI, "");
     public static final Token PLUS = new Token(TokenCategory.PLUS, "+");
+    public static final Token MINUS = new Token(TokenCategory.MINUS, "-");
     public static final Token GREATER = new Token(TokenCategory.GREATER, ">");
     public static final Token COMMA = new Token(TokenCategory.COMMA, ",");
     public static final Token TILDE = new Token(TokenCategory.TILDE, "~");
@@ -39,25 +40,31 @@ public class Token {
     public static final Token SUFFIX_MATCH = new Token(TokenCategory.SUFFIX_MATCH, "$=");
     public static final Token SUBSTRING_MATCH = new Token(TokenCategory.SUBSTRING_MATCH, "*=");
     public static final Token COLON = new Token(TokenCategory.COLON, ":");
+    public static final Token CLOSING_PARENTHESIS = new Token(TokenCategory.CLOSING_PARENTHESIS, ")");
 
     private final TokenCategory category;
     private final String rawText;
 
-    public static Token of(TokenCategory category, String rawText) {
+    public static Token create(TokenCategory category, String rawText) {
         switch (category) {
+        case NUMBER:
+            return new NumberToken(rawText);
+        case DIMENSION:
+            return new DimensionToken(rawText);
         case STRING:
             return new StringToken(rawText);
         case INVALID_STRING:
             return new InvalidStringToken(rawText);
         case IDENTITY:
         case HASH:
+        case FUNCTION:
             return new EscapedToken(category, rawText);
         default:
             return new Token(category, rawText);
         }
     }
 
-    private Token(TokenCategory category, String rawValue) {
+    protected Token(TokenCategory category, String rawValue) {
         this.category = category;
         this.rawText = rawValue;
     }
@@ -91,6 +98,20 @@ public class Token {
 
     public String getValue() {
         return getText();
+    }
+
+    public boolean isEndOfSequence() {
+        switch (getCategory()) {
+        case SPACE:
+        case GREATER:
+        case PLUS:
+        case TILDE:
+        case COMMA:
+        case EOI:
+            return true;
+        default:
+            return false;
+        }
     }
 
     @Override
@@ -151,6 +172,5 @@ public class Token {
         public String getValue() {
             throw new UnsupportedOperationException();
         }
-
     }
 }

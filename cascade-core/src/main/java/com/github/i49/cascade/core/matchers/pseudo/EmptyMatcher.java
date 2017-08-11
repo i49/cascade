@@ -48,7 +48,7 @@ public class EmptyMatcher extends PseudoClassMatcher {
     }
 
     @Override
-    public String getClassName() {
-        return "empty";
+    public PseudoClass getPseudoClass() {
+        return PseudoClass.EMPTY;
     }
 }

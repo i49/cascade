@@ -47,7 +47,7 @@ class TextInput {
         return -1;
     }
 
-    public String match(Pattern pattern, int index) {
+    public String match(int index, Pattern pattern) {
         Matcher m = pattern.matcher(text);
         m = m.region(index, length);
         if (m.lookingAt()) {

@@ -36,7 +36,9 @@ import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
-import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
+import com.github.i49.cascade.core.matchers.pseudo.Parity;
+import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
+import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
 import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
@@ -52,20 +54,26 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     private Tokenizer tokenizer;
     private Token currentToken;
 
+    private final PseudoClassMatcherFactory pseudoClassMatcherFactory;
+
+    public DefaultSelectorCompiler() {
+        this.pseudoClassMatcherFactory = PseudoClassMatcherFactory.create();
+    }
+
     @Override
     public Selector compile(String expression) {
         if (expression == null) {
             throw new NullPointerException("expression must not be null.");
         }
         this.tokenizer = new SelectorTokenizer(expression);
-        return selectorGroup();
+        return parseGroupOfSelectors();
     }
 
-    private Selector selectorGroup() {
+    private Selector parseGroupOfSelectors() {
         List<SingleSelector> selectors = new ArrayList<>();
 
         do {
-            SingleSelector selector = singleSelector();
+            SingleSelector selector = parseAllSequencesInSelector();
             selectors.add(selector);
         } while (currentToken.getCategory() != TokenCategory.EOI);
 
@@ -76,14 +84,18 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private SingleSelector singleSelector() {
+    private SingleSelector parseAllSequencesInSelector() {
         Sequence first = null;
         Sequence last = null;
         Combinator combinator = null;
         do {
-            MatcherList matchers = sequence();
+            MatcherList matchers = parseSequence();
             if (matchers.isEmpty()) {
-                throw newException(Message.UNEXPECTED_END_OF_INPUT);
+                if (combinator == Combinator.DESCENDANT) {
+                    break;
+                } else {
+                    throw newException(Message.UNEXPECTED_END_OF_INPUT);
+                }
             }
             if (first == null) {
                 first = new HeadSequence(matchers);
@@ -120,7 +132,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private MatcherList sequence() {
+    private MatcherList parseSequence() {
         MatcherList matchers = new MatcherList();
         int index = 0;
         Token token = nextNonSpaceToken();
@@ -131,42 +143,24 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             }
             matchers.add(matcher);
             token = nextToken();
-            if (isEndOfSequence(token)) {
+            if (token.isEndOfSequence()) {
                 break;
             }
         }
         return matchers;
     }
 
-    private static boolean isEndOfSequence(Token token) {
-        return (token == Token.SPACE ||
-                token == Token.GREATER ||
-                token == Token.PLUS ||
-                token == Token.TILDE ||
-                token == Token.COMMA ||
-                token == Token.EOI);
-    }
-
     private Matcher parseSimpleSelector(Token token, int index) {
         switch (token.getCategory()) {
         case ASTERISK:
         case IDENTITY:
+            return parseTypeSelector(token, index++);
         case HASH:
-            return simpleSelector(token, index++);
+            return parseIdSelector(token);
         case PERIOD:
-            token = nextToken();
-            if (token.getCategory() == TokenCategory.IDENTITY) {
-                return classSelector(token.getText());
-            }
-            throw newException(Message.CLASS_NAME_IS_MISSING);
+            return parseClassSelector();
         case COLON:
-            token = nextToken();
-            if (token == Token.COLON) {
-                throw newException(Message.PSEUDO_ELEMENTS_ARE_NOT_SUPPORTED);
-            } else if (token.getCategory() == TokenCategory.IDENTITY) {
-                return pseudoClassSelector(token.getText());
-            }
-            throw newException(Message.PSEUDO_CLASS_NAME_IS_MISSING);
+            return parsePseudoClass();
         case OPENING_BRACKET:
             return parseAttributeSelector();
         case SPACE:
@@ -185,48 +179,34 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return null;
     }
 
-    private Matcher simpleSelector(Token token, int index) {
+    /* simple selector parsers */
+
+    private Matcher parseTypeSelector(Token token, int index) {
         TokenCategory type = token.getCategory();
         if (type == TokenCategory.ASTERISK) {
             if (index > 0) {
                 throw newException(Message.UNIVERSAL_SELECTOR_POSITION_IS_INVALID);
             }
-            return universalSelector();
+            return newUniversalSelector();
         } else if (type == TokenCategory.IDENTITY) {
             if (index > 0) {
                 throw newException(Message.TYPE_SELECTOR_POSITION_IS_INVALID.with(token.getText()));
             }
-            return typeSelector(token.getText());
-        } else if (type == TokenCategory.HASH) {
-            return idSelector(token.getText());
+            return newTypeSelector(token.getText());
         }
-        return null;
+        throw internalError();
     }
 
-    private Matcher universalSelector() {
-        return UniversalMatcher.getInstance();
+    private Matcher parseIdSelector(Token token) {
+        return newIdSelector(token.getText());
     }
 
-    private Matcher typeSelector(String selector) {
-        return new TypeMatcher(selector);
-    }
-
-    private Matcher idSelector(String selector) {
-        String identifier = selector.substring(1);
-        return new IdentifierMatcher(identifier);
-    }
-
-    private Matcher classSelector(String className) {
-        return new ClassMatcher(className);
-    }
-
-    private Matcher pseudoClassSelector(String className) {
-        Matcher matcher = PseudoClassMatcher.byName(className);
-        if (matcher == null) {
-            String selector = ":" + className;
-            throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(selector));
+    private Matcher parseClassSelector() {
+        Token token = nextToken();
+        if (token.getCategory() == TokenCategory.IDENTITY) {
+            return newClassSelector(token.getText());
         }
-        return matcher;
+        throw newException(Message.CLASS_NAME_IS_MISSING);
     }
 
     private Matcher parseAttributeSelector() {
@@ -287,6 +267,187 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
+    private Matcher parsePseudoClass() {
+        Token token = nextToken();
+        if (token == Token.COLON) {
+            return parsePseudoElement();
+        }
+        TokenCategory category = token.getCategory();
+        if (category != TokenCategory.IDENTITY && category != TokenCategory.FUNCTION) {
+            throw newException(Message.PSEUDO_CLASS_NAME_IS_MISSING);
+        }
+        String className = token.getText().split("\\(")[0];
+        PseudoClass pseudoClass = PseudoClass.byName(className);
+        if (pseudoClass == null) {
+            throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(className));
+        }
+        if (pseudoClass.isFunctional()) {
+            if (category == TokenCategory.FUNCTION) {
+                return parseFunctionalPseudoClass(pseudoClass);
+            } else {
+                throw newException(Message.PSEUDO_CLASS_ARGUMENT_IS_MISSING.with(pseudoClass));
+            }
+        } else {
+            return newPseudoClassSelector(pseudoClass);
+        }
+    }
+
+    private Matcher parsePseudoElement() {
+        throw newException(Message.PSEUDO_ELEMENTS_ARE_NOT_SUPPORTED);
+    }
+
+    private Matcher parseFunctionalPseudoClass(PseudoClass pseudoClass) {
+        switch (pseudoClass) {
+        case NTH_CHILD:
+        case NTH_LAST_CHILD:
+        case NTH_OF_TYPE:
+        case NTH_LAST_OF_TYPE:
+            return parsePositionalPseudoClass(pseudoClass);
+        default:
+            throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(pseudoClass));
+        }
+    }
+
+    private Matcher parsePositionalPseudoClass(PseudoClass pseudoClass) {
+        Token token = nextNonSpaceToken();
+        if (token.getCategory() == TokenCategory.IDENTITY) {
+            // "odd" or "even"
+            Parity parity = Parity.byName(token.getText());
+            if (parity != null) {
+                return parseParityFunctionalPseudoClass(pseudoClass, parity);
+            }
+            // for "n"
+        }
+        return parseLinearFunctionalPseudoClass(pseudoClass, token);
+    }
+
+    private Matcher parseParityFunctionalPseudoClass(PseudoClass pseudoClass, Parity parity) {
+        Token token = nextNonSpaceToken();
+        if (token == Token.CLOSING_PARENTHESIS) {
+            return newFunctionalPseudoClassSelector(pseudoClass, parity);
+        } else {
+            throw unexpectedTokenInFunction(token);
+        }
+    }
+
+    private Matcher parseLinearFunctionalPseudoClass(PseudoClass pseudoClass, Token token) {
+        int a = 0, b = 0;
+        int sign = 1;
+
+        // a or b
+
+        if (token == Token.PLUS) {
+            token = nextToken();
+        } else if (token == Token.MINUS) {
+            sign = -1;
+            token = nextToken();
+        }
+        if (token.getCategory() == TokenCategory.IDENTITY) {
+            if (token.getText().equalsIgnoreCase("n")) {
+                a = sign;
+                // continues to b
+            } else {
+                throw unexpectedToken(token);
+            }
+        } else if (token.getCategory() == TokenCategory.NUMBER) {
+            b = parseInteger((NumberToken)token) * sign;
+            token = nextNonSpaceToken();
+            if (token == Token.CLOSING_PARENTHESIS) {
+                return newFunctionalPseudoClassSelector(pseudoClass, 0, b);
+            } else {
+                throw unexpectedToken(token);
+            }
+            // never reach here
+        } else if (token.getCategory() == TokenCategory.DIMENSION) {
+            DimensionToken dimension = (DimensionToken)token;
+            if (!dimension.getIdentityPart().equalsIgnoreCase("n")) {
+                throw unexpectedTokenInFunction(token);
+            }
+            a = parseInteger(dimension) * sign;
+            // continues to b
+        } else {
+            throw unexpectedTokenInFunction(token);
+        }
+
+        // after "n"
+
+        token = nextNonSpaceToken();
+        if (token == Token.CLOSING_PARENTHESIS) {
+            b = 0;
+        } else {
+            if (token == Token.PLUS) {
+                sign = 1;
+            } else if (token == Token.MINUS) {
+                sign = -1;
+            } else {
+                throw unexpectedTokenInFunction(token);
+            }
+            token = nextNonSpaceToken();
+            if (token.getCategory() == TokenCategory.NUMBER) {
+                b = parseInteger((NumberToken)token) * sign;
+                token = nextNonSpaceToken();
+                if (token != Token.CLOSING_PARENTHESIS) {
+                    throw unexpectedTokenInFunction(token);
+                }
+            } else {
+                throw unexpectedTokenInFunction(token);
+            }
+        }
+
+        return newFunctionalPseudoClassSelector(pseudoClass, a, b);
+    }
+
+    private int parseInteger(NumberToken token) {
+        if (token.isIntegral()) {
+            return token.intValue();
+        } else{
+            throw newException(Message.NUMBER_IS_NOT_INTEGER.with(token.getNumericPart()));
+        }
+    }
+
+    /* selector creators */
+
+    private Matcher newUniversalSelector() {
+        return UniversalMatcher.getInstance();
+    }
+
+    private Matcher newTypeSelector(String selector) {
+        return new TypeMatcher(selector);
+    }
+
+    private Matcher newIdSelector(String selector) {
+        String identifier = selector.substring(1);
+        return new IdentifierMatcher(identifier);
+    }
+
+    private Matcher newClassSelector(String className) {
+        return new ClassMatcher(className);
+    }
+
+    private Matcher newPseudoClassSelector(PseudoClass pseudoClass) {
+        Matcher matcher = pseudoClassMatcherFactory.createMatcher(pseudoClass);
+        if (matcher == null) {
+            throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(pseudoClass));
+        }
+        return matcher;
+    }
+
+    private Matcher newFunctionalPseudoClassSelector(PseudoClass pseudoClass, Parity parity) {
+        Matcher matcher = pseudoClassMatcherFactory.createMatcher(pseudoClass, parity);
+        if (matcher == null) {
+            internalError();
+        }
+        return matcher;
+    }
+
+    private Matcher newFunctionalPseudoClassSelector(PseudoClass pseudoClass, int a, int b) {
+        Matcher matcher = pseudoClassMatcherFactory.createMatcher(pseudoClass, a, b);
+        if (matcher == null) {
+            internalError();
+        }
+        return matcher;
+    }
+
     private Token nextToken() {
         this.currentToken = this.tokenizer.nextToken();
         return this.currentToken;
@@ -303,6 +464,16 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     private InvalidSelectorException unexpectedToken(Token token) {
         if (token == Token.EOI) {
             return newException(Message.UNEXPECTED_END_OF_INPUT);
+        } else if (token == Token.UNKNOWN) {
+            return newException(Message.UNKNOWN_TOKEN);
+        } else {
+            return newException(Message.UNEXPECTED_TOKEN.with(token.getRawText()));
+        }
+    }
+
+    private InvalidSelectorException unexpectedTokenInFunction(Token token) {
+        if (token == Token.EOI) {
+            return newException(Message.FUNCTION_IS_NOT_CLOSED);
         } else if (token == Token.UNKNOWN) {
             return newException(Message.UNKNOWN_TOKEN);
         } else {
