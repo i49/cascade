@@ -17,7 +17,7 @@ Set<Element> selected = selector.select(doc.getDocumentElement());
 * Operating on standard W3C DOM interface in _org.w3c.dom_ package.
 * Intuitive and clean API.
 * Optimization is performed when selectors are compiled.
-* 200+ test cases.
+* 250+ test cases.
 
 ## Supported Selectors
 ### Simple Selectors
@@ -39,9 +39,9 @@ Selector                             | Example
 -------------------------------------|--------------------
 :root                                |:root
 :nth-child                           |:nth-child(2n + 1) <br> :nth-child(odd)
-:nth-last-child                      |:nth-last-child(2n + 1) <br> :nth-last-child(even)
+:nth-last-child                      |:nth-last-child(2n) <br> :nth-last-child(even)
 :nth-of-type                         |:nth-of-type(2n + 1) <br> :nth-of-type(odd)
-:nth-last-of-type                    |:nth-last-of-type(2n + 1) <br> :nth-last-of-type(even)
+:nth-last-of-type                    |:nth-last-of-type(2n) <br> :nth-last-of-type(even)
 :first-child                         |:first-child
 :last-child                          |:last-child
 :first-of-type                       |:first-of-type
@@ -49,6 +49,7 @@ Selector                             | Example
 :only-child                          |:only-child
 :only-of-type                        |:only-of-type
 :empty                               |:empty
+:not                                 |:not(.example)
 
 ### Combinators
 Selector                             | Example

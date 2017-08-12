@@ -357,8 +357,10 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
 
     private Matcher parseNegationPseudoClass() {
         Token token = getFirstTokenInFunction(PseudoClass.NOT);
-        // selector below never be null.
         Matcher selector = parseSimpleSelectorInNegation(token);
+        if (selector == null) {
+            throw unexpectedToken(token);
+        }
         token = nextNonSpaceToken();
         if (token != Token.CLOSING_PARENTHESIS) {
             throw unexpectedToken(token);

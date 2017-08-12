@@ -39,15 +39,15 @@ public abstract class BaseSelectorTest {
     private final String resourceName;
     private final String startElement;
     private final String expression;
-    private final int[] expectedIndices;
+    private final Expected expected;
 
     private static Map<String, Document> documentCache;
 
-    protected BaseSelectorTest(String resourceName, String startElement, String expression, int[] indices) {
+    protected BaseSelectorTest(String resourceName, String startElement, String expression, Expected expected) {
         this.resourceName = resourceName;
         this.startElement = startElement;
         this.expression = expression;
-        this.expectedIndices = indices;
+        this.expected = expected;
     }
 
     @BeforeClass
@@ -66,19 +66,35 @@ public abstract class BaseSelectorTest {
         Document doc = loadDocument();
         Selector selector = Selector.compile(expression);
         Set<Element> selected  = selector.select(getStartingElement(doc));
-        if (expectedIndices != null) {
-            assertThat(selected).hasSize(expectedIndices.length);
+        if (expected == null) {
+            return;
+        }
+
+        int[] entries = expected.getEntries();
+        if (expected.isInclusive()) {
+            assertThat(selected).hasSize(entries.length);
             NodeList nodes = doc.getElementsByTagName("*");
             int i = 0;
             for (Element actual: selected) {
-                Element expected = (Element)nodes.item(expectedIndices[i++]);
+                Element expected = (Element)nodes.item(entries[i++]);
                 assertThat(actual).isSameAs(expected);
+            }
+        } else {
+            NodeList nodes = doc.getElementsByTagName("*");
+            assertThat(selected).hasSize(nodes.getLength() - entries.length);
+            for (int index: entries) {
+                Element excluded = (Element)nodes.item(index);
+                assertThat(selected).doesNotContain(excluded);
             }
         }
     }
 
-    protected static int[] expect(int... indices) {
-        return indices;
+    protected static Expected expect(int... indices) {
+        return Expected.include(indices);
+    }
+
+    protected static Expected expectAllBut(int... indices) {
+        return Expected.exclude(indices);
     }
 
     private Document loadDocument() {
@@ -100,5 +116,32 @@ public abstract class BaseSelectorTest {
             throw new IllegalArgumentException("Starting element " + startElement + " was not found.");
         }
         return element;
+    }
+
+    public static class Expected {
+
+        private final boolean inclusive;
+        private final int[] entries;
+
+        public static Expected include(int[] entries) {
+            return new Expected(entries, true);
+        }
+
+        public static Expected exclude(int[] entries) {
+            return new Expected(entries, false);
+        }
+
+        private Expected(int[] entries, boolean inclusive) {
+            this.entries = entries;
+            this.inclusive = inclusive;
+        }
+
+        public boolean isInclusive() {
+            return inclusive;
+        }
+
+        public int[] getEntries() {
+            return entries;
+        }
     }
 }

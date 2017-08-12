@@ -32,29 +32,46 @@ public class SimpleSelectorTest extends BaseSelectorTest {
     @Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            /* universal */
+            // universal
             { "/smallest-xml.xml", null, "*", expect(0) },
             { "/universal-selector-test.html", null, "*", expect(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
-            /* type */
+            // negated
+            { "/smallest-xml.xml", null, ":not(*)", expectAllBut(0) },
+            { "/universal-selector-test.html", null, ":not(*)", expectAllBut(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
+            // type
             { "/type-selector-test.html", null, "html", expect(0) },
             { "/type-selector-test.html", null, "h1", expect(5) },
             { "/type-selector-test.html", null, "p", expect(6, 7) },
             { "/type-selector-test.html", null, "nonexistent", expect() },
-            /* identifier */
+            // negated
+            { "/type-selector-test.html", null, ":not(html)", expectAllBut(0) },
+            { "/type-selector-test.html", null, ":not(h1)", expectAllBut(5) },
+            { "/type-selector-test.html", null, ":not(p)", expectAllBut(6, 7) },
+            { "/type-selector-test.html", null, ":not(nonexistent)", expectAllBut() },
+            // identifier
             { "/id-selector-test.html", null, "#content", expect(6) },
             { "/id-selector-test.html", "body", "#content", expect(6) },
             { "/id-selector-test.html", null, "section#content", expect(6) },
             { "/id-selector-test.html", null, "#nonexistent", expect() },
-            /* class */
+            // negated
+            { "/id-selector-test.html", null, ":not(#content)", expectAllBut(6) },
+            { "/id-selector-test.html", "body", ":not(#content)", expect(4, 5, 7, 8, 9) },
+            { "/id-selector-test.html", null, ":not(#nonexistent)", expectAllBut() },
+            // class
             { "/class-selector-test.html", null, ".hello", expect(6, 8, 10) },
             { "/class-selector-test.html", null, ".hello.java", expect(8) },
             { "/class-selector-test.html", null, ".java.hello", expect(8) },
             { "/class-selector-test.html", null, "div.hello", expect(6, 8, 10) },
             { "/class-selector-test.html", null, ".nonexistent", expect() },
+            // negated
+            { "/class-selector-test.html", null, ":not(.hello)", expectAllBut(6, 8, 10) },
+            { "/class-selector-test.html", null, ":not(.hello):not(.java)", expect(0, 1, 2, 3, 4, 5, 7, 9, 11) },
+            { "/class-selector-test.html", null, ":not(.java):not(.hello)", expect(0, 1, 2, 3, 4, 5, 7, 9, 11) },
+            { "/class-selector-test.html", null, ":not(.nonexistent)", expectAllBut() },
         });
     }
 
-    public SimpleSelectorTest(String resourceName, String startElement, String expression, int[] indices) {
-        super(resourceName, startElement, expression, indices);
+    public SimpleSelectorTest(String resourceName, String startElement, String expression, Expected expected) {
+        super(resourceName, startElement, expression, expected);
     }
 }

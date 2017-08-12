@@ -34,7 +34,9 @@ public class Html5Test extends BaseSelectorTest {
         return Arrays.asList(new Object[][] {
             // simple selectors
             { "/html5-test.html", "#forms__action", expect(435) },
+            { "/html5-test.html", ":not(#forms__action)", expectAllBut(435) },
             { "/html5-test.html", "article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", ":not(article)", expectAllBut(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
 
             // combinator
             { "/html5-test.html", "* article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
@@ -45,11 +47,12 @@ public class Html5Test extends BaseSelectorTest {
 
             // pseudo class
             { "/html5-test.html", ":root", expect(0) },
+            { "/html5-test.html", ":not(:root)", expectAllBut(0) },
             { "/html5-test.html", "meta:empty", expect(2, 3) },
         });
     }
 
-    public Html5Test(String resourceName, String expression, int[] indices) {
-        super(resourceName, null, expression, indices);
+    public Html5Test(String resourceName, String expression, Expected expected) {
+        super(resourceName, null, expression, expected);
     }
 }

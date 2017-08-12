@@ -40,7 +40,7 @@ public class SelectorGroupTest extends BaseSelectorTest {
         });
     }
 
-    public SelectorGroupTest(String resourceName, String expression, int[] indices) {
-        super(resourceName, null, expression, indices);
+    public SelectorGroupTest(String resourceName, String expression, Expected expected) {
+        super(resourceName, null, expression, expected);
    }
 }

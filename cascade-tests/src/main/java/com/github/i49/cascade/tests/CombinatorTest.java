@@ -41,7 +41,7 @@ public class CombinatorTest extends BaseSelectorTest {
         });
     }
 
-    public CombinatorTest(String resourceName, String expression, int[] indices) {
-        super(resourceName, null, expression, indices);
+    public CombinatorTest(String resourceName, String expression, Expected expected) {
+        super(resourceName, null, expression, expected);
     }
 }
