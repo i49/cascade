@@ -29,7 +29,7 @@ import com.github.i49.cascade.core.matchers.ExactMatcher;
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.IncludeMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
-import com.github.i49.cascade.core.matchers.MatcherList;
+import com.github.i49.cascade.core.matchers.AndMatcher;
 import com.github.i49.cascade.core.matchers.PrefixMatcher;
 import com.github.i49.cascade.core.matchers.SubstringMatcher;
 import com.github.i49.cascade.core.matchers.SuffixMatcher;
@@ -71,7 +71,6 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
 
     private Selector parseGroupOfSelectors() {
         List<SingleSelector> selectors = new ArrayList<>();
-
         do {
             SingleSelector selector = parseAllSequencesInSelector();
             selectors.add(selector);
@@ -89,8 +88,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         Sequence last = null;
         Combinator combinator = null;
         do {
-            MatcherList matchers = parseSequence();
-            if (matchers.isEmpty()) {
+            Matcher matcher = extractMatcher(parseSequence());
+            if (matcher == null) {
                 if (combinator == Combinator.DESCENDANT) {
                     break;
                 } else {
@@ -98,10 +97,10 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                 }
             }
             if (first == null) {
-                first = new HeadSequence(matchers);
+                first = new HeadSequence(matcher);
                 last = first;
             } else {
-                CombinatorSequence sequence = CombinatorSequence.create(combinator, matchers);
+                CombinatorSequence sequence = CombinatorSequence.create(combinator, matcher);
                 last.combine(sequence);
                 last = sequence;
             }
@@ -132,35 +131,42 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private MatcherList parseSequence() {
-        MatcherList matchers = new MatcherList();
+    private AndMatcher parseSequence() {
+        AndMatcher sequence = new AndMatcher();
         int index = 0;
         Token token = nextNonSpaceToken();
-        for (;;) {
-            Matcher matcher = parseSimpleSelector(token, index++);
-            if (matcher == null) {
-                break;
-            }
-            matchers.add(matcher);
+        Matcher simpleSelector;
+        while ((simpleSelector = parseSimpleSelector(token, index++, false)) != null) {
+            sequence.add(simpleSelector);
             token = nextToken();
             if (token.isEndOfSequence()) {
                 break;
             }
         }
-        return matchers;
+        return sequence;
     }
 
-    private Matcher parseSimpleSelector(Token token, int index) {
+    private Matcher extractMatcher(AndMatcher sequence) {
+        if (sequence.isEmpty()) {
+            return null;
+        } else if (sequence.size() == 1) {
+            return sequence.get(0);
+        } else {
+            return sequence;
+        }
+    }
+
+    private Matcher parseSimpleSelector(Token token, int index, boolean nested) {
         switch (token.getCategory()) {
         case ASTERISK:
         case IDENTITY:
-            return parseTypeSelector(token, index++);
+            return parseTypeSelector(token, index);
         case HASH:
             return parseIdSelector(token);
         case PERIOD:
             return parseClassSelector();
         case COLON:
-            return parsePseudoClass();
+            return parsePseudoClass(nested);
         case OPENING_BRACKET:
             return parseAttributeSelector();
         case SPACE:
@@ -267,7 +273,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private Matcher parsePseudoClass() {
+    private Matcher parsePseudoClass(boolean nested) {
         Token token = nextToken();
         if (token == Token.COLON) {
             return parsePseudoElement();
@@ -280,6 +286,9 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         PseudoClass pseudoClass = PseudoClass.byName(className);
         if (pseudoClass == null) {
             throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(className));
+        }
+        if (nested && pseudoClass == PseudoClass.NOT) {
+            throw newException(Message.NEGATION_IS_NESTED);
         }
         if (pseudoClass.isFunctional()) {
             if (category == TokenCategory.FUNCTION) {
@@ -303,13 +312,23 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         case NTH_OF_TYPE:
         case NTH_LAST_OF_TYPE:
             return parsePositionalPseudoClass(pseudoClass);
+        case NOT:
+            return parseNegationPseudoClass();
         default:
             throw newException(Message.UNSUPPORTED_PSEUDO_CLASS.with(pseudoClass));
         }
     }
 
-    private Matcher parsePositionalPseudoClass(PseudoClass pseudoClass) {
+    private Token getFirstTokenInFunction(PseudoClass pseudoClass) {
         Token token = nextNonSpaceToken();
+        if (token == Token.CLOSING_PARENTHESIS) {
+            throw newException(Message.PSEUDO_CLASS_ARGUMENT_IS_MISSING.with(pseudoClass));
+        }
+        return token;
+    }
+
+    private Matcher parsePositionalPseudoClass(PseudoClass pseudoClass) {
+        Token token = getFirstTokenInFunction(pseudoClass);
         if (token.getCategory() == TokenCategory.IDENTITY) {
             // "odd" or "even"
             Parity parity = Parity.byName(token.getText());
@@ -334,6 +353,30 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         OrdinalPositionParser parser = new OrdinalPositionParser();
         parser.parse(token);
         return newFunctionalPseudoClassSelector(pseudoClass, parser.a, parser.b);
+    }
+
+    private Matcher parseNegationPseudoClass() {
+        Token token = getFirstTokenInFunction(PseudoClass.NOT);
+        // selector below never be null.
+        Matcher selector = parseSimpleSelectorInNegation(token);
+        token = nextNonSpaceToken();
+        if (token != Token.CLOSING_PARENTHESIS) {
+            throw unexpectedToken(token);
+        }
+        return newNegationPseudoClassSelector(selector);
+    }
+
+    private Matcher parseSimpleSelectorInNegation(Token token) {
+        switch (token.getCategory()) {
+        case SPACE:
+        case GREATER:
+        case PLUS:
+        case TILDE:
+        case COMMA:
+            throw unexpectedToken(token);
+        default:
+            return parseSimpleSelector(token, 0, true);
+        }
     }
 
     /* selector creators */
@@ -377,6 +420,10 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             internalError();
         }
         return matcher;
+    }
+
+    private Matcher newNegationPseudoClassSelector(Matcher enclosed) {
+        return pseudoClassMatcherFactory.negateMatcher(enclosed);
     }
 
     private Token nextToken() {

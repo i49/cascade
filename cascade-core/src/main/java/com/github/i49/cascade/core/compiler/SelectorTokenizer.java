@@ -77,8 +77,6 @@ class SelectorTokenizer implements Tokenizer {
             return newToken(Token.CLOSING_BRACKET);
         case ':':
             return newToken(Token.COLON);
-        case ')':
-            return newToken(Token.CLOSING_PARENTHESIS);
         case '-':
             return newToken(Token.MINUS);
         }
@@ -190,7 +188,7 @@ class SelectorTokenizer implements Tokenizer {
                 c = input.charAt(++index);
                 length++;
             } while (isWhitespace(c));
-        } else if ("+>~,".indexOf(c) < 0) {
+        } else if ("+>~,)".indexOf(c) < 0) {
             return false;
         }
 
@@ -203,6 +201,8 @@ class SelectorTokenizer implements Tokenizer {
             return newToken(Token.TILDE, length);
         case ',':
             return newToken(Token.COMMA, length);
+        case ')':
+            return newToken(Token.CLOSING_PARENTHESIS, length);
         default:
             return newToken(Token.SPACE, --length);
         }

@@ -19,6 +19,8 @@ package com.github.i49.cascade.core.matchers.pseudo;
 import java.util.EnumMap;
 import java.util.Map;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+
 public class PseudoClassMatcherFactory {
 
     private static final PseudoClassMatcherFactory SINGLETON = new PseudoClassMatcherFactory();
@@ -44,6 +46,7 @@ public class PseudoClassMatcherFactory {
         case NTH_LAST_OF_TYPE:
             return NthLastOfTypeMatcher.of(parity);
         default:
+            assert(false);
             return null;
         }
     }
@@ -59,8 +62,13 @@ public class PseudoClassMatcherFactory {
         case NTH_LAST_OF_TYPE:
             return NthLastOfTypeMatcher.of(a, b);
         default:
+            assert(false);
             return null;
         }
+    }
+
+    public PseudoClassMatcher negateMatcher(Matcher matcher) {
+        return new NegationMatcher(matcher);
     }
 
     private PseudoClassMatcherFactory() {

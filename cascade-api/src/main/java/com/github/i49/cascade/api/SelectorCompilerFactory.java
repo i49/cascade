@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,10 @@ import java.util.ServiceLoader;
 
 /**
  * A factory for producing instances of {@link SelectorCompiler}.
+ *
+ * <p>
+ * Each instance of this class is thread-safe.
+ * </p>
  */
 public abstract class SelectorCompilerFactory {
 
@@ -29,20 +33,20 @@ public abstract class SelectorCompilerFactory {
     private static SelectorCompilerFactory supply() {
         ServiceLoader<SelectorCompilerFactory> loader = ServiceLoader.load(SelectorCompilerFactory.class);
         return loader.iterator().next();
-    }    
+    }
 
     /**
      * Returns the instance of this factory class.
-     * 
+     *
      * @return the instance of this factory class.
      */
     static SelectorCompilerFactory get() {
         return providers.get();
     }
-    
+
     /**
      * Creates a selector compiler.
-     * 
+     *
      * @return newly created instance of compiler.
      */
     public abstract SelectorCompiler createCompiler();

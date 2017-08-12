@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
-import com.github.i49.cascade.core.matchers.MatcherList;
+import com.github.i49.cascade.core.matchers.AndMatcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
@@ -41,15 +41,15 @@ abstract class AbstractSequence implements Sequence {
     private Traverser traverser;
     private CombinatorSequence nextSequence;
 
-    protected AbstractSequence(MatcherList matchers) {
-        this.originalMatcher = matchers;
-        this.matcherToApply = matchers.optimum();
-        this.traverser = createTraverserFor(matchers);
+    protected AbstractSequence(Matcher matcher) {
+        this.originalMatcher = matcher;
+        this.matcherToApply = matcher.optimum();
+        this.traverser = createTraverserFor(matcher);
     }
 
-    protected AbstractSequence(MatcherList matchers, Traverser traverser) {
-        this.originalMatcher = matchers;
-        this.matcherToApply = matchers.optimum();
+    protected AbstractSequence(Matcher matcher, Traverser traverser) {
+        this.originalMatcher = matcher;
+        this.matcherToApply = matcher.optimum();
         this.traverser = traverser;
     }
 
@@ -89,25 +89,53 @@ abstract class AbstractSequence implements Sequence {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+
+        if (originalMatcher instanceof AndMatcher) {
+            AndMatcher aggregation = (AndMatcher)originalMatcher;
+            if (aggregation.isEmpty() || !aggregation.get(0).getType().representsType()) {
+                b.append("*");
+            }
+        } else if (!originalMatcher.getType().representsType()) {
+            b.append("*");
+        }
         b.append(originalMatcher.toString());
+
         if (hasNext()) {
             b.append(nextSequence.toString());
         }
+
         return b.toString();
     }
 
-    private static Traverser createTraverserFor(MatcherList matchers) {
-        for (Matcher matcher: matchers) {
-            MatcherType type = matcher.getType();
-            if (type == MatcherType.IDENTIFIER) {
+    private static Traverser createTraverserFor(Matcher matcher) {
+        if (matcher instanceof AndMatcher) {
+            AndMatcher aggregation = (AndMatcher)matcher;
+            Matcher found = aggregation.find(AbstractSequence::isRootMatcher);
+            if (found != null) {
+                return RootTraverser.SINGLETON;
+            }
+            found = aggregation.find(AbstractSequence::isIdMatcher);
+            if (found != null) {
+                String identifier = ((IdentifierMatcher)found).getIdentifier();
+                return new FastIdentifierTraverser(identifier);
+            }
+        } else {
+            if (isRootMatcher(matcher)) {
+                return RootTraverser.SINGLETON;
+            } else if (isIdMatcher(matcher)) {
                 String identifier = ((IdentifierMatcher)matcher).getIdentifier();
                 return new FastIdentifierTraverser(identifier);
-            } else if (type == MatcherType.PSEUDO_CLASS) {
-                if (((PseudoClassMatcher)matcher).getPseudoClass() == PseudoClass.ROOT) {
-                    return RootTraverser.SINGLETON;
-                }
             }
         }
         return DepthFirstTraverser.SINGLETON;
+    }
+
+    private static boolean isRootMatcher(Matcher matcher) {
+        return matcher.getType() == MatcherType.PSEUDO_CLASS &&
+               ((PseudoClassMatcher)matcher).getPseudoClass() == PseudoClass.ROOT;
+    }
+
+    private static boolean isIdMatcher(Matcher matcher) {
+        return matcher.getType() == MatcherType.IDENTIFIER;
     }
 }

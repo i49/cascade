@@ -64,6 +64,7 @@ public class ParsingErrorTest {
             { ":foo", 1 },
             // functional pseudo-class
             { ":nth-child", 1 },
+            { ":nth-child()", 11 },
             { ":nth-child(odd", 14 },
             { ":nth-child(foo)", 11 },
             { ":nth-child(10n+-1)", 15 },
@@ -76,7 +77,19 @@ public class ParsingErrorTest {
             { ":nth-child(2n-1.2)", 15 },
             { ":nth-child(2n+.1)", 14 },
             // pseudo-element
-            { "::first-line", 1 }
+            { "::first-line", 1 },
+            // negation
+            { ":not", 1 },
+            { ":not()", 5 },
+            { ":not(", 5 },
+            { ":not(:not(div))", 6 },
+            { ":not(h1 em)", 8 },
+            { ":not(div > p)", 8 },
+            { ":not(h1 + h2)", 7 },
+            { ":not(h1 ~ pre)", 7 },
+            { ":not(li, p)", 7 },
+            { ":not(h1.opener)", 7 },
+            { ":not(42)", 5 },
         });
     }
 

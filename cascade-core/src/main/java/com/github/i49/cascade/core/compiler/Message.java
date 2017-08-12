@@ -35,12 +35,21 @@ public enum Message {
     UNEXPECTED_END_OF_INPUT,
     STRING_IS_NOT_CLOSED,
 
+    // pseudo-classes
+
     UNSUPPORTED_PSEUDO_CLASS,
     PSEUDO_CLASS_NAME_IS_MISSING,
     PSEUDO_CLASS_ARGUMENT_IS_MISSING,
-    PSEUDO_ELEMENTS_ARE_NOT_SUPPORTED,
     FUNCTION_IS_NOT_CLOSED,
     NUMBER_IS_NOT_INTEGER,
+
+    // negation
+
+    NEGATION_IS_NESTED,
+
+    // pseudo-elements
+
+    PSEUDO_ELEMENTS_ARE_NOT_SUPPORTED,
     ;
 
     private static final String BUNDLE_NAME = Message.class.getPackage().getName() + ".messages";

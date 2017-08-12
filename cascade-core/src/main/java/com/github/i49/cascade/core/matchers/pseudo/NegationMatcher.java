@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.selectors;
+package com.github.i49.cascade.core.matchers.pseudo;
+
+import org.w3c.dom.Element;
 
 import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- * The first sequence in the chained sequences.
+ * Matcher for :not pseudo-class selector.
  */
-public class HeadSequence extends AbstractSequence {
+public class NegationMatcher extends FunctionalPseudoClassMatcher {
 
-    public HeadSequence(Matcher matcher) {
-        super(matcher);
+    private final Matcher enclosed;
+
+    public NegationMatcher(Matcher enclosed) {
+        this.enclosed = enclosed;
+    }
+
+    @Override
+    public boolean matches(Element element) {
+        return !enclosed.matches(element);
+    }
+
+    @Override
+    protected String getExpression() {
+        return enclosed.toString();
+    }
+
+    @Override
+    public PseudoClass getPseudoClass() {
+        return PseudoClass.NOT;
     }
 }

@@ -17,13 +17,14 @@
 package com.github.i49.cascade.core.matchers;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import org.w3c.dom.Element;
 
 /**
  * List of matchers.
  */
-public class MatcherList extends ArrayList<Matcher> implements Matcher {
+public class AndMatcher extends ArrayList<Matcher> implements Matcher {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,35 +44,38 @@ public class MatcherList extends ArrayList<Matcher> implements Matcher {
     }
 
     @Override
+    public boolean matchesNone() {
+        for (Matcher m: this) {
+            if (m.matchesNone()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (int i = 0; i < size(); i++) {
-            Matcher m = get(i);
-            if (i == 0 && !m.getType().representsType()) {
-                b.append("*");
-            }
+        for (Matcher m: this) {
             b.append(m.toString());
         }
         return b.toString();
     }
 
-    public MatcherList without(Matcher matcher) {
-        MatcherList newList = new MatcherList();
-        newList.addAll(this);
-        newList.remove(matcher);
-        return newList;
-    }
-
     @Override
     public Matcher optimum() {
-        for (Matcher m: this) {
-            if (m.isNever()) {
-                return NeverMatcher.getInstance();
-            }
-        }
-        if (size() == 1) {
-            return get(0);
+        if (matchesNone()) {
+            return NeverMatcher.getInstance();
         }
         return this;
+    }
+
+    public Matcher find(Predicate<Matcher> predicate) {
+        for (Matcher matcher: this) {
+            if (predicate.test(matcher)) {
+                return matcher;
+            }
+        }
+        return null;
     }
 }

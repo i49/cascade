@@ -17,7 +17,7 @@
 package com.github.i49.cascade.api;
 
 /**
- * Exception thrown if the given expression was invalid.
+ * Exception thrown if the given expression of selector was invalid.
  */
 public class InvalidSelectorException extends RuntimeException {
 

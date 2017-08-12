@@ -127,6 +127,12 @@ public class ParsingTest {
             { "dl dt:first-of-type", "dl dt:first-of-type" },
             { "tr > td:last-of-type", "tr > td:last-of-type" },
             { "tr:only-child", "tr:only-child" },
+            // negation
+            { ":not([disabled])", "*:not([disabled])" },
+            { "button:not([disabled])", "button:not([disabled])" },
+            { ":not(p)", "*:not(p)" },
+            { ":not(*)", "*:not(*)" },
+            { "tr:not(:nth-child(3n+2))", "tr:not(:nth-child(3n + 2))" },
         });
     }
 

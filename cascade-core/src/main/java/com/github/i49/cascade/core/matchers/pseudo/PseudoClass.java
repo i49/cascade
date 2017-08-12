@@ -93,7 +93,8 @@ public enum PseudoClass {
                this == NTH_CHILD ||
                this == NTH_LAST_CHILD ||
                this == NTH_OF_TYPE ||
-               this == NTH_LAST_OF_TYPE
+               this == NTH_LAST_OF_TYPE ||
+               this == NOT
                ;
     }
 
