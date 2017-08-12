@@ -21,41 +21,41 @@ Set<Element> selected = selector.select(doc.getDocumentElement());
 
 ## Supported Selectors
 ### Simple Selectors
-Selector                          | Example
-----------------------------------|--------------------
-Universal selector                | \*       
-Type selector                     | h1
-Class selector                    | .example
-Attribute selector (presence)     | [title]
-Attribute selector (exact match)  | [class="example"]
-Attribute selector (separated)    | [class~="example"]
-Attribute selector (dash)         | [hreflang&#124;="en"]
-Attribute selector (prefix)       | [type^="image/"]
-Attribute selector (suffix)       | [href$=".html"]
-Attribute selector (substring)    | [title*="hello"]
-
-### Combinators
-Selector                          | Example
-----------------------------------|--------------------
-Descendant combinator             | h1 em       
-Child combinator                  | body > p       
-Adjacent sibling combinator       | h1 + h2       
-General sibling combinator        | h1 ~ pre
+Selector                             | Example
+-------------------------------------|--------------------
+Universal selector                   | \*       
+Type selector                        | h1
+Class selector                       | .example
+Attribute selector (presence)        | [title]
+Attribute selector (exact match)     | [class="example"]
+Attribute selector (space-separated) | [class~="example"]
+Attribute selector (dash-separated)  | [hreflang&#124;="en"]
+Attribute selector (prefix)          | [type^="image/"]
+Attribute selector (suffix)          | [href$=".html"]
+Attribute selector (substring)       | [title*="hello"]
 
 ### Pseudo-classes
-Selector                          | Example
-----------------------------------|--------------------
-:root                             |:root
-:nth-child                        |:nth-child(2n + 1) <br> :nth-child(odd)
-:nth-last-child                   |:nth-last-child(2n + 1) <br> :nth-last-child(even)
-:nth-of-type                      |:nth-of-type(2n + 1) <br> :nth-of-type(odd)
-:nth-last-of-type                 |:nth-last-of-type(2n + 1) <br> :nth-last-of-type(even)
-:first-child                      |:first-child
-:last-child                       |:last-child
-:first-of-type                    |:first-of-type
-:last-of-type                     |:last-of-type
-:only-child                       |:only-child
-:only-of-type                     |:only-of-type
-:empty                            |:empty
+Selector                             | Example
+-------------------------------------|--------------------
+:root                                |:root
+:nth-child                           |:nth-child(2n + 1) <br> :nth-child(odd)
+:nth-last-child                      |:nth-last-child(2n + 1) <br> :nth-last-child(even)
+:nth-of-type                         |:nth-of-type(2n + 1) <br> :nth-of-type(odd)
+:nth-last-of-type                    |:nth-last-of-type(2n + 1) <br> :nth-last-of-type(even)
+:first-child                         |:first-child
+:last-child                          |:last-child
+:first-of-type                       |:first-of-type
+:last-of-type                        |:last-of-type
+:only-child                          |:only-child
+:only-of-type                        |:only-of-type
+:empty                               |:empty
+
+### Combinators
+Selector                             | Example
+-------------------------------------|--------------------
+Descendant combinator                | h1 em       
+Child combinator                     | body > p       
+Adjacent sibling combinator          | h1 + h2       
+General sibling combinator           | h1 ~ pre
 
 Pseudo-elements are not supported.
