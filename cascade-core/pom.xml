@@ -35,7 +35,7 @@
                         <dependency>${project.groupId}:cascade-tests</dependency>
                     </dependenciesToScan>
                     <excludes>
-                        <exclude>**/benchmark/*</exclude>
+                        <exclude>**/performance/*</exclude>
                     </excludes>
                 </configuration>
              </plugin>

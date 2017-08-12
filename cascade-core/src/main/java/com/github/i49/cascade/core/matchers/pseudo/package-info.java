@@ -15,6 +15,6 @@
  */
 
 /**
- * Provides matchers for pseudo class selectors.
+ * Provides matchers for pseudo-classes.
  */
 package com.github.i49.cascade.core.matchers.pseudo;

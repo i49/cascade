@@ -40,7 +40,6 @@ public abstract class BaseSelectorTest {
     private final String startElement;
     private final String expression;
     private final int[] expectedIndices;
-    private final int expectedCount;
 
     private static Map<String, Document> documentCache;
 
@@ -48,7 +47,6 @@ public abstract class BaseSelectorTest {
         this.resourceName = resourceName;
         this.startElement = startElement;
         this.expression = expression;
-        this.expectedCount = -1;
         this.expectedIndices = indices;
     }
 
@@ -67,7 +65,7 @@ public abstract class BaseSelectorTest {
     public void test() {
         Document doc = loadDocument();
         Selector selector = Selector.compile(expression);
-        Set<Element> selected  = selector.select(startingElement(doc));
+        Set<Element> selected  = selector.select(getStartingElement(doc));
         if (expectedIndices != null) {
             assertThat(selected).hasSize(expectedIndices.length);
             NodeList nodes = doc.getElementsByTagName("*");
@@ -76,8 +74,6 @@ public abstract class BaseSelectorTest {
                 Element expected = (Element)nodes.item(expectedIndices[i++]);
                 assertThat(actual).isSameAs(expected);
             }
-        } else {
-            assertThat(selected).hasSize(expectedCount);
         }
     }
 
@@ -94,7 +90,7 @@ public abstract class BaseSelectorTest {
         return doc;
     }
 
-    private Element startingElement(Document doc) {
+    private Element getStartingElement(Document doc) {
         if (startElement == null) {
             return doc.getDocumentElement();
         }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.benchmark;
+package com.github.i49.cascade.tests.performance;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -33,16 +33,16 @@ import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.tests.Documents;
 
 @RunWith(Parameterized.class)
-public class BenchmarkTest {
+public class PerformanceTest {
 
-    private static final Logger log = Logger.getLogger(BenchmarkTest.class.getName());
+    private static final Logger log = Logger.getLogger(PerformanceTest.class.getName());
 
     private static Document doc;
 
     private final String expression;
     private long startTime;
 
-    public BenchmarkTest(String expression) {
+    public PerformanceTest(String expression) {
         this.expression = expression;
     }
 

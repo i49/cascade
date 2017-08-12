@@ -97,9 +97,6 @@ public class ParsingTest {
             // pseudo-class
             { ":root", "*:root" },
             { "style:empty", "style:empty" },
-            { "tr:first-child", "tr:first-child" },
-            { "tr:last-child", "tr:last-child" },
-            { "tr:only-child", "tr:only-child" },
             { "tr:nth-child(2n+1)", "tr:nth-child(2n + 1)" },
             { "tr:nth-child(2n+0)", "tr:nth-child(2n)" },
             { "tr:nth-child(10n-1)", "tr:nth-child(10n - 1)" },
@@ -122,6 +119,14 @@ public class ParsingTest {
             { "tr:nth-last-child(-n+2)", "tr:nth-last-child(-n + 2)" },
             { "tr:nth-last-child(odd)", "tr:nth-last-child(odd)" },
             { "tr:nth-last-child(even)", "tr:nth-last-child(even)" },
+            { "img:nth-of-type(2n+1)", "img:nth-of-type(2n + 1)" },
+            { "img:nth-of-type(2n)", "img:nth-of-type(2n)" },
+            { "body > h2:nth-of-type(n+2):nth-last-of-type(n+2)", "body > h2:nth-of-type(n + 2):nth-last-of-type(n + 2)" },
+            { "tr:first-child", "tr:first-child" },
+            { "tr:last-child", "tr:last-child" },
+            { "dl dt:first-of-type", "dl dt:first-of-type" },
+            { "tr > td:last-of-type", "tr > td:last-of-type" },
+            { "tr:only-child", "tr:only-child" },
         });
     }
 

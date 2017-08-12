@@ -15,6 +15,6 @@
  */
 
 /**
- * Provides benchmarking tests.
+ * Provides performance tests.
  */
-package com.github.i49.cascade.benchmark;
+package com.github.i49.cascade.tests.performance;

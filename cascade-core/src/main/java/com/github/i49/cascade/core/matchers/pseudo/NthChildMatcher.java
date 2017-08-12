@@ -25,11 +25,19 @@ import org.w3c.dom.Element;
  */
 public class NthChildMatcher extends OrdinalPositionMatcher {
 
-    public static final NthChildMatcher ODD = new NthChildMatcher(Parity.ODD);
-    public static final NthChildMatcher EVEN = new NthChildMatcher(Parity.EVEN);
+    private static final NthChildMatcher ODD = new NthChildMatcher(Parity.ODD);
+    private static final NthChildMatcher EVEN = new NthChildMatcher(Parity.EVEN);
 
     public static NthChildMatcher of(int a, int b) {
         return new NthChildMatcher(a, b);
+    }
+
+    public static NthChildMatcher of(Parity parity) {
+        if (parity == Parity.ODD) {
+            return ODD;
+        } else {
+            return EVEN;
+        }
     }
 
     private NthChildMatcher(int a, int b) {
