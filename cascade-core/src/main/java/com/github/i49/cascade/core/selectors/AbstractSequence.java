@@ -16,13 +16,14 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.w3c.dom.Element;
 
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
-import com.github.i49.cascade.core.matchers.AndMatcher;
+import com.github.i49.cascade.core.matchers.AllOfMatcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
@@ -90,9 +91,10 @@ abstract class AbstractSequence implements Sequence {
     public String toString() {
         StringBuilder b = new StringBuilder();
 
-        if (originalMatcher instanceof AndMatcher) {
-            AndMatcher aggregation = (AndMatcher)originalMatcher;
-            if (aggregation.isEmpty() || !aggregation.get(0).getType().representsType()) {
+        if (originalMatcher instanceof AllOfMatcher) {
+            AllOfMatcher aggregation = (AllOfMatcher)originalMatcher;
+            Iterator<Matcher> it = aggregation.iterator();
+            if (!it.hasNext() || !it.next().getType().representsType()) {
                 b.append("*");
             }
         } else if (!originalMatcher.getType().representsType()) {
@@ -108,8 +110,8 @@ abstract class AbstractSequence implements Sequence {
     }
 
     private static Traverser createTraverserFor(Matcher matcher) {
-        if (matcher instanceof AndMatcher) {
-            AndMatcher aggregation = (AndMatcher)matcher;
+        if (matcher instanceof AllOfMatcher) {
+            AllOfMatcher aggregation = (AllOfMatcher)matcher;
             Matcher found = aggregation.find(AbstractSequence::isRootMatcher);
             if (found != null) {
                 return RootTraverser.SINGLETON;

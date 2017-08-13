@@ -16,17 +16,31 @@
 
 package com.github.i49.cascade.core.matchers;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.w3c.dom.Element;
 
 /**
- * List of matchers.
+ * Matcher which tests all of entry matchers
  */
-public class AndMatcher extends ArrayList<Matcher> implements Matcher {
+public class AllOfMatcher implements Matcher, Iterable<Matcher> {
 
-    private static final long serialVersionUID = 1L;
+    private final List<Matcher> matchers;
+
+    public static Matcher allOf(List<Matcher> matchers) {
+        assert(!matchers.isEmpty());
+        if (matchers.size() == 1) {
+            return matchers.iterator().next();
+        } else {
+            return new AllOfMatcher(matchers);
+        }
+    }
+
+    private AllOfMatcher(List<Matcher> matchers) {
+        this.matchers = matchers;
+    }
 
     @Override
     public MatcherType getType() {
@@ -44,9 +58,9 @@ public class AndMatcher extends ArrayList<Matcher> implements Matcher {
     }
 
     @Override
-    public boolean matchesNone() {
+    public boolean matchesNever() {
         for (Matcher m: this) {
-            if (m.matchesNone()) {
+            if (m.matchesNever()) {
                 return true;
             }
         }
@@ -64,10 +78,15 @@ public class AndMatcher extends ArrayList<Matcher> implements Matcher {
 
     @Override
     public Matcher optimum() {
-        if (matchesNone()) {
+        if (matchesNever()) {
             return NeverMatcher.getInstance();
         }
         return this;
+    }
+
+    @Override
+    public Iterator<Matcher> iterator() {
+        return matchers.iterator();
     }
 
     public Matcher find(Predicate<Matcher> predicate) {

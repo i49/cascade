@@ -25,6 +25,7 @@ Selector                             | Example
 -------------------------------------|--------------------
 Universal selector                   | \*       
 Type selector                        | h1
+ID selector                          | \#notice
 Class selector                       | .example
 Attribute selector (presence)        | [title]
 Attribute selector (exact match)     | [class="example"]

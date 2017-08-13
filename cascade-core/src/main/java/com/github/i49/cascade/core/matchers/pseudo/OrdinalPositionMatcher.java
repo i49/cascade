@@ -70,7 +70,7 @@ public abstract class OrdinalPositionMatcher extends FunctionalPseudoClassMatche
     }
 
     @Override
-    public boolean matchesNone() {
+    public boolean matchesNever() {
         return a == 0 && b == 0;
     }
 

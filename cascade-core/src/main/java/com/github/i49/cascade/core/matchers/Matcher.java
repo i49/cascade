@@ -43,7 +43,7 @@ public interface Matcher {
      *
      * @return {@code true} if this matcher never match any element, {@code false} otherwise.
      */
-    default boolean matchesNone() {
+    default boolean matchesNever() {
         return false;
     }
 

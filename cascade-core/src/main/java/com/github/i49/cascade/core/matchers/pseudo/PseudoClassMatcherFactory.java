@@ -19,8 +19,6 @@ package com.github.i49.cascade.core.matchers.pseudo;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.github.i49.cascade.core.matchers.Matcher;
-
 public class PseudoClassMatcherFactory {
 
     private static final PseudoClassMatcherFactory SINGLETON = new PseudoClassMatcherFactory();
@@ -65,10 +63,6 @@ public class PseudoClassMatcherFactory {
             assert(false);
             return null;
         }
-    }
-
-    public PseudoClassMatcher negateMatcher(Matcher matcher) {
-        return new NegationMatcher(matcher);
     }
 
     private PseudoClassMatcherFactory() {

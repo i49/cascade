@@ -29,13 +29,14 @@ import com.github.i49.cascade.core.matchers.ExactMatcher;
 import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.IncludeMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
-import com.github.i49.cascade.core.matchers.AndMatcher;
+import com.github.i49.cascade.core.matchers.AllOfMatcher;
 import com.github.i49.cascade.core.matchers.PrefixMatcher;
 import com.github.i49.cascade.core.matchers.SubstringMatcher;
 import com.github.i49.cascade.core.matchers.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.TypeMatcher;
 import com.github.i49.cascade.core.matchers.UniversalMatcher;
+import com.github.i49.cascade.core.matchers.pseudo.NegationMatcher;
 import com.github.i49.cascade.core.matchers.pseudo.Parity;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
@@ -88,7 +89,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         Sequence last = null;
         Combinator combinator = null;
         do {
-            Matcher matcher = extractMatcher(parseSequence());
+            Matcher matcher = parseSequence();
             if (matcher == null) {
                 if (combinator == Combinator.DESCENDANT) {
                     break;
@@ -131,29 +132,22 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
     }
 
-    private AndMatcher parseSequence() {
-        AndMatcher sequence = new AndMatcher();
+    private Matcher parseSequence() {
+        List<Matcher> matchers = new ArrayList<>();
         int index = 0;
         Token token = nextNonSpaceToken();
-        Matcher simpleSelector;
-        while ((simpleSelector = parseSimpleSelector(token, index++, false)) != null) {
-            sequence.add(simpleSelector);
+        Matcher matcher;
+        while ((matcher = parseSimpleSelector(token, index++, false)) != null) {
+            matchers.add(matcher);
             token = nextToken();
             if (token.isEndOfSequence()) {
                 break;
             }
         }
-        return sequence;
-    }
-
-    private Matcher extractMatcher(AndMatcher sequence) {
-        if (sequence.isEmpty()) {
+        if (matchers.isEmpty()) {
             return null;
-        } else if (sequence.size() == 1) {
-            return sequence.get(0);
-        } else {
-            return sequence;
         }
+        return AllOfMatcher.allOf(matchers);
     }
 
     private Matcher parseSimpleSelector(Token token, int index, boolean nested) {
@@ -365,7 +359,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         if (token != Token.CLOSING_PARENTHESIS) {
             throw unexpectedToken(token);
         }
-        return newNegationPseudoClassSelector(selector);
+        return NegationMatcher.negate(selector);
     }
 
     private Matcher parseSimpleSelectorInNegation(Token token) {
@@ -422,10 +416,6 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             internalError();
         }
         return matcher;
-    }
-
-    private Matcher newNegationPseudoClassSelector(Matcher enclosed) {
-        return pseudoClassMatcherFactory.negateMatcher(enclosed);
     }
 
     private Token nextToken() {
