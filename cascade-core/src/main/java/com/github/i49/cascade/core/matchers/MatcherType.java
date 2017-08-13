@@ -35,7 +35,7 @@ public enum MatcherType {
     /** Matcher which matches any element. */
     ALWAYS,
     /** Matcher which never match any element. */
-    NEVER
+    NEVER,
     ;
 
     /**

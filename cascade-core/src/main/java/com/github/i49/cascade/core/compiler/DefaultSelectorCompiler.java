@@ -41,11 +41,10 @@ import com.github.i49.cascade.core.matchers.pseudo.Parity;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
 import com.github.i49.cascade.core.selectors.Combinator;
-import com.github.i49.cascade.core.selectors.CombinatorSequence;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
 import com.github.i49.cascade.core.selectors.Sequence;
-import com.github.i49.cascade.core.selectors.HeadSequence;
+import com.github.i49.cascade.core.selectors.TailSequence;
 
 /**
  * Default implementation of {@link SelectorCompiler}.
@@ -85,10 +84,10 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     }
 
     private SingleSelector parseAllSequencesInSelector() {
-        Sequence first = null;
-        Sequence last = null;
+        List<Matcher> matchers = new ArrayList<>();
+        List<Combinator> combinators = new ArrayList<>();
         Combinator combinator = null;
-        do {
+        for (;;) {
             Matcher matcher = parseSequence();
             if (matcher == null) {
                 if (combinator == Combinator.DESCENDANT) {
@@ -97,19 +96,27 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
                     throw newException(Message.UNEXPECTED_END_OF_INPUT);
                 }
             }
-            if (first == null) {
-                first = new HeadSequence(matcher);
-                last = first;
-            } else {
-                CombinatorSequence sequence = CombinatorSequence.create(combinator, matcher);
-                last.combine(sequence);
-                last = sequence;
-            }
+            matchers.add(matcher);
             combinator = parseCombinatorType(currentToken);
-        } while (combinator != null);
-
-        return new DefaultSingleSelector(first);
+            if (combinator != null) {
+                combinators.add(combinator);
+            } else {
+                break;
+            }
+        }
+        return buildSelector(matchers, combinators);
     }
+
+    private SingleSelector buildSelector(List<Matcher> matchers, List<Combinator> combinators) {
+        int index = matchers.size() - 1;
+        TailSequence tail = new TailSequence(matchers.get(index));
+        Sequence current = tail;
+        while (--index >= 0) {
+            current = current.prepend(matchers.get(index), combinators.get(index));
+        }
+        return new DefaultSingleSelector(tail);
+    }
+
 
     /**
      * Returns the combinator type of the given token.

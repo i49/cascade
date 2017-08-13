@@ -16,32 +16,29 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+
 /**
- * Combinators.
+ *
  */
-public enum Combinator {
-    /** Descendant combinator. */
-    DESCENDANT(" "),
-    /** Child combinators. */
-    CHILD(" > "),
-    /** Adjacent sibling combinator. */
-    ADJACENT(" + "),
-    /** General sibling combinator. */
-    SIBLING(" ~ ")
-    ;
+public abstract class PrecedingSequence extends AbstractSequence {
 
-    private final String symbol;
+    public final Combinator combinator;
 
-    private Combinator(String symbol) {
-        this.symbol = symbol;
+    protected PrecedingSequence(Matcher matcher, Combinator combinator) {
+        super(matcher);
+        this.combinator = combinator;
     }
 
-    /**
-     * Returns the symbol representing this combinator.
-     *
-     * @return the symbol.
-     */
-    public String getSymbol() {
-        return symbol;
+    public Combinator getCombinator() {
+        return combinator;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append(super.toString());
+        b.append(getCombinator().getSymbol());
+        return b.toString();
     }
 }

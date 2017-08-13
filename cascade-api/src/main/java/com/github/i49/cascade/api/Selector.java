@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,10 +24,10 @@ import org.w3c.dom.Element;
  * Cascading Style Sheets selector.
  */
 public interface Selector {
-    
+
     /**
      * Compiles the given expression to generate a selector.
-     * 
+     *
      * @param expression the expression representing a selector.
      * @return created selector.
      * @throws NullPointerException if given {@code expression} is {@code null}.
@@ -35,12 +35,13 @@ public interface Selector {
     static Selector compile(String expression) {
         return SelectorCompiler.create().compile(expression);
     }
-    
+
     /**
-     * Finds all elements matching this selector.
-     * 
+     * Searches the document tree for elements matching this selector.
+     *
      * @param root the root of all elements to search.
-     * @return the set of elements found, cannot be {@code null}.
+     *             All descendants of this element and given element itself will be searched.
+     * @return the set of all elements found, may be empty but never be {@code null}.
      * @throws NullPointerException if the given {@code root} is {@code null}.
      */
     Set<Element> select(Element root);

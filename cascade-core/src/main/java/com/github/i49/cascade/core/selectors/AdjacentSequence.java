@@ -16,14 +16,32 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- * The first sequence in the chained sequences.
  */
-public class HeadSequence extends AbstractSequence {
+public class AdjacentSequence extends PrecedingSequence {
 
-    public HeadSequence(Matcher matcher) {
-        super(matcher);
+    public AdjacentSequence(Matcher matcher) {
+        super(matcher, Combinator.ADJACENT);
+    }
+
+    @Override
+    public boolean test(Element start, Element root) {
+        Node sibling = start.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element)sibling;
+                if (test(element) && testPrevious(element, root)) {
+                    return true;
+                }
+                return false;
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return false;
     }
 }

@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.traversers;
-
-import org.w3c.dom.Element;
-
 /**
- * The base interface of all traversers.
+ * Provides utility classes manipulating matchers.
  */
-@FunctionalInterface
-public interface Traverser {
-
-    /**
-     * Traverses the document tree.
-     *
-     * @param start the starting point of the traversal.
-     * @param visitor the visitor of each element.
-     */
-    void traverse(Element start, Visitor visitor);
-}
+package com.github.i49.cascade.core.matchers.util;

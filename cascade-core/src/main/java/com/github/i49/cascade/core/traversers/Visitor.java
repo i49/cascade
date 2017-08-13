@@ -28,7 +28,6 @@ public interface Visitor {
      * Visits a element.
      *
      * @param element the element to visit.
-     * @return {@code true} if given element is matched, {@code false} otherwise..
      */
-    boolean visit(Element element);
+    void visit(Element element);
 }

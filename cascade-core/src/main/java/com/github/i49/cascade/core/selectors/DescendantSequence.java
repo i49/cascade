@@ -14,28 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.traversers;
+package com.github.i49.cascade.core.selectors;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+
 /**
- *
  */
-public class ChildTraverser implements Traverser {
+public class DescendantSequence extends PrecedingSequence {
 
-    // The one and only instance of this traverser.
-   public static final ChildTraverser SINGLETON = new ChildTraverser();
-
-    private ChildTraverser() {
+    public DescendantSequence(Matcher matcher) {
+        super(matcher, Combinator.DESCENDANT);
     }
 
     @Override
-    public void traverse(Element start, Visitor visitor) {
-        for (Node node = start.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                visitor.visit((Element)node);
-            }
+    public boolean test(Element start, Element root) {
+        if (start == root) {
+            return false;
         }
-   }
+        Node parent = start.getParentNode();
+        while (parent != root) {
+            Element element = (Element)parent;
+            if (test(element) && testPrevious(element, root)) {
+                return true;
+            }
+            parent = parent.getParentNode();
+        }
+        return false;
+    }
 }

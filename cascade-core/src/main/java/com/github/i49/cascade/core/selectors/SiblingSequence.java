@@ -16,33 +16,31 @@
 
 package com.github.i49.cascade.core.selectors;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import com.github.i49.cascade.core.matchers.Matcher;
 
 /**
- * A sequence preceded by a combinator.
  */
-public class CombinatorSequence extends AbstractSequence {
+public class SiblingSequence extends PrecedingSequence {
 
-    private final Combinator combinator;
-
-    private CombinatorSequence(Combinator combinator, Matcher matcher) {
-        super(matcher, combinator.getTraverser());
-        this.combinator = combinator;
-    }
-
-    public Combinator getCombinator() {
-        return combinator;
+    public SiblingSequence(Matcher matcher) {
+        super(matcher, Combinator.SIBLING);
     }
 
     @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append(getCombinator().getSymbol());
-        b.append(super.toString());
-        return b.toString();
-    }
-
-    public static CombinatorSequence create(Combinator combinator, Matcher matcher) {
-        return new CombinatorSequence(combinator, matcher);
+    public boolean test(Element start, Element root) {
+        Node sibling = start.getPreviousSibling();
+        while (sibling != null) {
+            if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element)sibling;
+                if (test(element) && testPrevious(element, root)) {
+                    return true;
+                }
+            }
+            sibling = sibling.getPreviousSibling();
+        }
+        return false;
     }
 }

@@ -29,7 +29,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class CombinatorTest extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             { "/descendant-combinator-test.html", "div.main p", expect(7, 12, 14) },
