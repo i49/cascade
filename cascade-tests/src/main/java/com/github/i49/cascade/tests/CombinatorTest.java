@@ -32,12 +32,16 @@ public class CombinatorTest extends BaseSelectorTest {
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/descendant-combinator-test.html", "div.main p", expect(7, 12, 14) },
-            { "/child-combinator-test.html", "div > p", expect(7, 14) },
-            { "/adjacent-combinator-test-1.html", "h1.opener + h2", expect(6) },
-            { "/adjacent-combinator-test-2.html", "article > p + p", expect(7, 8) },
-            { "/sibling-combinator-test-1.html", "h2 ~ pre", expect(8) },
-            { "/sibling-combinator-test-2.html", "article > p ~ p", expect(8, 9, 11) }
+            { "/descendant-combinator-test.html", "div.main p", contains(7, 12, 14) },
+            { "/child-combinator-test.html", "div > p", contains(7, 14) },
+            { "/adjacent-combinator-test-1.html", "h1.opener + h2", contains(6) },
+            { "/adjacent-combinator-test-2.html", "article > p + p", contains(7, 8) },
+            { "/sibling-combinator-test-1.html", "h2 ~ pre", contains(8) },
+            { "/sibling-combinator-test-2.html", "article > p ~ p", contains(8, 9, 11) },
+
+            // element order
+            { "/element-order-test-1.html", "div ~ p", contains(9, 10) },
+            { "/element-order-test-2.html", "div > p", contains(8, 9) },
         });
     }
 

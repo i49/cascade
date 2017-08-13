@@ -33,43 +33,43 @@ public class AttributeSelectorTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // presence
-            { "/attribute-presence-selector-test.html", "[title]", expect(5) },
-            // negated
-            { "/attribute-presence-selector-test.html", ":not([title])", expectAllBut(5) },
+            { "/attribute-presence-selector-test.html", "[title]", contains(5) },
+            // presence negation
+            { "/attribute-presence-selector-test.html", ":not([title])", doesNotContain(5) },
             // value
-            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", expect(8) },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([href=\"http://www.w3.org/\"])", expectAllBut(8) },
+            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", contains(8) },
+            // value negation
+            { "/attribute-value-selector-test.html", ":not([href=\"http://www.w3.org/\"])", doesNotContain(8) },
             // space-separated
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", expect(10) },
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", expect() },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright\"])", expectAllBut(10) },
-            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright copyleft\"])", expectAllBut() },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", contains(10) },
+            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", contains() },
+            // space-separated negation
+            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright\"])", doesNotContain(10) },
+            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright copyleft\"])", doesNotContain() },
             // dash-separated
-            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", expect(12, 14) },
-            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", expect() },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([hreflang|=\"en\"])", expectAllBut(12, 14) },
-            { "/attribute-value-selector-test.html", ":not([hreflang|=\"US\"])", expectAllBut() },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", contains(12, 14) },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", contains() },
+            // dash-separated negation
+            { "/attribute-value-selector-test.html", ":not([hreflang|=\"en\"])", doesNotContain(12, 14) },
+            { "/attribute-value-selector-test.html", ":not([hreflang|=\"US\"])", doesNotContain() },
             // prefix
-            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", expect(16) },
-            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", expect(16) },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/\"])", expectAllBut(16) },
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/png\"])", expectAllBut(16) },
+            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", contains(16) },
+            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", contains(16) },
+            // prefix negation
+            { "/attribute-value-selector-test.html", ":not([type^=\"image/\"])", doesNotContain(16) },
+            { "/attribute-value-selector-test.html", ":not([type^=\"image/png\"])", doesNotContain(16) },
             // suffix
-            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", expect(18) },
-            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", expect(18) },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([href$=\".pdf\"])", expectAllBut(18) },
-            { "/attribute-value-selector-test.html", ":not([href$=\"userguide.pdf\"])", expectAllBut(18) },
+            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", contains(18) },
+            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", contains(18) },
+            // suffix negation
+            { "/attribute-value-selector-test.html", ":not([href$=\".pdf\"])", doesNotContain(18) },
+            { "/attribute-value-selector-test.html", ":not([href$=\"userguide.pdf\"])", doesNotContain(18) },
             // substring
-            { "/attribute-value-selector-test.html", "[href*=\"example\"]", expect(20) },
-            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", expect(20) },
-            // negated
-            { "/attribute-value-selector-test.html", ":not([href*=\"example\"])", expectAllBut(20) },
-            { "/attribute-value-selector-test.html", ":not([href*=\"http://example.com\"])", expectAllBut(20) },
+            { "/attribute-value-selector-test.html", "[href*=\"example\"]", contains(20) },
+            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", contains(20) },
+            // substring negation
+            { "/attribute-value-selector-test.html", ":not([href*=\"example\"])", doesNotContain(20) },
+            { "/attribute-value-selector-test.html", ":not([href*=\"http://example.com\"])", doesNotContain(20) },
         });
     }
 

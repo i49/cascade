@@ -14,39 +14,40 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.matchers.simple;
 
 import org.w3c.dom.Element;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+import com.github.i49.cascade.core.matchers.MatcherType;
+
 /**
- *
+ * The matcher which will check the presence of the specified attribute. 
  */
-public class ClassMatcher implements Matcher {
+public class AttributeMatcher implements Matcher {
     
-    private final String className;
+    private final String name;
     
-    public ClassMatcher(String className) {
-        this.className = className;
+    public AttributeMatcher(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public MatcherType getType() {
+        return MatcherType.ATTRIBUTE;
     }
 
     @Override
-    public MatcherType getType() {
-        return MatcherType.CLASS;
-    }
-    
-    @Override
     public boolean matches(Element element) {
-        String valueList = element.getAttribute("class");
-        for (String value: valueList.split("\\s+")) {
-            if (this.className.equals(value)) {
-                return true;
-            }
-        }
-        return false;
+        return element.hasAttribute(getName());
     }
     
     @Override
     public String toString() {
-        return "." + this.className;
+        return "[" + getName() + "]";
+    }
+    
+    protected String getName() {
+        return name;
     }
 }

@@ -14,37 +14,49 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.matchers.simple;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+
+import com.github.i49.cascade.core.matchers.Matcher;
+import com.github.i49.cascade.core.matchers.MatcherType;
 
 /**
  *
  */
-public class TypeMatcher implements Matcher {
+public class IdentifierMatcher implements Matcher {
 
-    private final String elementName;
+    private final String identifier;
 
-    public TypeMatcher(String elementName) {
-        this.elementName = elementName;
+    public IdentifierMatcher(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
     public MatcherType getType() {
-        return MatcherType.TYPE;
+        return MatcherType.IDENTIFIER;
     }
 
     @Override
     public boolean matches(Element element) {
-        return elementName.equals(element.getTagName());
+        NamedNodeMap map = element.getAttributes();
+        for (int i = 0; i < map.getLength(); i++) {
+            Attr a = (Attr)map.item(i);
+            if (a.isId() && this.identifier.equals(a.getValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return elementName;
+        return "#" + this.identifier;
     }
 
-    public String getElementName() {
-        return elementName;
+    public String getIdentifier() {
+        return identifier;
     }
 }

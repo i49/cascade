@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.matchers.simple;
 
 import org.w3c.dom.Element;
 
 /**
- * The matcher which will check the presence of the specified attribute. 
+ *
  */
-public class AttributeMatcher implements Matcher {
-    
-    private final String name;
-    
-    public AttributeMatcher(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public MatcherType getType() {
-        return MatcherType.ATTRIBUTE;
+public class PrefixMatcher extends AttributeValueMatcher {
+
+    public PrefixMatcher(String name, String prefix) {
+        super(name, prefix);
     }
 
     @Override
     public boolean matches(Element element) {
-        return element.hasAttribute(getName());
+        if (!super.matches(element)) {
+            return false;
+        }
+        String value = element.getAttribute(getName()); 
+        return value.startsWith(getExpectedValue());
     }
-    
+  
     @Override
-    public String toString() {
-        return "[" + getName() + "]";
-    }
-    
-    protected String getName() {
-        return name;
+    protected String getSymbol() {
+        return "^=";
     }
 }

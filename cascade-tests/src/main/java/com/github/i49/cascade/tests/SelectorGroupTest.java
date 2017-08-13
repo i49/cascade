@@ -32,11 +32,11 @@ public class SelectorGroupTest extends BaseSelectorTest {
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/selector-group-test.html", "li, p", expect(5, 7, 8, 9) },
-            { "/selector-group-test.html", "li, nonexistent", expect(7, 8) },
-            { "/selector-group-test.html", "nonexistent, p", expect(5, 9) },
-            { "/selector-group-test.html", "nonexistent1, nonexistent2", expect() },
-            { "/selector-group-test.html", "li, .example", expect(5, 7, 8, 9) },
+            { "/selector-group-test.html", "li, p", contains(5, 7, 8, 9) },
+            { "/selector-group-test.html", "li, nonexistent", contains(7, 8) },
+            { "/selector-group-test.html", "nonexistent, p", contains(5, 9) },
+            { "/selector-group-test.html", "nonexistent1, nonexistent2", contains() },
+            { "/selector-group-test.html", "li, .example", contains(5, 7, 8, 9) },
         });
     }
 

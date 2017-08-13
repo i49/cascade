@@ -18,10 +18,10 @@ package com.github.i49.cascade.core.selectors;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.core.matchers.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
+import com.github.i49.cascade.core.matchers.simple.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.util.Matchers;
 import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
 import com.github.i49.cascade.core.traversers.FastIdentifierTraverser;

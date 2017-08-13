@@ -89,11 +89,11 @@ public abstract class BaseSelectorTest {
         }
     }
 
-    protected static Expected expect(int... indices) {
+    protected static Expected contains(int... indices) {
         return Expected.include(indices);
     }
 
-    protected static Expected expectAllBut(int... indices) {
+    protected static Expected doesNotContain(int... indices) {
         return Expected.exclude(indices);
     }
 

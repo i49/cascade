@@ -14,41 +14,42 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
-
-import java.util.regex.Pattern;
+package com.github.i49.cascade.core.matchers.simple;
 
 import org.w3c.dom.Element;
 
+import com.github.i49.cascade.core.matchers.Matcher;
+import com.github.i49.cascade.core.matchers.MatcherType;
+
 /**
- * Matcher which returns true if one of attribute values
- * separated by whitespaces equals the specified value.
+ *
  */
-public class IncludeMatcher extends AttributeValueMatcher {
+public class ClassMatcher implements Matcher {
     
-    private static final Pattern SEPARATOR = Pattern.compile("[ \\t\\r\\n\\f]+");
-            
-    public IncludeMatcher(String name, String value) {
-        super(name, value);
+    private final String className;
+    
+    public ClassMatcher(String className) {
+        this.className = className;
     }
 
     @Override
+    public MatcherType getType() {
+        return MatcherType.CLASS;
+    }
+    
+    @Override
     public boolean matches(Element element) {
-        if (!super.matches(element)) {
-            return false;
-        }
-        String expected = getExpectedValue();
-        String values = element.getAttribute(getName()); 
-        for (String value: SEPARATOR.split(values)) {
-            if (value.equals(expected)) {
+        String valueList = element.getAttribute("class");
+        for (String value: valueList.split("\\s+")) {
+            if (this.className.equals(value)) {
                 return true;
             }
         }
         return false;
     }
-  
+    
     @Override
-    protected String getSymbol() {
-        return "~=";
+    public String toString() {
+        return "." + this.className;
     }
 }

@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
-
-import org.w3c.dom.Element;
+package com.github.i49.cascade.core.matchers.simple;
 
 /**
  *
  */
-public class DashMatcher extends AttributeValueMatcher {
+public abstract class AttributeValueMatcher extends AttributeMatcher {
 
-    public DashMatcher(String name, String value) {
-        super(name, value);
+    private final String value;
+    
+    public AttributeValueMatcher(String attribute, String value) {
+        super(attribute);
+        this.value = value;
     }
-   
+
     @Override
-    public boolean matches(Element element) {
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = element.getAttribute(getName());
-        String expected = getExpectedValue();
-        return actual.equals(expected) || actual.startsWith(expected + "-");
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("[")
+         .append(getName())
+         .append(getSymbol())
+         .append("\"")
+         .append(getExpectedValue())
+         .append("\"]");
+        return b.toString();
     }
     
-    @Override
-    protected String getSymbol() {
-        return "|=";
+    public String getExpectedValue() {
+        return value;
     }
+
+    protected abstract String getSymbol();
 }

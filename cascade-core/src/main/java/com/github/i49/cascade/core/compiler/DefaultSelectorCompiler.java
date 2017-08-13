@@ -22,23 +22,23 @@ import java.util.List;
 import com.github.i49.cascade.api.InvalidSelectorException;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
-import com.github.i49.cascade.core.matchers.ClassMatcher;
-import com.github.i49.cascade.core.matchers.DashMatcher;
-import com.github.i49.cascade.core.matchers.ExactMatcher;
-import com.github.i49.cascade.core.matchers.IdentifierMatcher;
-import com.github.i49.cascade.core.matchers.IncludeMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.AllOfMatcher;
-import com.github.i49.cascade.core.matchers.PrefixMatcher;
-import com.github.i49.cascade.core.matchers.SubstringMatcher;
-import com.github.i49.cascade.core.matchers.SuffixMatcher;
-import com.github.i49.cascade.core.matchers.AttributeMatcher;
-import com.github.i49.cascade.core.matchers.TypeMatcher;
-import com.github.i49.cascade.core.matchers.UniversalMatcher;
 import com.github.i49.cascade.core.matchers.pseudo.NegationMatcher;
 import com.github.i49.cascade.core.matchers.pseudo.Parity;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
+import com.github.i49.cascade.core.matchers.simple.AttributeMatcher;
+import com.github.i49.cascade.core.matchers.simple.ClassMatcher;
+import com.github.i49.cascade.core.matchers.simple.DashMatcher;
+import com.github.i49.cascade.core.matchers.simple.ExactMatcher;
+import com.github.i49.cascade.core.matchers.simple.IdentifierMatcher;
+import com.github.i49.cascade.core.matchers.simple.IncludeMatcher;
+import com.github.i49.cascade.core.matchers.simple.PrefixMatcher;
+import com.github.i49.cascade.core.matchers.simple.SubstringMatcher;
+import com.github.i49.cascade.core.matchers.simple.SuffixMatcher;
+import com.github.i49.cascade.core.matchers.simple.TypeMatcher;
+import com.github.i49.cascade.core.matchers.simple.UniversalMatcher;
 import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
 import com.github.i49.cascade.core.selectors.DefaultSingleSelector;
@@ -439,6 +439,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             return newException(Message.UNEXPECTED_END_OF_INPUT);
         } else if (token == Token.UNKNOWN) {
             return newException(Message.UNKNOWN_TOKEN);
+        } else if (token == Token.SPACE) {
+            return newException(Message.UNEXPECTED_WHITESPACE);
         } else {
             return newException(Message.UNEXPECTED_TOKEN.with(token.getRawText()));
         }
@@ -447,11 +449,8 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     private InvalidSelectorException unexpectedTokenInFunction(Token token) {
         if (token == Token.EOI) {
             return newException(Message.FUNCTION_IS_NOT_CLOSED);
-        } else if (token == Token.UNKNOWN) {
-            return newException(Message.UNKNOWN_TOKEN);
-        } else {
-            return newException(Message.UNEXPECTED_TOKEN.with(token.getRawText()));
         }
+        return unexpectedToken(token);
     }
 
     private InvalidSelectorException newException(Object message) {

@@ -29,26 +29,26 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class Html5Test extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // simple selectors
-            { "/html5-test.html", "#forms__action", expect(435) },
-            { "/html5-test.html", ":not(#forms__action)", expectAllBut(435) },
-            { "/html5-test.html", "article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
-            { "/html5-test.html", ":not(article)", expectAllBut(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "#forms__action", contains(435) },
+            { "/html5-test.html", ":not(#forms__action)", doesNotContain(435) },
+            { "/html5-test.html", "article", contains(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", ":not(article)", doesNotContain(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
 
             // combinator
-            { "/html5-test.html", "* article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
-            { "/html5-test.html", "* * article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
-            { "/html5-test.html", "* ~ article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
-            { "/html5-test.html", "* * ~ article", expect(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
-            { "/html5-test.html", "* ~ * ~ article", expect(84, 92, 104, 125, 133, 180, 198, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "* article", contains(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "* * article", contains(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "* ~ article", contains(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "* * ~ article", contains(71, 84, 92, 104, 125, 133, 180, 198, 247, 269, 277, 285, 293, 301, 309, 318) },
+            { "/html5-test.html", "* ~ * ~ article", contains(84, 92, 104, 125, 133, 180, 198, 269, 277, 285, 293, 301, 309, 318) },
 
             // pseudo class
-            { "/html5-test.html", ":root", expect(0) },
-            { "/html5-test.html", ":not(:root)", expectAllBut(0) },
-            { "/html5-test.html", "meta:empty", expect(2, 3) },
+            { "/html5-test.html", ":root", contains(0) },
+            { "/html5-test.html", ":not(:root)", doesNotContain(0) },
+            { "/html5-test.html", "meta:empty", contains(2, 3) },
         });
     }
 

@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.matchers.simple;
+
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 
 /**
- *
+ * Matcher which returns true if one of attribute values
+ * separated by whitespaces equals the specified value.
  */
-public class PrefixMatcher extends AttributeValueMatcher {
-
-    public PrefixMatcher(String name, String prefix) {
-        super(name, prefix);
+public class IncludeMatcher extends AttributeValueMatcher {
+    
+    private static final Pattern SEPARATOR = Pattern.compile("[ \\t\\r\\n\\f]+");
+            
+    public IncludeMatcher(String name, String value) {
+        super(name, value);
     }
 
     @Override
@@ -32,12 +37,18 @@ public class PrefixMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String value = element.getAttribute(getName()); 
-        return value.startsWith(getExpectedValue());
+        String expected = getExpectedValue();
+        String values = element.getAttribute(getName()); 
+        for (String value: SEPARATOR.split(values)) {
+            if (value.equals(expected)) {
+                return true;
+            }
+        }
+        return false;
     }
   
     @Override
     protected String getSymbol() {
-        return "^=";
+        return "~=";
     }
 }

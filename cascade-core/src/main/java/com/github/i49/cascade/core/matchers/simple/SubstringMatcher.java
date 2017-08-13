@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.matchers;
+package com.github.i49.cascade.core.matchers.simple;
 
 import org.w3c.dom.Element;
 
 /**
  *
  */
-public class SuffixMatcher extends AttributeValueMatcher {
+public class SubstringMatcher extends AttributeValueMatcher {
 
-    public SuffixMatcher(String name, String suffix) {
-        super(name, suffix);
+    public SubstringMatcher(String name, String substring) {
+        super(name, substring);
     }
-
+    
     @Override
     public boolean matches(Element element) {
         if (!super.matches(element)) {
             return false;
         }
         String value = element.getAttribute(getName()); 
-        return value.endsWith(getExpectedValue());
+        return value.contains(getExpectedValue());
     }
-
+    
     @Override
     protected String getSymbol() {
-        return "$=";
+        return "*=";
     }
 }

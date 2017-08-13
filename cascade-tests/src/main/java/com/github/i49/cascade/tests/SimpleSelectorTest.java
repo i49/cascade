@@ -33,41 +33,41 @@ public class SimpleSelectorTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // universal
-            { "/smallest-xml.xml", null, "*", expect(0) },
-            { "/universal-selector-test.html", null, "*", expect(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
+            { "/smallest-xml.xml", null, "*", contains(0) },
+            { "/universal-selector-test.html", null, "*", contains(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
             // negated
-            { "/smallest-xml.xml", null, ":not(*)", expectAllBut(0) },
-            { "/universal-selector-test.html", null, ":not(*)", expectAllBut(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
+            { "/smallest-xml.xml", null, ":not(*)", doesNotContain(0) },
+            { "/universal-selector-test.html", null, ":not(*)", doesNotContain(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
             // type
-            { "/type-selector-test.html", null, "html", expect(0) },
-            { "/type-selector-test.html", null, "h1", expect(5) },
-            { "/type-selector-test.html", null, "p", expect(6, 7) },
-            { "/type-selector-test.html", null, "nonexistent", expect() },
+            { "/type-selector-test.html", null, "html", contains(0) },
+            { "/type-selector-test.html", null, "h1", contains(5) },
+            { "/type-selector-test.html", null, "p", contains(6, 7) },
+            { "/type-selector-test.html", null, "nonexistent", contains() },
             // negated
-            { "/type-selector-test.html", null, ":not(html)", expectAllBut(0) },
-            { "/type-selector-test.html", null, ":not(h1)", expectAllBut(5) },
-            { "/type-selector-test.html", null, ":not(p)", expectAllBut(6, 7) },
-            { "/type-selector-test.html", null, ":not(nonexistent)", expectAllBut() },
+            { "/type-selector-test.html", null, ":not(html)", doesNotContain(0) },
+            { "/type-selector-test.html", null, ":not(h1)", doesNotContain(5) },
+            { "/type-selector-test.html", null, ":not(p)", doesNotContain(6, 7) },
+            { "/type-selector-test.html", null, ":not(nonexistent)", doesNotContain() },
             // identifier
-            { "/id-selector-test.html", null, "#content", expect(6) },
-            { "/id-selector-test.html", "body", "#content", expect(6) },
-            { "/id-selector-test.html", null, "section#content", expect(6) },
-            { "/id-selector-test.html", null, "#nonexistent", expect() },
+            { "/id-selector-test.html", null, "#content", contains(6) },
+            { "/id-selector-test.html", "body", "#content", contains(6) },
+            { "/id-selector-test.html", null, "section#content", contains(6) },
+            { "/id-selector-test.html", null, "#nonexistent", contains() },
             // negated
-            { "/id-selector-test.html", null, ":not(#content)", expectAllBut(6) },
-            { "/id-selector-test.html", "body", ":not(#content)", expect(4, 5, 7, 8, 9) },
-            { "/id-selector-test.html", null, ":not(#nonexistent)", expectAllBut() },
+            { "/id-selector-test.html", null, ":not(#content)", doesNotContain(6) },
+            { "/id-selector-test.html", "body", ":not(#content)", contains(4, 5, 7, 8, 9) },
+            { "/id-selector-test.html", null, ":not(#nonexistent)", doesNotContain() },
             // class
-            { "/class-selector-test.html", null, ".hello", expect(6, 8, 10) },
-            { "/class-selector-test.html", null, ".hello.java", expect(8) },
-            { "/class-selector-test.html", null, ".java.hello", expect(8) },
-            { "/class-selector-test.html", null, "div.hello", expect(6, 8, 10) },
-            { "/class-selector-test.html", null, ".nonexistent", expect() },
+            { "/class-selector-test.html", null, ".hello", contains(6, 8, 10) },
+            { "/class-selector-test.html", null, ".hello.java", contains(8) },
+            { "/class-selector-test.html", null, ".java.hello", contains(8) },
+            { "/class-selector-test.html", null, "div.hello", contains(6, 8, 10) },
+            { "/class-selector-test.html", null, ".nonexistent", contains() },
             // negated
-            { "/class-selector-test.html", null, ":not(.hello)", expectAllBut(6, 8, 10) },
-            { "/class-selector-test.html", null, ":not(.hello):not(.java)", expect(0, 1, 2, 3, 4, 5, 7, 9, 11) },
-            { "/class-selector-test.html", null, ":not(.java):not(.hello)", expect(0, 1, 2, 3, 4, 5, 7, 9, 11) },
-            { "/class-selector-test.html", null, ":not(.nonexistent)", expectAllBut() },
+            { "/class-selector-test.html", null, ":not(.hello)", doesNotContain(6, 8, 10) },
+            { "/class-selector-test.html", null, ":not(.hello):not(.java)", contains(0, 1, 2, 3, 4, 5, 7, 9, 11) },
+            { "/class-selector-test.html", null, ":not(.java):not(.hello)", contains(0, 1, 2, 3, 4, 5, 7, 9, 11) },
+            { "/class-selector-test.html", null, ":not(.nonexistent)", doesNotContain() },
         });
     }
 
