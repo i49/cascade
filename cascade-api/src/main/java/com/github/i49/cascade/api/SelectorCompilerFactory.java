@@ -36,18 +36,24 @@ public abstract class SelectorCompilerFactory {
     }
 
     /**
+     * Constructs this factory.
+     */
+    protected SelectorCompilerFactory() {
+    }
+
+    /**
      * Returns the instance of this factory class.
      *
      * @return the instance of this factory class.
      */
-    static SelectorCompilerFactory get() {
+    public static SelectorCompilerFactory get() {
         return providers.get();
     }
 
     /**
      * Creates a selector compiler.
      *
-     * @return newly created instance of compiler.
+     * @return newly created instance of {@link SelectorCompiler}.
      */
     public abstract SelectorCompiler createCompiler();
 }

@@ -16,9 +16,6 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.Set;
-import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
 import com.github.i49.cascade.api.SingleSelector;
@@ -26,28 +23,22 @@ import com.github.i49.cascade.api.SingleSelector;
 /**
  * Default implementation of {@link SingleSelector} interface.
  */
-public class DefaultSingleSelector implements SingleSelector {
-
-    @SuppressWarnings("unused")
-    private static final Logger log = Logger.getLogger(DefaultSingleSelector.class.getName());
+public class DefaultSingleSelector extends AbstractSelector implements SingleSelector {
 
     private final TailSequence tail;
 
     public DefaultSingleSelector(TailSequence tail) {
+        super(tail.createTraverser());
         this.tail = tail;
-    }
-
-    @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null.");
-        }
-        SequenceResult result = this.tail.testAll(root);
-        return result.getSelected();
     }
 
     @Override
     public String toString() {
         return tail.toString();
+    }
+
+    @Override
+    public boolean test(Element element, Element root) {
+        return tail.test(element, root);
     }
 }

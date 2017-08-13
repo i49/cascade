@@ -19,8 +19,8 @@ package com.github.i49.cascade.tests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -65,7 +65,7 @@ public abstract class BaseSelectorTest {
     public void test() {
         Document doc = loadDocument();
         Selector selector = Selector.compile(expression);
-        Set<Element> selected  = selector.select(getStartingElement(doc));
+        List<Element> selected  = selector.select(getStartingElement(doc));
         if (expected == null) {
             return;
         }

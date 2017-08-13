@@ -16,38 +16,48 @@
 
 package com.github.i49.cascade.core.selectors;
 
-import java.util.AbstractList;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
 
+import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorGroup;
 import com.github.i49.cascade.api.SingleSelector;
+import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
 
 /**
  *
  */
-public class DefaultSelectorGroup extends AbstractList<SingleSelector> implements SelectorGroup {
+public class DefaultSelectorGroup extends AbstractSelector implements SelectorGroup {
 
-    private final List<SingleSelector> selectors;
+    private final List<DefaultSingleSelector> selectors;
 
-    public DefaultSelectorGroup(List<SingleSelector> selectors) {
+    /**
+     * Creates a selector containing all given selectors.
+     *
+     * @param selectors the selectors to contain.
+     * @return created selector.
+     */
+    public static Selector of(List<DefaultSingleSelector> selectors) {
+        if (selectors.size() == 1) {
+            return selectors.get(0);
+        } else {
+            return new DefaultSelectorGroup(selectors);
+        }
+    }
+
+    private DefaultSelectorGroup(List<DefaultSingleSelector> selectors) {
+        super(DepthFirstTraverser.SINGLETON);
         this.selectors = selectors;
     }
 
     @Override
-    public Set<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null.");
-        }
-        Set<Element> found  = new LinkedHashSet<>();
-        for (SingleSelector selector: this.selectors) {
-            found.addAll(selector.select(root));
-        }
-        return found;
+    public Iterator<SingleSelector> iterator() {
+        List<SingleSelector> list = Collections.unmodifiableList(selectors);
+        return list.iterator();
     }
 
     @Override
@@ -58,12 +68,12 @@ public class DefaultSelectorGroup extends AbstractList<SingleSelector> implement
     }
 
     @Override
-    public SingleSelector get(int index) {
-        return selectors.get(index);
-    }
-
-    @Override
-    public int size() {
-        return selectors.size();
+    public boolean test(Element element, Element root) {
+        for (DefaultSingleSelector selector: selectors) {
+            if (selector.test(element, root)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

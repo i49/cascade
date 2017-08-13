@@ -29,14 +29,14 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SelectorGroupTest extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/selector-group-test.html", "li, p", expect(6, 7, 8) },
-            { "/selector-group-test.html", "li, nonexistent", expect(6, 7) },
-            { "/selector-group-test.html", "nonexistent, p", expect(8) },
+            { "/selector-group-test.html", "li, p", expect(5, 7, 8, 9) },
+            { "/selector-group-test.html", "li, nonexistent", expect(7, 8) },
+            { "/selector-group-test.html", "nonexistent, p", expect(5, 9) },
             { "/selector-group-test.html", "nonexistent1, nonexistent2", expect() },
-            { "/selector-group-test.html", "li, .example", expect(6, 7, 8) },
+            { "/selector-group-test.html", "li, .example", expect(5, 7, 8, 9) },
         });
     }
 

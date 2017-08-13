@@ -16,7 +16,7 @@
 
 package com.github.i49.cascade.api;
 
-import java.util.Set;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -41,8 +41,8 @@ public interface Selector {
      *
      * @param root the root of all elements to search.
      *             All descendants of this element and given element itself will be searched.
-     * @return the set of all elements found, may be empty but never be {@code null}.
+     * @return the list of all elements found, may be empty but never be {@code null}.
      * @throws NullPointerException if the given {@code root} is {@code null}.
      */
-    Set<Element> select(Element root);
+    List<Element> select(Element root);
 }

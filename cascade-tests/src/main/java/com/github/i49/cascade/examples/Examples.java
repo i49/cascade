@@ -16,7 +16,7 @@
 
 package com.github.i49.cascade.examples;
 
-import java.util.Set;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,16 +29,10 @@ public class Examples {
     public static void example1() {
         Selector selector = Selector.compile("div p");
         Document doc = getDocument(); /* doc is of org.w3c.dom.Document */
-        Set<Element> selected = selector.select(doc.getDocumentElement());
+        List<Element> selected = selector.select(doc.getDocumentElement());
     }
 
     private static Document getDocument() {
         return null;
-    }
-
-    public static void main(String[] args) {
-        for (int i = 32 ; i <= 127; i++) {
-            System.out.print((char)i);
-        }
     }
 }

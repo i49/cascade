@@ -16,7 +16,7 @@
 
 package com.github.i49.cascade.tests.performance;
 
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.AfterClass;
@@ -127,7 +127,7 @@ public class PerformanceTest {
          Selector s = Selector.compile(expression);
          Element root = doc.getDocumentElement();
          long elapsed2 = profile(()->{
-             Set<Element> selected = s.select(root);
+             List<Element> selected = s.select(root);
              selected.size();
          });
 

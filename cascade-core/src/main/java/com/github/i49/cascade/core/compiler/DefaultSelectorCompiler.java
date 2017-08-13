@@ -22,7 +22,6 @@ import java.util.List;
 import com.github.i49.cascade.api.InvalidSelectorException;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorCompiler;
-import com.github.i49.cascade.api.SingleSelector;
 import com.github.i49.cascade.core.matchers.ClassMatcher;
 import com.github.i49.cascade.core.matchers.DashMatcher;
 import com.github.i49.cascade.core.matchers.ExactMatcher;
@@ -70,20 +69,17 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     }
 
     private Selector parseGroupOfSelectors() {
-        List<SingleSelector> selectors = new ArrayList<>();
+        List<DefaultSingleSelector> selectors = new ArrayList<>();
+
         do {
-            SingleSelector selector = parseAllSequencesInSelector();
+            DefaultSingleSelector selector = parseAllSequencesInSelector();
             selectors.add(selector);
         } while (currentToken.getCategory() != TokenCategory.EOI);
 
-        if (selectors.size() == 1) {
-            return selectors.get(0);
-        } else {
-            return new DefaultSelectorGroup(selectors);
-        }
+        return DefaultSelectorGroup.of(selectors);
     }
 
-    private SingleSelector parseAllSequencesInSelector() {
+    private DefaultSingleSelector parseAllSequencesInSelector() {
         List<Matcher> matchers = new ArrayList<>();
         List<Combinator> combinators = new ArrayList<>();
         Combinator combinator = null;
@@ -107,7 +103,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         return buildSelector(matchers, combinators);
     }
 
-    private SingleSelector buildSelector(List<Matcher> matchers, List<Combinator> combinators) {
+    private DefaultSingleSelector buildSelector(List<Matcher> matchers, List<Combinator> combinators) {
         int index = matchers.size() - 1;
         TailSequence tail = new TailSequence(matchers.get(index));
         Sequence current = tail;

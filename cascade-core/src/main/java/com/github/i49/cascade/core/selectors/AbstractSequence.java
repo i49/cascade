@@ -28,8 +28,8 @@ import com.github.i49.cascade.core.matchers.AllOfMatcher;
  */
 abstract class AbstractSequence implements Sequence {
 
-    private final Matcher originalMatcher;
-    private final Matcher matcher;
+    protected final Matcher originalMatcher;
+    protected final Matcher matcher;
     private Sequence previous;
 
     protected AbstractSequence(Matcher matcher) {
