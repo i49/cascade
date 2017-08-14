@@ -30,10 +30,10 @@ import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
 import com.github.i49.cascade.core.matchers.simple.AttributeMatcher;
 import com.github.i49.cascade.core.matchers.simple.ClassMatcher;
-import com.github.i49.cascade.core.matchers.simple.DashMatcher;
+import com.github.i49.cascade.core.matchers.simple.DashSeparatedValueMatcher;
 import com.github.i49.cascade.core.matchers.simple.ExactMatcher;
 import com.github.i49.cascade.core.matchers.simple.IdentifierMatcher;
-import com.github.i49.cascade.core.matchers.simple.IncludeMatcher;
+import com.github.i49.cascade.core.matchers.simple.SpaceSeparatedValueMatcher;
 import com.github.i49.cascade.core.matchers.simple.PrefixMatcher;
 import com.github.i49.cascade.core.matchers.simple.SubstringMatcher;
 import com.github.i49.cascade.core.matchers.simple.SuffixMatcher;
@@ -220,7 +220,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         String name = token.getRawText();
         token = nextNonSpaceToken();
         if (token == Token.CLOSING_BRACKET) {
-            return new AttributeMatcher(name);
+            return AttributeMatcher.of(name);
         } else {
             switch (token.getCategory()) {
             case EXACT_MATCH:
@@ -254,17 +254,17 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
         }
         switch (operator.getCategory()) {
         case EXACT_MATCH:
-            return new ExactMatcher(name, value);
+            return ExactMatcher.of(name, value);
         case INCLUDES:
-            return new IncludeMatcher(name, value);
+            return SpaceSeparatedValueMatcher.of(name, value);
         case DASH_MATCH:
-            return new DashMatcher(name, value);
+            return new DashSeparatedValueMatcher(name, value);
         case PREFIX_MATCH:
-            return new PrefixMatcher(name, value);
+            return PrefixMatcher.of(name, value);
         case SUFFIX_MATCH:
-            return new SuffixMatcher(name, value);
+            return SuffixMatcher.of(name, value);
         case SUBSTRING_MATCH:
-            return new SubstringMatcher(name, value);
+            return SubstringMatcher.of(name, value);
         default:
             throw internalError();
         }

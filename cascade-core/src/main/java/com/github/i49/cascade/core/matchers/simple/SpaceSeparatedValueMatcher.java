@@ -16,19 +16,25 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
+import java.util.regex.Pattern;
+
 import org.w3c.dom.Element;
 
-/**
- *
- */
-public class PrefixMatcher extends AttributeValueMatcher {
+import com.github.i49.cascade.core.matchers.Matcher;
 
-    public static PrefixMatcher of(String name, String prefix) {
-        return new PrefixMatcher(name, prefix);
+/**
+ * The matcher which tests space separated values of the attribute.
+ */
+public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
+
+    private static final Pattern SEPARATOR = Pattern.compile("[ \\t\\r\\n\\f]+");
+
+    public static Matcher of(String name, String value) {
+        return new SpaceSeparatedValueMatcher(name, value);
     }
 
-    private PrefixMatcher(String name, String prefix) {
-        super(name, prefix);
+    private SpaceSeparatedValueMatcher(String name, String value) {
+        super(name, value);
     }
 
     @Override
@@ -40,8 +46,13 @@ public class PrefixMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String value = element.getAttribute(getName());
-        return value.startsWith(expected);
+        String values = element.getAttribute(getName());
+        for (String value: SEPARATOR.split(values)) {
+            if (value.equals(expected)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -51,6 +62,6 @@ public class PrefixMatcher extends AttributeValueMatcher {
 
     @Override
     protected String getSymbol() {
-        return "^=";
+        return "~=";
     }
 }

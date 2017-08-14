@@ -29,7 +29,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AttributeSelectorTest extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // presence
@@ -43,33 +43,37 @@ public class AttributeSelectorTest extends BaseSelectorTest {
             // space-separated
             { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", contains(10) },
             { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", contains() },
+            { "/attribute-value-selector-test.html", "[rel~=\"\"]", contains() },
             // space-separated negation
             { "/attribute-value-selector-test.html", ":not([rel~=\"copyright\"])", doesNotContain(10) },
             { "/attribute-value-selector-test.html", ":not([rel~=\"copyright copyleft\"])", doesNotContain() },
             // dash-separated
-            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", contains(12, 14) },
+            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", contains(14, 16) },
             { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", contains() },
             // dash-separated negation
-            { "/attribute-value-selector-test.html", ":not([hreflang|=\"en\"])", doesNotContain(12, 14) },
+            { "/attribute-value-selector-test.html", ":not([hreflang|=\"en\"])", doesNotContain(14, 16) },
             { "/attribute-value-selector-test.html", ":not([hreflang|=\"US\"])", doesNotContain() },
             // prefix
-            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", contains(16) },
-            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", contains(16) },
+            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", contains(18) },
+            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", contains(18) },
+            { "/attribute-value-selector-test.html", "[type^=\"\"]", contains() },
             // prefix negation
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/\"])", doesNotContain(16) },
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/png\"])", doesNotContain(16) },
+            { "/attribute-value-selector-test.html", ":not([type^=\"image/\"])", doesNotContain(18) },
+            { "/attribute-value-selector-test.html", ":not([type^=\"image/png\"])", doesNotContain(18) },
             // suffix
-            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", contains(18) },
-            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", contains(18) },
+            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", contains(22) },
+            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", contains(22) },
+            { "/attribute-value-selector-test.html", "[href$=\"\"]", contains() },
             // suffix negation
-            { "/attribute-value-selector-test.html", ":not([href$=\".pdf\"])", doesNotContain(18) },
-            { "/attribute-value-selector-test.html", ":not([href$=\"userguide.pdf\"])", doesNotContain(18) },
+            { "/attribute-value-selector-test.html", ":not([href$=\".pdf\"])", doesNotContain(22) },
+            { "/attribute-value-selector-test.html", ":not([href$=\"userguide.pdf\"])", doesNotContain(22) },
             // substring
-            { "/attribute-value-selector-test.html", "[href*=\"example\"]", contains(20) },
-            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", contains(20) },
+            { "/attribute-value-selector-test.html", "[href*=\"example\"]", contains(26) },
+            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", contains(26) },
+            { "/attribute-value-selector-test.html", "[href*=\"\"]", contains() },
             // substring negation
-            { "/attribute-value-selector-test.html", ":not([href*=\"example\"])", doesNotContain(20) },
-            { "/attribute-value-selector-test.html", ":not([href*=\"http://example.com\"])", doesNotContain(20) },
+            { "/attribute-value-selector-test.html", ":not([href*=\"example\"])", doesNotContain(26) },
+            { "/attribute-value-selector-test.html", ":not([href*=\"http://example.com\"])", doesNotContain(26) },
         });
     }
 

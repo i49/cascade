@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,16 +22,20 @@ import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 
 /**
- * The matcher which will check the presence of the specified attribute. 
+ * The matcher which will check the presence of the specified attribute.
  */
 public class AttributeMatcher implements Matcher {
-    
+
     private final String name;
-    
-    public AttributeMatcher(String name) {
+
+    public static AttributeMatcher of(String name) {
+        return new AttributeMatcher(name);
+    }
+
+    protected AttributeMatcher(String name) {
         this.name = name;
     }
-    
+
     @Override
     public MatcherType getType() {
         return MatcherType.ATTRIBUTE;
@@ -41,12 +45,12 @@ public class AttributeMatcher implements Matcher {
     public boolean matches(Element element) {
         return element.hasAttribute(getName());
     }
-    
+
     @Override
     public String toString() {
         return "[" + getName() + "]";
     }
-    
+
     protected String getName() {
         return name;
     }
