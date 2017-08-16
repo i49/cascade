@@ -103,7 +103,16 @@ public enum PseudoClass {
         return ":" + getClassName();
     }
 
+    /**
+     * Returns the instance of this class which has the specified class name.
+     * <p>
+     * Note that pseudo-class names are case-insensitive.
+     * </p>
+     *
+     * @param className the name of the pseudo-class.
+     * @return found instance.
+     */
     public static PseudoClass byName(String className) {
-        return values.get(className);
+        return values.get(className.toLowerCase());
     }
 }

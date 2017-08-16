@@ -17,7 +17,7 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 * Operating on standard W3C DOM interface in _org.w3c.dom_ package.
 * Intuitive and clean API.
 * Optimization is performed when selectors are compiled.
-* 250+ test cases.
+* Passed 300+ test cases.
 
 ## Supported Selectors
 ### Simple Selectors

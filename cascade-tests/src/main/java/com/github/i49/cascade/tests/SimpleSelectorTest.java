@@ -72,6 +72,15 @@ public class SimpleSelectorTest extends BaseSelectorTest {
             { "#class-selector-test", ":not(.hello):not(.java)", contains(0, 1, 3, 5, 7) },
             { "#class-selector-test", ":not(.java):not(.hello)", contains(0, 1, 3, 5, 7) },
             { "#class-selector-test", ":not(.nonexistent)", contains(0, 1, 2, 3, 4, 5, 6, 7) },
+
+            // mix
+            { "#class-and-id-test", "p:not(#other).class:not(.fail).test#id#id", contains(1) },
+            { "#class-and-id-test", "div:not(#theid).class:not(.fail).test#theid#theid", contains() },
+            { "#class-and-id-test", "div:not(#other).notclass:not(.fail).test#theid#theid", contains() },
+            { "#class-and-id-test", "div:not(#other).class:not(.test).test#theid#theid", contains() },
+            { "#class-and-id-test", "div:not(#other).class:not(.fail).nottest#theid#theid", contains() },
+            { "#class-and-id-test", "div:not(#other).class:not(.fail).nottest#theid#other", contains() },
+
         });
     }
 

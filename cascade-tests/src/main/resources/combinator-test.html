@@ -9,25 +9,25 @@
 <section id="descendant-combinator-test">
 	<h1>Descendant Combinator Test</h1>
 	<div class="main">
-	    <p>paragraph 1</p>
+	    <p>3</p>
 	    <table>
 	        <tbody>
 	            <tr>
 	                <td>
-	                    <p>paragraph 2</p>
+	                    <p>8</p>
 	                </td>
 	            </tr>
 	        </tbody>
 	    </table>
 	    <div>
-	       <p>paragraph 3</p>
+	       <p>10</p>
 	    </div>
 	</div>
 	<table>
 	    <tbody>
 	        <tr>
 	            <td>
-	                <p>paragraph 4</p>
+	                <p>15</p>
 	            </td>
 	        </tr>
 	    </tbody>
@@ -107,13 +107,43 @@
 </section>
 
 <section id="element-order-test-2">
-	<h1>Element order test</h1>
-	<div>
-	    <div>
-	        <p>First paragraph</p> <!--4th -->
-	    </div>
-	    <p>Second paragraph</p> <!-- 5th -->
-	</div>
+    <h1>Element order test</h1>
+    <div>
+        <div>
+            <p>First paragraph</p> <!--4th -->
+        </div>
+        <p>Second paragraph</p> <!-- 5th -->
+    </div>
+</section>
+
+<section id="descendant-and-child-test">
+    <blockquote>
+        <div>
+            <div>
+                <p>4th element</p>
+            </div>
+        </div>
+    </blockquote>
+</section>
+
+<section id="sibling-and-adjacent-test">
+    <blockquote>
+        <div>2</div>
+    </blockquote>
+    <div>3</div>
+    <div>4</div>
+    <p>5</p>
+</section>
+
+<section id="adjacent-and-descendant-test">
+    <blockquote>
+        <div>2</div>
+    </blockquote>
+    <div>
+        <div>
+            <p>5</p>
+        </div>
+    </div>
 </section>
 
 </body>

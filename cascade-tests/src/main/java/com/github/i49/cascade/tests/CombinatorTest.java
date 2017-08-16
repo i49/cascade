@@ -50,6 +50,13 @@ public class CombinatorTest extends BaseSelectorTest {
             // element order
             { "#element-order-test-1", "div ~ p", contains(5, 6) },
             { "#element-order-test-2", "div > p", contains(4, 5) },
+
+            // multiple combinators
+            { "#descendant-and-child-test", "blockquote div > p", contains(4) },
+            { "#descendant-and-child-test", "blockquote > div p", contains(4) },
+            { "#sibling-and-adjacent-test", "blockquote ~ div + p", contains(5) },
+            { "#sibling-and-adjacent-test", "blockquote + div ~ p", contains(5) },
+            { "#adjacent-and-descendant-test", "blockquote + div p", contains(5) },
         });
     }
 

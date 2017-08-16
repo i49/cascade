@@ -19,6 +19,7 @@ package com.github.i49.cascade.tests;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -49,8 +50,7 @@ public abstract class BaseSelectorTest {
             this.root = doc.getElementById(rootId.substring(1));
         }
         this.expression = expression;
-        List<Element> all = Documents.descentandsOf(this.root);
-        this.expected = filtertExpected(all, expected);
+        this.expected = filtertExpected(this.root, expected);
     }
 
     public static void loadDocument(String resourceName) {
@@ -72,7 +72,14 @@ public abstract class BaseSelectorTest {
         return Expected.exclude(indices);
     }
 
-    private static List<Element> filtertExpected(List<Element> all, Expected expected) {
+    private static List<Element> filtertExpected(Element root, Expected expected) {
+        if (expected.isEmpty() && expected.isInclusive()) {
+            return Collections.emptyList();
+        }
+        List<Element> all = Documents.descentandsOf(root);
+        if (expected.isEmpty()) {
+            return all;
+        }
         List<Element> entries = new ArrayList<>();
         for (int index: expected.getEntries()) {
             entries.add(all.get(index));
@@ -106,6 +113,10 @@ public abstract class BaseSelectorTest {
 
         public boolean isInclusive() {
             return inclusive;
+        }
+
+        public boolean isEmpty() {
+            return entries.length == 0;
         }
 
         public int[] getEntries() {
