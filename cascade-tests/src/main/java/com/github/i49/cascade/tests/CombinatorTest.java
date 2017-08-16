@@ -19,6 +19,7 @@ package com.github.i49.cascade.tests;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -32,20 +33,32 @@ public class CombinatorTest extends BaseSelectorTest {
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "/descendant-combinator-test.html", "div.main p", contains(7, 12, 14) },
-            { "/child-combinator-test.html", "div > p", contains(7, 14) },
-            { "/adjacent-combinator-test-1.html", "h1.opener + h2", contains(6) },
-            { "/adjacent-combinator-test-2.html", "article > p + p", contains(7, 8) },
-            { "/sibling-combinator-test-1.html", "h2 ~ pre", contains(8) },
-            { "/sibling-combinator-test-2.html", "article > p ~ p", contains(8, 9, 11) },
+            // descendant combinator
+            { "#descendant-combinator-test", "div.main p", contains(3, 8, 10) },
+
+            // child combinator
+            { "#child-combinator-test", "div > p", contains(3, 10) },
+
+            // adjacent combinator
+            { "#adjacent-combinator-test-1", "h1.opener + h2", contains(2) },
+            { "#adjacent-combinator-test-2", "article > p + p", contains(3, 4) },
+
+            // general sibling combinator
+            { "#sibling-combinator-test-1", "h2 ~ pre", contains(4) },
+            { "#sibling-combinator-test-2", "article > p ~ p", contains(4, 5, 7) },
 
             // element order
-            { "/element-order-test-1.html", "div ~ p", contains(9, 10) },
-            { "/element-order-test-2.html", "div > p", contains(8, 9) },
+            { "#element-order-test-1", "div ~ p", contains(5, 6) },
+            { "#element-order-test-2", "div > p", contains(4, 5) },
         });
     }
 
-    public CombinatorTest(String resourceName, String expression, Expected expected) {
-        super(resourceName, null, expression, expected);
+    public CombinatorTest(String rootId, String expression, Expected expected) {
+        super(rootId, expression, expected);
+    }
+
+    @BeforeClass
+    public static void setUpOnce() {
+        loadDocument("/combinator-test.html");
     }
 }

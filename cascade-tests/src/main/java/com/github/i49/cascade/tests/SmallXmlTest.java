@@ -24,29 +24,26 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-/**
- * Tests for groups of selectors.
- */
 @RunWith(Parameterized.class)
-public class SelectorGroupTest extends BaseSelectorTest {
+public class SmallXmlTest extends BaseSelectorTest {
 
-    @Parameters(name = "{index}: {1}")
+    @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            { "#selector-group-test", "li, p", contains(1, 3, 4, 5) },
-            { "#selector-group-test", "li, nonexistent", contains(3, 4) },
-            { "#selector-group-test", "nonexistent, p", contains(1, 5) },
-            { "#selector-group-test", "nonexistent1, nonexistent2", contains() },
-            { "#selector-group-test", "li, .example", contains(1, 3, 4, 5) },
+            { "*", contains(0) },
+            { "_ _", contains() },
+            { "_ > _", contains() },
+            { "_ ~ _", contains() },
+            { "_ + _", contains() },
         });
     }
 
-    public SelectorGroupTest(String rootId, String expression, Expected expected) {
-        super(rootId, expression, expected);
-   }
+    public SmallXmlTest(String expression, Expected expected) {
+        super(expression, expected);
+    }
 
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/selector-group-test.html");
+        loadDocument("/smallest-xml.xml");
     }
 }

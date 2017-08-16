@@ -46,6 +46,12 @@ public final class Documents {
         return loadFromResource(resourceName);
     }
 
+    public static List<Element> descentandsOf(Element element) {
+        List<Element> descendants = new ArrayList<>();
+        visitElement(element, e->descendants.add(e));
+        return descendants;
+    }
+
     public static Element findOne(Document doc, String tagname) {
         NodeList nodes = doc.getElementsByTagName(tagname);
         if (nodes.getLength() > 0) {

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<title>Combinator Test</title>
+</head>
+<body>
+
+<section id="descendant-combinator-test">
+	<h1>Descendant Combinator Test</h1>
+	<div class="main">
+	    <p>paragraph 1</p>
+	    <table>
+	        <tbody>
+	            <tr>
+	                <td>
+	                    <p>paragraph 2</p>
+	                </td>
+	            </tr>
+	        </tbody>
+	    </table>
+	    <div>
+	       <p>paragraph 3</p>
+	    </div>
+	</div>
+	<table>
+	    <tbody>
+	        <tr>
+	            <td>
+	                <p>paragraph 4</p>
+	            </td>
+	        </tr>
+	    </tbody>
+	</table>
+</section>
+
+<section id="child-combinator-test">
+	<h1>Child Combinator Test</h1>
+	<div class="main">
+	    <p>paragraph 1</p>
+	    <table>
+	        <tbody>
+	            <tr>
+	                <td>
+	                    <p>paragraph 2</p>
+	                </td>
+	            </tr>
+	        </tbody>
+	    </table>
+	    <div>
+	       <p>paragraph 3</p>
+	    </div>
+	</div>
+	<table>
+	    <tbody>
+	        <tr>
+	            <td>
+	                <p>paragraph 4</p>
+	            </td>
+	        </tr>
+	    </tbody>
+	</table>
+</section>
+
+<section id="adjacent-combinator-test-1">
+	<h1 class="opener">Adjacent Combinator Test</h1>
+	<h2>heading 2</h2>
+</section>
+
+<section id="adjacent-combinator-test-2">
+	<article>
+	    <p>paragraph a</p>
+	    <p>paragraph b</p>
+	    <p>paragraph c</p>
+	    <address>sample address</address>
+	    <p>paragraph d</p>
+	</article>
+</section>
+
+<section id="sibling-combinator-test-1">
+	<h1>Sibling Combinator Test</h1>
+	<h2>Definition of the function a</h2>
+	<p>Function a(x) has to be applied to all figures in the table.</p>
+	<pre>function a(x) = 12x/13.5</pre>
+</section>
+
+<section id="sibling-combinator-test-2">
+	<h1>Sibling Combinator Test</h1>
+	<article>
+	    <p>paragraph a</p>
+	    <p>paragraph b</p>
+	    <p>paragraph c</p>
+	    <address>sample address</address>
+	    <p>paragraph d</p>
+	</article>
+</section>
+
+<section id="element-order-test-1">
+    <h1>Element order test</h1>
+    <div>
+        <div>
+            <p>First paragraph</p> <!-- 4th -->
+        </div>
+        <p>Second paragraph</p> <!-- 5th -->
+    </div>
+    <p>Third paragraph</p> <!-- 6th -->
+</section>
+
+<section id="element-order-test-2">
+	<h1>Element order test</h1>
+	<div>
+	    <div>
+	        <p>First paragraph</p> <!--4th -->
+	    </div>
+	    <p>Second paragraph</p> <!-- 5th -->
+	</div>
+</section>
+
+</body>
+</html>

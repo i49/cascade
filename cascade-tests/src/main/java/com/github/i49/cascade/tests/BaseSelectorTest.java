@@ -16,77 +16,52 @@
 
 package com.github.i49.cascade.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.github.i49.cascade.api.Selector;
 
 /**
- * Base class of all selector tests.
+ * Base test class.
  */
 public abstract class BaseSelectorTest {
 
-    private final String resourceName;
-    private final String startElement;
-    private final String expression;
-    private final Expected expected;
+    protected static Document doc;
 
-    private static Map<String, Document> documentCache;
+    protected final Element root;
+    protected final String expression;
+    private final List<Element> expected;
 
-    protected BaseSelectorTest(String resourceName, String startElement, String expression, Expected expected) {
-        this.resourceName = resourceName;
-        this.startElement = startElement;
+    protected BaseSelectorTest(String expression, Expected expected) {
+        this(null, expression, expected);
+    }
+
+    protected BaseSelectorTest(String rootId, String expression, Expected expected) {
+        if (rootId == null) {
+            this.root = doc.getDocumentElement();
+        } else {
+            this.root = doc.getElementById(rootId.substring(1));
+        }
         this.expression = expression;
-        this.expected = expected;
+        List<Element> all = Documents.descentandsOf(this.root);
+        this.expected = filtertExpected(all, expected);
     }
 
-    @BeforeClass
-    public static void setUpOnce() {
-        documentCache = new HashMap<>();
-    }
-
-    @AfterClass
-    public static void tearDownOnce() {
-        documentCache.clear();
-        documentCache = null;
+    public static void loadDocument(String resourceName) {
+        doc = Documents.load(resourceName);
     }
 
     @Test
     public void test() {
-        Document doc = loadDocument();
-        Selector selector = Selector.compile(expression);
-        List<Element> selected  = selector.select(getStartingElement(doc));
-        if (expected == null) {
-            return;
-        }
-
-        int[] entries = expected.getEntries();
-        if (expected.isInclusive()) {
-            assertThat(selected).hasSize(entries.length);
-            NodeList nodes = doc.getElementsByTagName("*");
-            int i = 0;
-            for (Element actual: selected) {
-                Element expected = (Element)nodes.item(entries[i++]);
-                assertThat(actual).isSameAs(expected);
-            }
-        } else {
-            NodeList nodes = doc.getElementsByTagName("*");
-            assertThat(selected).hasSize(nodes.getLength() - entries.length);
-            for (int index: entries) {
-                Element excluded = (Element)nodes.item(index);
-                assertThat(selected).doesNotContain(excluded);
-            }
-        }
+        Selector selector = Selector.compile(this.expression);
+        List<Element> actual  = selector.select(this.root);
+        assertThat(actual).containsExactlyElementsOf(this.expected);
     }
 
     protected static Expected contains(int... indices) {
@@ -97,25 +72,18 @@ public abstract class BaseSelectorTest {
         return Expected.exclude(indices);
     }
 
-    private Document loadDocument() {
-        Document doc = documentCache.get(this.resourceName);
-        if (doc == null) {
-            doc = Documents.load(this.resourceName);
-            documentCache.put(this.resourceName, doc);
+    private static List<Element> filtertExpected(List<Element> all, Expected expected) {
+        List<Element> entries = new ArrayList<>();
+        for (int index: expected.getEntries()) {
+            entries.add(all.get(index));
         }
-        return doc;
-    }
-
-    private Element getStartingElement(Document doc) {
-        if (startElement == null) {
-            return doc.getDocumentElement();
+        if (expected.isInclusive()) {
+            return entries;
+        } else {
+            List<Element> subtracted = new ArrayList<>(all);
+            subtracted.removeAll(entries);
+            return subtracted;
         }
-        NodeList nodes = doc.getElementsByTagName(startElement);
-        Element element = (Element)nodes.item(0);
-        if (element == null) {
-            throw new IllegalArgumentException("Starting element " + startElement + " was not found.");
-        }
-        return element;
     }
 
     public static class Expected {

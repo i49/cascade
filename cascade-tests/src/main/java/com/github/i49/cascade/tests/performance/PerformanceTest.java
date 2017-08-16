@@ -19,83 +19,40 @@ package com.github.i49.cascade.tests.performance;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.github.i49.cascade.api.Selector;
-import com.github.i49.cascade.tests.Documents;
+import com.github.i49.cascade.tests.Html5Test;
 
 @RunWith(Parameterized.class)
-public class PerformanceTest {
+public class PerformanceTest extends Html5Test {
 
     private static final Logger log = Logger.getLogger(PerformanceTest.class.getName());
+    private static int REPEAT_COUNT = 10000;
 
-    private static Document doc;
-
-    private final String expression;
-    private long startTime;
-
-    public PerformanceTest(String expression) {
-        this.expression = expression;
-    }
-
-    @BeforeClass
-    public static void setUpOnce() {
-        doc = Documents.load("/html5-test.html");
-    }
-
-    @AfterClass
-    public static void tearDownOnce() {
-        doc = null;
-    }
-
-    @Parameters
-    public static Object[] parameters() {
-        return new Object[] {
-                "#forms__action",
-                "article",
-                "* article",
-                "* * article",
-                "* ~ article",
-                "* * ~ article",
-                "* ~ * ~ article",
-                "*:root",
-        };
+    public PerformanceTest(String expression, Expected expected) {
+        super(expression, expected);
     }
 
     @Test
-    public void benchmark() {
+    public void testPerformance() {
         Selector s = Selector.compile(expression);
-        Element root = doc.getDocumentElement();
-        long elapsed = profile(()->{
-            s.select(root);
-        });
-
+        long elapsed = profile(()->{ s.select(root); });
         log.info("selector = \"" + expression + "\", elapsed = " + elapsed + " [ms]");
     }
 
-    private long profile(Runnable runnable) {
-        start();
-        int i = 10000;
+    private static long profile(Runnable runnable) {
+        long startTime = System.nanoTime();
+        int i = REPEAT_COUNT;
         while (i-- > 0) {
             runnable.run();
         }
-        return stop();
-    }
-
-    private void start() {
-        this.startTime = System.nanoTime();
-    }
-
-    private long stop() {
-        long elapsed = (System.nanoTime() - this.startTime) / (1000 * 1000);
+        long endTime = System.nanoTime();
+        long elapsed = (endTime - startTime) / (1000 * 1000);
         return elapsed;
     }
 

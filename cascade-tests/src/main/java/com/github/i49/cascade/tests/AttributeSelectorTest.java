@@ -19,6 +19,7 @@ package com.github.i49.cascade.tests;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -33,51 +34,62 @@ public class AttributeSelectorTest extends BaseSelectorTest {
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // presence
-            { "/attribute-presence-selector-test.html", "[title]", contains(5) },
+            { "#presence-test", "[title]", contains(1) },
             // presence negation
-            { "/attribute-presence-selector-test.html", ":not([title])", doesNotContain(5) },
+            { "#presence-test", ":not([title])", contains(0) },
+
             // value
-            { "/attribute-value-selector-test.html", "[href=\"http://www.w3.org/\"]", contains(8) },
+            { "#extact-value-test", "[href=\"http://www.w3.org/\"]", contains(3) },
             // value negation
-            { "/attribute-value-selector-test.html", ":not([href=\"http://www.w3.org/\"])", doesNotContain(8) },
+            { "#extact-value-test", ":not([href=\"http://www.w3.org/\"])", doesNotContain(3) },
+
             // space-separated
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright\"]", contains(10) },
-            { "/attribute-value-selector-test.html", "[rel~=\"copyright copyleft\"]", contains() },
-            { "/attribute-value-selector-test.html", "[rel~=\"\"]", contains() },
+            { "#space-separated-value-test", "[rel~=\"copyright\"]", contains(3) },
+            { "#space-separated-value-test", "[rel~=\"copyright copyleft\"]", contains() },
+            { "#space-separated-value-test", "[rel~=\"\"]", contains() },
             // space-separated negation
-            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright\"])", doesNotContain(10) },
-            { "/attribute-value-selector-test.html", ":not([rel~=\"copyright copyleft\"])", doesNotContain() },
+            { "#space-separated-value-test", ":not([rel~=\"copyright\"])", doesNotContain(3) },
+            { "#space-separated-value-test", ":not([rel~=\"copyright copyleft\"])", doesNotContain() },
+
             // dash-separated
-            { "/attribute-value-selector-test.html", "[hreflang|=\"en\"]", contains(14, 16) },
-            { "/attribute-value-selector-test.html", "[hreflang|=\"US\"]", contains() },
+            { "#dash-separated-value-test", "[hreflang|=\"en\"]", contains(3, 5) },
+            { "#dash-separated-value-test", "[hreflang|=\"US\"]", contains() },
             // dash-separated negation
-            { "/attribute-value-selector-test.html", ":not([hreflang|=\"en\"])", doesNotContain(14, 16) },
-            { "/attribute-value-selector-test.html", ":not([hreflang|=\"US\"])", doesNotContain() },
+            { "#dash-separated-value-test", ":not([hreflang|=\"en\"])", doesNotContain(3, 5) },
+            { "#dash-separated-value-test", ":not([hreflang|=\"US\"])", doesNotContain() },
+
             // prefix
-            { "/attribute-value-selector-test.html", "[type^=\"image/\"]", contains(18) },
-            { "/attribute-value-selector-test.html", "[type^=\"image/png\"]", contains(18) },
-            { "/attribute-value-selector-test.html", "[type^=\"\"]", contains() },
+            { "#prefix-test", "[type^=\"image/\"]", contains(3) },
+            { "#prefix-test", "[type^=\"image/png\"]", contains(3) },
+            { "#prefix-test", "[type^=\"\"]", contains() },
             // prefix negation
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/\"])", doesNotContain(18) },
-            { "/attribute-value-selector-test.html", ":not([type^=\"image/png\"])", doesNotContain(18) },
+            { "#prefix-test", ":not([type^=\"image/\"])", doesNotContain(3) },
+            { "#prefix-test", ":not([type^=\"image/png\"])", doesNotContain(3) },
+
             // suffix
-            { "/attribute-value-selector-test.html", "[href$=\".pdf\"]", contains(22) },
-            { "/attribute-value-selector-test.html", "[href$=\"userguide.pdf\"]", contains(22) },
-            { "/attribute-value-selector-test.html", "[href$=\"\"]", contains() },
+            { "#suffix-test", "[href$=\".pdf\"]", contains(3) },
+            { "#suffix-test", "[href$=\"userguide.pdf\"]", contains(3) },
+            { "#suffix-test", "[href$=\"\"]", contains() },
             // suffix negation
-            { "/attribute-value-selector-test.html", ":not([href$=\".pdf\"])", doesNotContain(22) },
-            { "/attribute-value-selector-test.html", ":not([href$=\"userguide.pdf\"])", doesNotContain(22) },
+            { "#suffix-test", ":not([href$=\".pdf\"])", doesNotContain(3) },
+            { "#suffix-test", ":not([href$=\"userguide.pdf\"])", doesNotContain(3) },
+
             // substring
-            { "/attribute-value-selector-test.html", "[href*=\"example\"]", contains(26) },
-            { "/attribute-value-selector-test.html", "[href*=\"http://example.com\"]", contains(26) },
-            { "/attribute-value-selector-test.html", "[href*=\"\"]", contains() },
+            { "#substring-test", "[href*=\"example\"]", contains(3) },
+            { "#substring-test", "[href*=\"http://example.com\"]", contains(3) },
+            { "#substring-test", "[href*=\"\"]", contains() },
             // substring negation
-            { "/attribute-value-selector-test.html", ":not([href*=\"example\"])", doesNotContain(26) },
-            { "/attribute-value-selector-test.html", ":not([href*=\"http://example.com\"])", doesNotContain(26) },
-        });
+            { "#substring-test", ":not([href*=\"example\"])", doesNotContain(3) },
+            { "#substring-test", ":not([href*=\"http://example.com\"])", doesNotContain(3) },
+       });
     }
 
-    public AttributeSelectorTest(String resourceName, String expression, Expected expected) {
-        super(resourceName, null, expression, expected);
+    public AttributeSelectorTest(String rootId, String expression, Expected expected) {
+        super(rootId, expression, expected);
+    }
+
+    @BeforeClass
+    public static void setUpOnce() {
+        loadDocument("/attribute-selector-test.html");
     }
 }

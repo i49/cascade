@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<title>Attribute Selector Test</title>
+</head>
+<body>
+<section id="presence-test">
+    <h1 title="test">1</h1>
+</section>
+
+<section id="extact-value-test">
+	<ul>
+	    <li><a href="http://www.w3.org/">3</a></li>
+	</ul>
+</section>
+
+<section id="space-separated-value-test">
+    <ul>
+        <li><a href="page1.html" rel="copyright copyleft copyeditor">3</a></li>
+        <li><a href="page1.html" rel="">5</a></li>
+    </ul>
+</section>
+
+<section id="dash-separated-value-test">
+    <ul>
+        <li><a href="page2.html" hreflang="en">3</a></li>
+        <li><a href="page3.html" hreflang="en-US">5</a></li>
+    </ul>
+</section>
+
+<section id="prefix-test">
+    <ul>
+        <li><a href="figure1.png" type="image/png">3</a></li>
+        <li><a href="figure1.png" type="">5</a></li>
+    </ul>
+</section>
+
+<section id="suffix-test">
+    <ul>
+        <li><a href="userguide.pdf">3</a></li>
+        <li><a href="">5</a></li>
+    </ul>
+</section>
+
+<section id="substring-test">
+    <ul>
+        <li><a href="http://example.com">3</a></li>
+        <li><a href="">5</a></li>
+    </ul>
+</section>
+
+</body>
+</html>

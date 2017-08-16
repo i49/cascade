@@ -19,6 +19,7 @@ package com.github.i49.cascade.tests;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -29,49 +30,57 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SimpleSelectorTest extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // universal
-            { "/smallest-xml.xml", null, "*", contains(0) },
-            { "/universal-selector-test.html", null, "*", contains(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
+            { "#universal-selector-test", "*", contains(0) },
+            { "#universal-selector-test-2", "*", contains(0, 1, 2, 3, 4, 5) },
             // negated
-            { "/smallest-xml.xml", null, ":not(*)", doesNotContain(0) },
-            { "/universal-selector-test.html", null, ":not(*)", doesNotContain(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) },
+            { "#universal-selector-test", ":not(*)", contains() },
+            { "#universal-selector-test-2", ":not(*)", contains() },
+
             // type
-            { "/type-selector-test.html", null, "html", contains(0) },
-            { "/type-selector-test.html", null, "h1", contains(5) },
-            { "/type-selector-test.html", null, "p", contains(6, 7) },
-            { "/type-selector-test.html", null, "nonexistent", contains() },
+            { "#type-selector-test", "section", contains(0) },
+            { "#type-selector-test", "h1", contains(1) },
+            { "#type-selector-test", "p", contains(2, 3) },
+            { "#type-selector-test", "nonexistent", contains() },
             // negated
-            { "/type-selector-test.html", null, ":not(html)", doesNotContain(0) },
-            { "/type-selector-test.html", null, ":not(h1)", doesNotContain(5) },
-            { "/type-selector-test.html", null, ":not(p)", doesNotContain(6, 7) },
-            { "/type-selector-test.html", null, ":not(nonexistent)", doesNotContain() },
-            // identifier
-            { "/id-selector-test.html", null, "#content", contains(6) },
-            { "/id-selector-test.html", "body", "#content", contains(6) },
-            { "/id-selector-test.html", null, "section#content", contains(6) },
-            { "/id-selector-test.html", null, "#nonexistent", contains() },
+            { "#type-selector-test", ":not(section)", contains(1, 2, 3) },
+            { "#type-selector-test", ":not(h1)", contains(0, 2, 3) },
+            { "#type-selector-test", ":not(p)", contains(0, 1) },
+            { "#type-selector-test", ":not(nonexistent)", contains(0, 1, 2, 3) },
+
+            // id
+            { "#id-selector-test", "#content", contains(2) },
+            { "#id-selector-test", "div#content", contains(2) },
+            { "#id-selector-test", "section#content", contains() },
+            { "#id-selector-test", "#nonexistent", contains() },
             // negated
-            { "/id-selector-test.html", null, ":not(#content)", doesNotContain(6) },
-            { "/id-selector-test.html", "body", ":not(#content)", contains(4, 5, 7, 8, 9) },
-            { "/id-selector-test.html", null, ":not(#nonexistent)", doesNotContain() },
+            { "#id-selector-test", ":not(#content)", contains(0, 1, 3, 4, 5) },
+            { "#id-selector-test", ":not(#nonexistent)", contains(0, 1, 2, 3, 4, 5) },
+
             // class
-            { "/class-selector-test.html", null, ".hello", contains(6, 8, 10) },
-            { "/class-selector-test.html", null, ".hello.java", contains(8) },
-            { "/class-selector-test.html", null, ".java.hello", contains(8) },
-            { "/class-selector-test.html", null, "div.hello", contains(6, 8, 10) },
-            { "/class-selector-test.html", null, ".nonexistent", contains() },
+            { "#class-selector-test", ".hello", contains(2, 4, 6) },
+            { "#class-selector-test", ".hello.java", contains(4) },
+            { "#class-selector-test", ".java.hello", contains(4) },
+            { "#class-selector-test", "div.hello", contains(2, 4, 6) },
+            { "#class-selector-test", ".nonexistent", contains() },
+            { "#class-selector-test", ".hello\\ python", contains() },
             // negated
-            { "/class-selector-test.html", null, ":not(.hello)", doesNotContain(6, 8, 10) },
-            { "/class-selector-test.html", null, ":not(.hello):not(.java)", contains(0, 1, 2, 3, 4, 5, 7, 9, 11) },
-            { "/class-selector-test.html", null, ":not(.java):not(.hello)", contains(0, 1, 2, 3, 4, 5, 7, 9, 11) },
-            { "/class-selector-test.html", null, ":not(.nonexistent)", doesNotContain() },
+            { "#class-selector-test", ":not(.hello)", contains(0, 1, 3, 5, 7) },
+            { "#class-selector-test", ":not(.hello):not(.java)", contains(0, 1, 3, 5, 7) },
+            { "#class-selector-test", ":not(.java):not(.hello)", contains(0, 1, 3, 5, 7) },
+            { "#class-selector-test", ":not(.nonexistent)", contains(0, 1, 2, 3, 4, 5, 6, 7) },
         });
     }
 
-    public SimpleSelectorTest(String resourceName, String startElement, String expression, Expected expected) {
-        super(resourceName, startElement, expression, expected);
+    public SimpleSelectorTest(String rootId, String expression, Expected expected) {
+        super(rootId, expression, expected);
+    }
+
+    @BeforeClass
+    public static void setUpOnce() {
+        loadDocument("/simple-selector-test.html");
     }
 }

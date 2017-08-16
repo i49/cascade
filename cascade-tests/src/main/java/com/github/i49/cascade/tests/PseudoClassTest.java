@@ -19,6 +19,7 @@ package com.github.i49.cascade.tests;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -29,111 +30,127 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class PseudoClassTest extends BaseSelectorTest {
 
-    @Parameters
+    @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // :root
-            { "/root-test.html", null, ":root", contains(0) },
-            { "/root-test.html", "body", ":root", contains() },
+            { null, ":root", contains(0) },
+            { "#root-test", ":root", contains() },
             // :root negation
-            { "/root-test.html", null, ":not(:root)", doesNotContain(0) },
-            { "/root-test.html", "body", ":not(:root)", contains(4, 5) },
+            { null, ":not(:root)", doesNotContain(0) },
+            { "#root-test", ":not(:root)", contains(0, 1) },
+
             // :empty
-            { "/empty-test.html", null, "p:empty", contains(6) },
+            { "#empty-test", "p:empty", contains(2) },
             // :empty negation
-            { "/empty-test.html", null, "p:not(:empty)", contains(7, 8, 10) },
+            { "#empty-test", "p:not(:empty)", contains(3, 4, 6) },
+
             // :nth-child
-            { "/nth-child-test.html", null, "li:nth-child(2n)", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(2n+1)", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:nth-child(2n+2)", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(3n)", contains(9, 12, 16, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(3n+1)", contains(7, 10, 14, 17) },
-            { "/nth-child-test.html", null, "li:nth-child(3n+2)", contains(8, 11, 15, 18) },
-            { "/nth-child-test.html", null, "li:nth-child(3n+3)", contains(9, 12, 16, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(3n-1)", contains(8, 11, 15, 18) },
-            { "/nth-child-test.html", null, "li:nth-child(3n-2)", contains(7, 10, 14, 17) },
-            { "/nth-child-test.html", null, "li:nth-child(-n+4)", contains(7, 8, 9, 10, 14, 15, 16, 17) },
-            { "/nth-child-test.html", null, "li:nth-child(1)", contains(7, 14) },
-            { "/nth-child-test.html", null, "li:nth-child(6)", contains(12, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(0)", contains() },
-            { "/nth-child-test.html", null, "li:nth-child(even)", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:nth-child(odd)", contains(7, 9, 11, 14, 16, 18) },
+            { "#nth-child-test", "li:nth-child(2n)", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:nth-child(2n+1)", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:nth-child(2n+2)", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:nth-child(3n)", contains(5, 8, 12, 15) },
+            { "#nth-child-test", "li:nth-child(3n+1)", contains(3, 6, 10, 13) },
+            { "#nth-child-test", "li:nth-child(3n+2)", contains(4, 7, 11, 14) },
+            { "#nth-child-test", "li:nth-child(3n+3)", contains(5, 8, 12, 15) },
+            { "#nth-child-test", "li:nth-child(3n-1)", contains(4, 7, 11, 14) },
+            { "#nth-child-test", "li:nth-child(3n-2)", contains(3, 6, 10, 13) },
+            { "#nth-child-test", "li:nth-child(-n+4)", contains(3, 4, 5, 6, 10, 11, 12, 13) },
+            { "#nth-child-test", "li:nth-child(1)", contains(3, 10) },
+            { "#nth-child-test", "li:nth-child(6)", contains(8, 15) },
+            { "#nth-child-test", "li:nth-child(0)", contains() },
+            { "#nth-child-test", "li:nth-child(even)", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:nth-child(odd)", contains(3, 5, 7, 10, 12, 14) },
             // :nth-child negation
-            { "/nth-child-test.html", null, "li:not(:nth-child(2n))", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(2n+1))", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(2n+2))", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(1))", contains(8, 9, 10, 11, 12, 15, 16, 17, 18, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(6))", contains(7, 8, 9, 10, 11, 14, 15, 16, 17, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(0))", contains(7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(even))", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-child(odd))", contains(8, 10, 12, 15, 17, 19) },
+            { "#nth-child-test", "li:not(:nth-child(2n))", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:not(:nth-child(2n+1))", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:not(:nth-child(2n+2))", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:not(:nth-child(1))", contains(4, 5, 6, 7, 8, 11, 12, 13, 14, 15) },
+            { "#nth-child-test", "li:not(:nth-child(6))", contains(3, 4, 5, 6, 7, 10, 11, 12, 13, 14) },
+            { "#nth-child-test", "li:not(:nth-child(0))", contains(3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15) },
+            { "#nth-child-test", "li:not(:nth-child(even))", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:not(:nth-child(odd))", contains(4, 6, 8, 11, 13, 15) },
+
             // :nth-last-child
-            { "/nth-child-test.html", null, "li:nth-last-child(2n)", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:nth-last-child(2n+1)", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:nth-last-child(2n+2)", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n)", contains(7, 10, 14, 17) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n+1)", contains(9, 12, 16, 19) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n+2)", contains(8, 11, 15, 18) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n+3)", contains(7, 10, 14, 17) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n-1)", contains(8, 11, 15, 18) },
-            { "/nth-child-test.html", null, "li:nth-last-child(3n-2)", contains(9, 12, 16, 19) },
-            { "/nth-child-test.html", null, "li:nth-last-child(-n+4)", contains(9, 10, 11, 12, 16, 17, 18, 19) },
-            { "/nth-child-test.html", null, "li:nth-last-child(1)", contains(12, 19) },
-            { "/nth-child-test.html", null, "li:nth-last-child(6)", contains(7, 14) },
-            { "/nth-child-test.html", null, "li:nth-last-child(0)", contains() },
-            { "/nth-child-test.html", null, "li:nth-last-child(even)", contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:nth-last-child(odd)", contains(8, 10, 12, 15, 17, 19) },
+            { "#nth-child-test", "li:nth-last-child(2n)", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:nth-last-child(2n+1)", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:nth-last-child(2n+2)", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:nth-last-child(3n)", contains(3, 6, 10, 13) },
+            { "#nth-child-test", "li:nth-last-child(3n+1)", contains(5, 8, 12, 15) },
+            { "#nth-child-test", "li:nth-last-child(3n+2)", contains(4, 7, 11, 14) },
+            { "#nth-child-test", "li:nth-last-child(3n+3)", contains(3, 6, 10, 13) },
+            { "#nth-child-test", "li:nth-last-child(3n-1)", contains(4, 7, 11, 14) },
+            { "#nth-child-test", "li:nth-last-child(3n-2)", contains(5, 8, 12, 15) },
+            { "#nth-child-test", "li:nth-last-child(-n+4)", contains(5, 6, 7, 8, 12, 13, 14, 15) },
+            { "#nth-child-test", "li:nth-last-child(1)", contains(8, 15) },
+            { "#nth-child-test", "li:nth-last-child(6)", contains(3, 10) },
+            { "#nth-child-test", "li:nth-last-child(0)", contains() },
+            { "#nth-child-test", "li:nth-last-child(even)", contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:nth-last-child(odd)", contains(4, 6, 8, 11, 13, 15) },
             // :nth-last-child negation
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(2n))", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(2n+1))",  contains(7, 9, 11, 14, 16, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(2n+2))", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(1))", contains(7, 8, 9, 10, 11, 14, 15, 16, 17, 18) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(6))", contains(8, 9, 10, 11, 12, 15, 16, 17, 18, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(0))", contains(7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(even))", contains(8, 10, 12, 15, 17, 19) },
-            { "/nth-child-test.html", null, "li:not(:nth-last-child(odd))", contains(7, 9, 11, 14, 16, 18) },
+            { "#nth-child-test", "li:not(:nth-last-child(2n))", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:not(:nth-last-child(2n+1))",  contains(3, 5, 7, 10, 12, 14) },
+            { "#nth-child-test", "li:not(:nth-last-child(2n+2))", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:not(:nth-last-child(1))", contains(3, 4, 5, 6, 7, 10, 11, 12, 13, 14) },
+            { "#nth-child-test", "li:not(:nth-last-child(6))", contains(4, 5, 6, 7, 8, 11, 12, 13, 14, 15) },
+            { "#nth-child-test", "li:not(:nth-last-child(0))", contains(3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15) },
+            { "#nth-child-test", "li:not(:nth-last-child(even))", contains(4, 6, 8, 11, 13, 15) },
+            { "#nth-child-test", "li:not(:nth-last-child(odd))", contains(3, 5, 7, 10, 12, 14) },
+
             // :nth-of-type
-            { "/nth-of-type-test.html", null, "p:nth-of-type(3)", contains(9) },
-            { "/nth-of-type-test.html", null, "dl > :nth-of-type(3n+1)", contains(11, 12, 17, 18) },
+            { "#nth-of-type-test", "p:nth-of-type(3)", contains(5) },
+            { "#nth-of-type-test", "dl > :nth-of-type(3n+1)", contains(7, 8, 13, 14) },
             // :nth-of-type negation
-            { "/nth-of-type-test.html", null, "p:not(:nth-of-type(3))", contains(6, 8) },
-            { "/nth-of-type-test.html", null, "dl > :not(:nth-of-type(3n+1))", contains(13, 14, 15, 16, 19, 20, 21, 22) },
+            { "#nth-of-type-test", "p:not(:nth-of-type(3))", contains(2, 4) },
+            { "#nth-of-type-test", "dl > :not(:nth-of-type(3n+1))", contains(9, 10, 11, 12, 15, 16, 17, 18) },
+
             // :nth-last-of-type
-            { "/nth-of-type-test.html", null, "p:nth-last-of-type(3)", contains(6) },
-            { "/nth-of-type-test.html", null, "dl > :nth-last-of-type(3n+1)", contains(15, 16, 21, 22) },
+            { "#nth-of-type-test", "p:nth-last-of-type(3)", contains(2) },
+            { "#nth-of-type-test", "dl > :nth-last-of-type(3n+1)", contains(11, 12, 17, 18) },
             // :nth-last-of-type negation
-            { "/nth-of-type-test.html", null, "p:not(:nth-last-of-type(3))", contains(8, 9) },
-            { "/nth-of-type-test.html", null, "dl > :not(:nth-last-of-type(3n+1))", contains(11, 12, 13, 14, 17, 18, 19, 20) },
+            { "#nth-of-type-test", "p:not(:nth-last-of-type(3))", contains(4, 5) },
+            { "#nth-of-type-test", "dl > :not(:nth-last-of-type(3n+1))", contains(7, 8, 9, 10, 13, 14, 15, 16) },
+
             // :first-child
-            { "/first-child-test.html", null, "div > p:first-child", contains(8) },
-            { "/nth-child-test.html", null, "li:first-child", contains(7, 14) },
+            { "#first-child-test", "div > p:first-child", contains(4) },
+            { "#nth-child-test", "li:first-child", contains(3, 10) },
             // :first-child negation
-            { "/first-child-test.html", null, "div > p:not(:first-child)", contains(12) },
-            { "/nth-child-test.html", null, "li:not(:first-child)", contains(8, 9, 10, 11, 12, 15, 16, 17, 18, 19) },
+            { "#first-child-test", "div > p:not(:first-child)", contains(8) },
+            { "#nth-child-test", "li:not(:first-child)", contains(4, 5, 6, 7, 8, 11, 12, 13, 14, 15) },
+
             // :last-child
-            { "/nth-child-test.html", null, "li:last-child", contains(12, 19) },
+            { "#nth-child-test", "li:last-child", contains(8, 15) },
             // :last-child negation
-            { "/nth-child-test.html", null, "li:not(:last-child)", contains(7, 8, 9, 10, 11, 14, 15, 16, 17, 18) },
+            { "#nth-child-test", "li:not(:last-child)", contains(3, 4, 5, 6, 7, 10, 11, 12, 13, 14) },
+
             // :first-of-type
-            { "/first-of-type-test.html", null, "dl dt:first-of-type", contains(7, 10) },
+            { "#first-of-type-test", "dl dt:first-of-type", contains(3, 6) },
             // :first-of-type negation
-            { "/first-of-type-test.html", null, "dl dt:not(:first-of-type)", contains(12) },
+            { "#first-of-type-test", "dl dt:not(:first-of-type)", contains(8) },
+
             // :last-of-type
-            { "/last-of-type-test.html", null, "address:last-of-type", contains(9) },
+            { "#last-of-type-test", "address:last-of-type", contains(5) },
             // :last-of-type negation
-            { "/last-of-type-test.html", null, "address:not(:last-of-type)", contains(7, 8) },
+            { "#last-of-type-test", "address:not(:last-of-type)", contains(3, 4) },
+
             // :only-child
-            { "/only-child-test.html", null, "p:only-child", contains(8) },
+            { "#only-child-test", "p:only-child", contains(4) },
             // :only-child negation
-            { "/only-child-test.html", null, "p:not(:only-child)", contains(6) },
+            { "#only-child-test", "p:not(:only-child)", contains(2) },
+
             // :only-of-type
-            { "/only-of-type-test.html", null, ".example :only-of-type", contains(8) },
+            { "#only-of-type-test", ".example :only-of-type", contains(4) },
             // :only-of-type negation
-            { "/only-of-type-test.html", null, ".example :not(:only-of-type)", contains(7, 9) },
+            { "#only-of-type-test", ".example :not(:only-of-type)", contains(3, 5) },
         });
     }
 
-    public PseudoClassTest(String resourceName, String startElement, String expression, Expected expected) {
-        super(resourceName, startElement, expression, expected);
+    public PseudoClassTest(String rootId, String expression, Expected expected) {
+        super(rootId, expression, expected);
+    }
+
+    @BeforeClass
+    public static void setUpOnce() {
+        loadDocument("/pseudo-class-test.html");
     }
 }
