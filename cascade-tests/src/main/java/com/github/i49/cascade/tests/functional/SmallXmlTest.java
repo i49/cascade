@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.tests;
+package com.github.i49.cascade.tests.functional;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.github.i49.cascade.tests.BasicSelectorTest;
+import com.github.i49.cascade.tests.Expectation;
+
 @RunWith(Parameterized.class)
-public class SmallXmlTest extends BaseSelectorTest {
+public class SmallXmlTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> parameters() {
@@ -38,8 +43,14 @@ public class SmallXmlTest extends BaseSelectorTest {
         });
     }
 
-    public SmallXmlTest(String expression, Expected expected) {
-        super(expression, expected);
+    public SmallXmlTest(String expression, Expectation expected) {
+        super(null, expression, expected);
+    }
+
+    @Override
+    @Test
+    @Ignore
+    public void testWithDefaultNamespace() {
     }
 
     @BeforeClass

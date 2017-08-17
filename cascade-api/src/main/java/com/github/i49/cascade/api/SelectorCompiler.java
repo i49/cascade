@@ -36,6 +36,26 @@ public interface SelectorCompiler {
     }
 
     /**
+     * Declares a namespace.
+     *
+     * @param prefix the prefix which represents the namespace.
+     * @param namespace the namespace to declare.
+     * @throws NullPointerException if one or more arguments are {@code null}.
+     * @throws IllegalArgumentException if given {@code prefix} is blank.
+     */
+    void declare(String prefix, String namespace);
+
+    /**
+     * Declares the default namespace.
+     * No default namespace is declared by default.
+     * If default namespace is already declared, it will be replaced by new one.
+     *
+     * @param namespace the default namespace.
+     * @throws NullPointerException if given argument is {@code null}.
+     */
+    void declareDefault(String namespace);
+
+    /**
      * Compiles the given expression to generate a selector.
      *
      * @param expression the expression representing a selector.

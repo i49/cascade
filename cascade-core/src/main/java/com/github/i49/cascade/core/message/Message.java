@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.compiler;
+package com.github.i49.cascade.core.message;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -25,10 +25,16 @@ import java.util.ResourceBundle;
 public enum Message {
     // common
 
+    ARGUMENT_IS_NULL,
+    ARGUMENT_IS_BLANK,
+
+    // parsing errors
+
     UNKNOWN_TOKEN,
     UNEXPECTED_TOKEN,
     UNEXPECTED_WHITESPACE,
     STRING_IS_NOT_CLOSED,
+    NAMESPACE_PREFIX_IS_NOT_DECLARED,
     UNEXPECTED_END_OF_INPUT,
 
     // simple selectors

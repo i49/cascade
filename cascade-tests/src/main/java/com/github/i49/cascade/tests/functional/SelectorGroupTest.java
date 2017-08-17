@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.tests;
+package com.github.i49.cascade.tests.functional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,11 +24,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.github.i49.cascade.tests.BasicSelectorTest;
+import com.github.i49.cascade.tests.Expectation;
+
 /**
  * Tests for groups of selectors.
  */
 @RunWith(Parameterized.class)
-public class SelectorGroupTest extends BaseSelectorTest {
+public class SelectorGroupTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
@@ -41,7 +44,7 @@ public class SelectorGroupTest extends BaseSelectorTest {
         });
     }
 
-    public SelectorGroupTest(String rootId, String expression, Expected expected) {
+    public SelectorGroupTest(String rootId, String expression, Expectation expected) {
         super(rootId, expression, expected);
    }
 

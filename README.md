@@ -14,7 +14,7 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 ## Features
 
 * Compliant with [W3C Selectors Level 3](http://www.w3.org/TR/css3-selectors/).
-* Operating on standard W3C DOM interface in _org.w3c.dom_ package.
+* Operating on standard W3C DOM interface defined in _org.w3c.dom_ package.
 * Intuitive and clean API.
 * Optimization is performed when selectors are compiled.
 * Passed 300+ test cases.
@@ -61,3 +61,14 @@ Adjacent sibling combinator          | h1 + h2
 General sibling combinator           | h1 ~ pre
 
 Pseudo-elements are not supported.
+
+## Namespace Support
+Element names can be qualified with namespaces.
+
+```java
+SelectorCompiler compiler = SelectorCompiler.create();
+compiler.declare("ns", "http://www.w3.org/2000/svg");
+Selector selector = compiler.compile("ns|circle");
+Document doc = ... /* doc is an instance of org.w3c.dom.Document */
+List<Element> selected = selector.select(doc.getDocumentElement());
+```

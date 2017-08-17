@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.tests;
+package com.github.i49.cascade.tests.functional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -35,13 +35,19 @@ public class ParsingTest {
 
     private static final Logger log = Logger.getLogger(ParsingTest.class.getName());
 
-    @Parameters
+    @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-            // universal
+            // universal selector
             { "*", "*" },
-            // type
+            { "*|*", "*" },
+            { "foo|*", "foo|*" },
+            { "|*", "|*" },
+            // type selector
             { "h1", "h1" },
+            { "*|h1", "h1" },
+            { "foo|h1", "foo|h1" },
+            { "|h1", "|h1" },
             // class
             { ".pastoral", "*.pastoral" },
             { "h1.pastoral", "h1.pastoral" },
@@ -154,10 +160,15 @@ public class ParsingTest {
     }
 
     @Test
-    public void compile_shouldParseExpression() {
+    public void testCompile() {
         SelectorCompiler compiler = SelectorCompiler.create();
+        declareNamespaces(compiler);
         Selector s = compiler.compile(this.expression);
         assertThat(s).hasToString(this.result);
         log.fine(this.expression + " -> " + this.result);
+    }
+
+    private void declareNamespaces(SelectorCompiler compiler) {
+        compiler.declare("foo", "http://www.example.com");
     }
 }

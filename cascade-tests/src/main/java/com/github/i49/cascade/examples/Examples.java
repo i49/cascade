@@ -22,12 +22,22 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.github.i49.cascade.api.Selector;
+import com.github.i49.cascade.api.SelectorCompiler;
 
 public class Examples {
 
     @SuppressWarnings("unused")
-    public static void example1() {
+    public static void selectorExample() {
         Selector selector = Selector.compile("div p");
+        Document doc = getDocument(); /* doc is of org.w3c.dom.Document */
+        List<Element> selected = selector.select(doc.getDocumentElement());
+    }
+
+    @SuppressWarnings("unused")
+    public static void namespaceExample() {
+        SelectorCompiler compiler = SelectorCompiler.create();
+        compiler.declare("ns", "http://www.w3.org/2000/svg");
+        Selector selector = compiler.compile("ns|circle");
         Document doc = getDocument(); /* doc is of org.w3c.dom.Document */
         List<Element> selected = selector.select(doc.getDocumentElement());
     }

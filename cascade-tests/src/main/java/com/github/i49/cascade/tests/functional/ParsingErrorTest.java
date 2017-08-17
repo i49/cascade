@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.tests;
+package com.github.i49.cascade.tests.functional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -35,17 +35,24 @@ public class ParsingErrorTest {
 
     private static final Logger log = Logger.getLogger(ParsingErrorTest.class.getName());
 
-    @Parameters
+    @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             { null, 0 },
+            // type
             { "", 0 },
+            { "undeclared|p", 0 },
+            { "undeclared|*", 0 },
+            // selector group
             { "p, ", 3 },
+            // class
             { ".5cm, ", 0 },
+            // combinators
             { "> p", 0 },
             { "+ p", 0 },
             { "~ p", 0 },
             { ", p", 0 },
+            // attributes
             { "[class=\"example\"]*", 17 },
             { "[class=\"example\"]div", 17 },
             { "[]", 1 },
@@ -104,6 +111,7 @@ public class ParsingErrorTest {
     @Test
     public void compile_shouldThrowExceptionIfSyntaxErrorFound() {
         SelectorCompiler compiler = SelectorCompiler.create();
+        declareNamespaces(compiler);
         Throwable thrown = catchThrowable(()->{
             compiler.compile(this.expression);
         });
@@ -115,5 +123,9 @@ public class ParsingErrorTest {
             assertThat(e.getPosition()).isEqualTo(this.position);
         }
         log.fine(thrown.getMessage());
+    }
+
+    private void declareNamespaces(SelectorCompiler compiler) {
+        compiler.declare("foo", "http://www.example.com");
     }
 }

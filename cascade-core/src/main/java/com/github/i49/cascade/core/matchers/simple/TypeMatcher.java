@@ -26,9 +26,21 @@ import com.github.i49.cascade.core.matchers.MatcherType;
  */
 public class TypeMatcher implements Matcher {
 
+    public static TypeMatcher anyNamespace(String localName) {
+        return new TypeMatcher(localName);
+    }
+
+    public static TypeMatcher withNamespace(String prefix, String namespace, String localName) {
+        return new NamespacedTypeMatcher(prefix, namespace, localName);
+    }
+
+    public static TypeMatcher withoutNamespace(String localName) {
+        return new NoNamespaceTypeMatcher(localName);
+    }
+
     private final String elementName;
 
-    public TypeMatcher(String elementName) {
+    protected TypeMatcher(String elementName) {
         this.elementName = elementName;
     }
 
@@ -39,7 +51,7 @@ public class TypeMatcher implements Matcher {
 
     @Override
     public boolean matches(Element element) {
-        return elementName.equals(element.getTagName());
+        return elementName.equals(element.getLocalName());
     }
 
     @Override
@@ -49,5 +61,54 @@ public class TypeMatcher implements Matcher {
 
     public String getElementName() {
         return elementName;
+    }
+
+    private static class NoNamespaceTypeMatcher extends TypeMatcher {
+
+        public NoNamespaceTypeMatcher(String elementName) {
+            super(elementName);
+        }
+
+        @Override
+        public boolean matches(Element element) {
+            if (!super.matches(element)) {
+                return false;
+            }
+            return element.getNamespaceURI() == null;
+        }
+
+        @Override
+        public String toString() {
+            return "|" + super.toString();
+        }
+    }
+
+    private static class NamespacedTypeMatcher extends TypeMatcher {
+
+        private final String prefix;
+        private final String namespace;
+
+        public NamespacedTypeMatcher(String prefix, String namespace, String localName) {
+            super(localName);
+            this.prefix = prefix;
+            this.namespace = namespace;
+        }
+
+        @Override
+        public boolean matches(Element element) {
+            if (!super.matches(element)) {
+                return false;
+            }
+            return namespace.equals(element.getNamespaceURI());
+        }
+
+        @Override
+        public String toString() {
+            if (prefix != null) {
+                return prefix + "|" + super.toString();
+            } else {
+                return super.toString();
+            }
+        }
     }
 }

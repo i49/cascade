@@ -41,6 +41,7 @@ public class Token {
     public static final Token SUBSTRING_MATCH = new Token(TokenCategory.SUBSTRING_MATCH, "*=");
     public static final Token COLON = new Token(TokenCategory.COLON, ":");
     public static final Token CLOSING_PARENTHESIS = new Token(TokenCategory.CLOSING_PARENTHESIS, ")");
+    public static final Token VERTICAL_BAR = new Token(TokenCategory.VERTICAL_BAR, "|");
 
     private final TokenCategory category;
     private final String rawText;

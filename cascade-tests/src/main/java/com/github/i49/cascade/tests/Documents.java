@@ -16,6 +16,7 @@
 
 package com.github.i49.cascade.tests;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,8 +77,10 @@ public final class Documents {
         try (InputStream in = Documents.class.getResourceAsStream(resourceName)) {
             doc = b.parse(in);
             activateIdentifiers(doc);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Document not found: " + resourceName);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem found in: " + resourceName);
         }
         return doc;
     }

@@ -22,11 +22,13 @@ import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.github.i49.cascade.api.Selector;
-import com.github.i49.cascade.tests.Html5Test;
+import com.github.i49.cascade.tests.Expectation;
+import com.github.i49.cascade.tests.functional.Html5Test;
 
 @RunWith(Parameterized.class)
 public class PerformanceTest extends Html5Test {
@@ -34,15 +36,15 @@ public class PerformanceTest extends Html5Test {
     private static final Logger log = Logger.getLogger(PerformanceTest.class.getName());
     private static int REPEAT_COUNT = 10000;
 
-    public PerformanceTest(String expression, Expected expected) {
+    public PerformanceTest(String expression, Expectation expected) {
         super(expression, expected);
     }
 
     @Test
     public void testPerformance() {
-        Selector s = Selector.compile(expression);
-        long elapsed = profile(()->{ s.select(root); });
-        log.info("selector = \"" + expression + "\", elapsed = " + elapsed + " [ms]");
+        Selector s = Selector.compile(getExpression());
+        long elapsed = profile(()->{ s.select(getRoot()); });
+        log.info("selector = \"" + getExpression() + "\", elapsed = " + elapsed + " [ms]");
     }
 
     private static long profile(Runnable runnable) {
@@ -61,6 +63,7 @@ public class PerformanceTest extends Html5Test {
         String id = "forms__action";
         String expression = "#" + id;
 
+        Document doc = getDocument();
         long elapsed1 = profile(()->doc.getElementById(id));
 
         Selector s = Selector.compile(expression);
@@ -76,6 +79,7 @@ public class PerformanceTest extends Html5Test {
      public void compareWithGetElementsByTagName() {
          String expression = "article";
 
+         Document doc = getDocument();
          long elapsed1 = profile(()->{
              NodeList nodeList = doc.getElementsByTagName(expression);
              nodeList.getLength();

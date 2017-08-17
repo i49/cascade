@@ -96,7 +96,10 @@ class SelectorTokenizer implements Tokenizer {
 
         if (c == '*') {
             newToken(Token.ASTERISK);
+        } else if (c == '|') {
+            newToken(Token.VERTICAL_BAR);
         }
+
         return true;
     }
 

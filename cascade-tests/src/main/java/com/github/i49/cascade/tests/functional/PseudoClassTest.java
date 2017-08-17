@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.tests;
+package com.github.i49.cascade.tests.functional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,11 +24,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.github.i49.cascade.tests.BasicSelectorTest;
+import com.github.i49.cascade.tests.Expectation;
+
 /**
  * Tests for pseudo-class selectors.
  */
 @RunWith(Parameterized.class)
-public class PseudoClassTest extends BaseSelectorTest {
+public class PseudoClassTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> parameters() {
@@ -145,7 +148,7 @@ public class PseudoClassTest extends BaseSelectorTest {
         });
     }
 
-    public PseudoClassTest(String rootId, String expression, Expected expected) {
+    public PseudoClassTest(String rootId, String expression, Expectation expected) {
         super(rootId, expression, expected);
     }
 

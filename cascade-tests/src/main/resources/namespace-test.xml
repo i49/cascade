@@ -1,0 +1,21 @@
+<tests>
+
+<!-- with prefix -->
+<svg:svg id="prefix-test" width="400px" height="400px" version="1.1" xmlns:svg="http://www.w3.org/2000/svg">
+    <svg:text x="10" y="10">1</svg:text>
+    <svg:rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+</svg:svg>
+
+<!-- with default namespace -->
+<svg id="default-ns-test" width="400px" height="400px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <text x="10" y="10">1</text>
+    <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+</svg>
+
+<!-- with no namespace -->
+<svg id="no-ns-test" width="400px" height="400px" version="1.1">
+    <text x="10" y="10">1</text>
+    <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+</svg>
+
+</tests>

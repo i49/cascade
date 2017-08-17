@@ -49,5 +49,6 @@ public enum TokenCategory {
     FUNCTION,
     CLOSING_PARENTHESIS,
     NUMBER,
-    DIMENSION
+    DIMENSION,
+    VERTICAL_BAR
 }
