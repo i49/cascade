@@ -28,13 +28,13 @@ import com.github.i49.cascade.core.matchers.AllOfMatcher;
  */
 abstract class AbstractSequence implements Sequence {
 
-    protected final Matcher originalMatcher;
     protected final Matcher matcher;
+    protected final Matcher optimum;
     private Sequence previous;
 
     protected AbstractSequence(Matcher matcher) {
-        this.originalMatcher = matcher;
-        this.matcher = matcher.optimum();
+        this.matcher = matcher;
+        this.optimum = matcher.optimum();
     }
 
     @Override
@@ -76,21 +76,21 @@ abstract class AbstractSequence implements Sequence {
         if (hasPrevious()) {
             b.append(getPrevious().toString());
         }
-        if (originalMatcher instanceof AllOfMatcher) {
-            AllOfMatcher aggregation = (AllOfMatcher)originalMatcher;
+        if (matcher instanceof AllOfMatcher) {
+            AllOfMatcher aggregation = (AllOfMatcher)matcher;
             Iterator<Matcher> it = aggregation.iterator();
             if (!it.hasNext() || !it.next().getType().representsType()) {
                 b.append("*");
             }
-        } else if (!originalMatcher.getType().representsType()) {
+        } else if (!matcher.getType().representsType()) {
             b.append("*");
         }
-        b.append(originalMatcher.toString());
+        b.append(matcher.toString());
         return b.toString();
     }
 
     protected boolean test(Element element) {
-        return matcher.matches(element);
+        return optimum.matches(element);
     }
 
     protected boolean testPrevious(Element element, Element root) {

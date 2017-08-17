@@ -29,16 +29,8 @@ public class UniversalMatcher implements Matcher {
     private static final UniversalMatcher ANY_NAMESPACE = new UniversalMatcher();
     private static final UniversalMatcher NO_NAMESPACE = new NoNamespaceUniversalMatcher();
 
-    public static Matcher anyNamespace() {
+    public static UniversalMatcher get() {
         return ANY_NAMESPACE;
-    }
-
-    public static Matcher withNamespace(String prefix, String namespace) {
-        return new NamespacedUnversalMatcher(prefix, namespace);
-    }
-
-    public static Matcher withoutNamespace() {
-        return NO_NAMESPACE;
     }
 
     protected UniversalMatcher() {
@@ -55,8 +47,25 @@ public class UniversalMatcher implements Matcher {
     }
 
     @Override
+    public boolean matchesAlways() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "*";
+    }
+
+    public UniversalMatcher withNamespace(String namespace) {
+        return new NamespacedUnversalMatcher(namespace);
+    }
+
+    public UniversalMatcher withNamespace(String prefix, String namespace) {
+        return new NamespacedUnversalMatcher(prefix, namespace);
+    }
+
+    public UniversalMatcher withoutNamespace() {
+        return NO_NAMESPACE;
     }
 
     protected static class NoNamespaceUniversalMatcher extends UniversalMatcher {
@@ -64,6 +73,11 @@ public class UniversalMatcher implements Matcher {
         @Override
         public boolean matches(Element element) {
             return element.getNamespaceURI() == null;
+        }
+
+        @Override
+        public boolean matchesAlways() {
+            return false;
         }
 
         @Override
@@ -77,6 +91,11 @@ public class UniversalMatcher implements Matcher {
         private final String prefix;
         private final String namespace;
 
+        public NamespacedUnversalMatcher(String namespace) {
+            this.prefix = null;
+            this.namespace = namespace;
+        }
+
         public NamespacedUnversalMatcher(String prefix, String namespace) {
             this.prefix = prefix;
             this.namespace = namespace;
@@ -88,6 +107,11 @@ public class UniversalMatcher implements Matcher {
         }
 
         @Override
+        public boolean matchesAlways() {
+            return false;
+        }
+
+        @Override
         public String toString() {
             if (prefix != null) {
                 return prefix + "|" + super.toString();
@@ -95,6 +119,5 @@ public class UniversalMatcher implements Matcher {
                 return super.toString();
             }
         }
-
     }
 }

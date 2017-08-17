@@ -16,21 +16,43 @@
 
 package com.github.i49.cascade.core.matchers.util;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import com.github.i49.cascade.core.matchers.AllOfMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
+import com.github.i49.cascade.core.matchers.pseudo.NegationMatcher;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcher;
 
 public final class Matchers {
 
-    public static Matcher findOneOfType(Matcher matcher, MatcherType type) {
+    public static Matcher allOf(List<Matcher> matchers) {
+        assert(!matchers.isEmpty());
+        if (matchers.size() == 1) {
+            return matchers.iterator().next();
+        } else {
+            return new AllOfMatcher(matchers);
+        }
+    }
+
+    /**
+     * Creates a new matcher which negates the given matcher.
+     *
+     * @param matcher the matcher to be negated.
+     * @return newly created matcher.
+     */
+    public static Matcher negate(Matcher matcher) {
+        assert(matcher != null);
+        return (matcher != null) ? new NegationMatcher(matcher) : null;
+    }
+
+    public static Matcher extractByType(Matcher matcher, MatcherType type) {
         return findMatcher(matcher, m->m.getType() == type);
     }
 
-    public static Matcher findOneOfPseudoClass(Matcher matcher, PseudoClass pseudoClass) {
+    public static Matcher extractByPseudoClass(Matcher matcher, PseudoClass pseudoClass) {
         return findMatcher(matcher, m->{
            return m.getType() == MatcherType.PSEUDO_CLASS &&
                   ((PseudoClassMatcher)m).getPseudoClass() == pseudoClass;

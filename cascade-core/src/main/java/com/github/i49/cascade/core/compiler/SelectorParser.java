@@ -21,9 +21,7 @@ import java.util.List;
 
 import com.github.i49.cascade.api.InvalidSelectorException;
 import com.github.i49.cascade.api.Selector;
-import com.github.i49.cascade.core.matchers.AllOfMatcher;
 import com.github.i49.cascade.core.matchers.Matcher;
-import com.github.i49.cascade.core.matchers.pseudo.NegationMatcher;
 import com.github.i49.cascade.core.matchers.pseudo.Parity;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
@@ -38,6 +36,7 @@ import com.github.i49.cascade.core.matchers.simple.SubstringMatcher;
 import com.github.i49.cascade.core.matchers.simple.SuffixMatcher;
 import com.github.i49.cascade.core.matchers.simple.TypeMatcher;
 import com.github.i49.cascade.core.matchers.simple.UniversalMatcher;
+import com.github.i49.cascade.core.matchers.util.Matchers;
 import com.github.i49.cascade.core.message.Message;
 import com.github.i49.cascade.core.selectors.Combinator;
 import com.github.i49.cascade.core.selectors.DefaultSelectorGroup;
@@ -152,7 +151,10 @@ public class SelectorParser {
         if (matchers.isEmpty()) {
             return null;
         }
-        return AllOfMatcher.allOf(matchers);
+        if (!matchers.get(0).getType().representsType()) {
+            matchers.add(0, newUniversalSelector());
+        }
+        return Matchers.allOf(matchers);
     }
 
     private Matcher parseSimpleSelector(Token token, int index, boolean nested) {
@@ -206,12 +208,20 @@ public class SelectorParser {
             if (index > 0) {
                 throw newException(Message.UNIVERSAL_SELECTOR_POSITION_IS_INVALID);
             }
-            return newUniversalSelector(prefix);
+            if (prefix == null) {
+                return newUniversalSelector();
+            } else {
+                return newUniversalSelector(prefix);
+            }
         } else if (category == TokenCategory.IDENTITY) {
             if (index > 0) {
                 throw newException(Message.TYPE_SELECTOR_POSITION_IS_INVALID.with(token.getText()));
             }
-            return newTypeSelector(prefix, token.getText());
+            if (prefix == null) {
+                return newTypeSelector(token.getText());
+            } else {
+                return newTypeSelector(prefix, token.getText());
+            }
         } else {
             throw unexpectedToken(token);
         }
@@ -379,7 +389,7 @@ public class SelectorParser {
         if (token != Token.CLOSING_PARENTHESIS) {
             throw unexpectedToken(token);
         }
-        return NegationMatcher.negate(selector);
+        return Matchers.negate(selector);
     }
 
     private Matcher parseSimpleSelectorInNegation(Token token) {
@@ -397,6 +407,14 @@ public class SelectorParser {
 
     /* selector creators */
 
+    private Matcher newUniversalSelector() {
+        UniversalMatcher matcher = UniversalMatcher.get();
+        if (namespaceRegistry.hasDefault()) {
+            matcher = matcher.withNamespace(namespaceRegistry.getDefault());
+        }
+        return matcher;
+    }
+
     /**
      * Creates a new universal selector matcher.
      *
@@ -404,37 +422,31 @@ public class SelectorParser {
      * @return newly created matcher.
      */
     private Matcher newUniversalSelector(String prefix) {
-        if (prefix == null) {
-            if (namespaceRegistry.hasDefault()) {
-                return UniversalMatcher.withNamespace(prefix, namespaceRegistry.getDefault());
-            } else {
-                return UniversalMatcher.anyNamespace();
-            }
-        } else if (prefix.equals("*")) {
-            return UniversalMatcher.anyNamespace();
-        } else if (prefix.isEmpty()) {
-            return UniversalMatcher.withoutNamespace();
-        } else {
-            return UniversalMatcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
+        UniversalMatcher matcher = UniversalMatcher.get();
+        if (prefix.isEmpty()) {
+            matcher = matcher.withoutNamespace();
+        } else if (!prefix.equals("*")){
+            matcher = matcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
         }
+        return matcher;
+    }
+
+    private Matcher newTypeSelector(String selector) {
+        TypeMatcher matcher = new TypeMatcher(selector);
+        if (namespaceRegistry.hasDefault()) {
+            matcher = matcher.withNamespace(namespaceRegistry.getDefault());
+        }
+        return matcher;
     }
 
     private Matcher newTypeSelector(String prefix, String selector) {
-        if (prefix == null) {
-            if (namespaceRegistry.hasDefault()) {
-                return TypeMatcher.withNamespace(
-                        null, namespaceRegistry.getDefault(), selector);
-            } else {
-                return TypeMatcher.anyNamespace(selector);
-            }
-        } else if (prefix.equals("*")) {
-            return TypeMatcher.anyNamespace(selector);
-        } else if (prefix.isEmpty()){
-            return TypeMatcher.withoutNamespace(selector);
-        } else {
-            return TypeMatcher.withNamespace(
-                    prefix, namespaceRegistry.lookUp(prefix), selector);
+        TypeMatcher matcher = new TypeMatcher(selector);
+        if (prefix.isEmpty()){
+            matcher = matcher.withoutNamespace();
+        } else if (!prefix.equals("*")){
+            matcher = matcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
         }
+        return matcher;
     }
 
     private Matcher newIdSelector(String selector) {

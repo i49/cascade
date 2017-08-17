@@ -26,21 +26,9 @@ import com.github.i49.cascade.core.matchers.MatcherType;
  */
 public class TypeMatcher implements Matcher {
 
-    public static TypeMatcher anyNamespace(String localName) {
-        return new TypeMatcher(localName);
-    }
-
-    public static TypeMatcher withNamespace(String prefix, String namespace, String localName) {
-        return new NamespacedTypeMatcher(prefix, namespace, localName);
-    }
-
-    public static TypeMatcher withoutNamespace(String localName) {
-        return new NoNamespaceTypeMatcher(localName);
-    }
-
     private final String elementName;
 
-    protected TypeMatcher(String elementName) {
+    public TypeMatcher(String elementName) {
         this.elementName = elementName;
     }
 
@@ -61,6 +49,18 @@ public class TypeMatcher implements Matcher {
 
     public String getElementName() {
         return elementName;
+    }
+
+    public TypeMatcher withNamespace(String namespace) {
+        return new NamespacedTypeMatcher(namespace, getElementName());
+    }
+
+    public TypeMatcher withNamespace(String prefix, String namespace) {
+        return new NamespacedTypeMatcher(prefix, namespace, getElementName());
+    }
+
+    public TypeMatcher withoutNamespace() {
+        return new NoNamespaceTypeMatcher(getElementName());
     }
 
     private static class NoNamespaceTypeMatcher extends TypeMatcher {
@@ -87,6 +87,12 @@ public class TypeMatcher implements Matcher {
 
         private final String prefix;
         private final String namespace;
+
+        public NamespacedTypeMatcher(String namespace, String localName) {
+            super(localName);
+            this.prefix = null;
+            this.namespace = namespace;
+        }
 
         public NamespacedTypeMatcher(String prefix, String namespace, String localName) {
             super(localName);

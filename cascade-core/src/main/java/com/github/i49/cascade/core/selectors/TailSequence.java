@@ -43,11 +43,11 @@ public class TailSequence extends AbstractSequence {
     }
 
     public Traverser createTraverser() {
-        Matcher found = Matchers.findOneOfPseudoClass(matcher, PseudoClass.ROOT);
+        Matcher found = Matchers.extractByPseudoClass(optimum, PseudoClass.ROOT);
         if (found != null) {
             return RootTraverser.SINGLETON;
         }
-        found = Matchers.findOneOfType(matcher, MatcherType.IDENTIFIER);
+        found = Matchers.extractByType(optimum, MatcherType.IDENTIFIER);
         if (found != null) {
             String identifier = ((IdentifierMatcher)found).getIdentifier();
             return new FastIdentifierTraverser(identifier);

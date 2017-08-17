@@ -27,18 +27,7 @@ public class NegationMatcher extends FunctionalPseudoClassMatcher {
 
     private final Matcher enclosed;
 
-    /**
-     * Creates a new matcher which negates the given matcher.
-     *
-     * @param matcher the matcher to be negated.
-     * @return newly created matcher.
-     */
-    public static Matcher negate(Matcher matcher) {
-        assert(matcher != null);
-        return (matcher != null) ? new NegationMatcher(matcher) : null;
-    }
-
-    private NegationMatcher(Matcher enclosed) {
+    public NegationMatcher(Matcher enclosed) {
         this.enclosed = enclosed;
     }
 

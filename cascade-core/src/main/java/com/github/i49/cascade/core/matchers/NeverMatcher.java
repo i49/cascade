@@ -26,7 +26,7 @@ public class NeverMatcher implements Matcher {
 
     private static final NeverMatcher SINGLETON = new NeverMatcher();
 
-    public static Matcher getInstance() {
+    public static Matcher get() {
         return SINGLETON;
     }
 
@@ -41,5 +41,10 @@ public class NeverMatcher implements Matcher {
     @Override
     public boolean matches(Element element) {
         return false;
+    }
+
+    @Override
+    public boolean matchesNever() {
+        return true;
     }
 }

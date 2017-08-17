@@ -19,6 +19,7 @@ package com.github.i49.cascade.core.matchers;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
 
@@ -29,16 +30,7 @@ public class AllOfMatcher implements Matcher, Iterable<Matcher> {
 
     private final List<Matcher> matchers;
 
-    public static Matcher allOf(List<Matcher> matchers) {
-        assert(!matchers.isEmpty());
-        if (matchers.size() == 1) {
-            return matchers.iterator().next();
-        } else {
-            return new AllOfMatcher(matchers);
-        }
-    }
-
-    private AllOfMatcher(List<Matcher> matchers) {
+    public AllOfMatcher(List<Matcher> matchers) {
         this.matchers = matchers;
     }
 
@@ -51,6 +43,16 @@ public class AllOfMatcher implements Matcher, Iterable<Matcher> {
     public boolean matches(Element element) {
         for (Matcher m: this) {
             if (!m.matches(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean matchesAlways() {
+        for (Matcher m: this) {
+            if (!m.matchesAlways()) {
                 return false;
             }
         }
@@ -78,10 +80,22 @@ public class AllOfMatcher implements Matcher, Iterable<Matcher> {
 
     @Override
     public Matcher optimum() {
-        if (matchesNever()) {
-            return NeverMatcher.getInstance();
+        if (matchesAlways()) {
+            return AlwaysMatcher.get();
+        } else if (matchesNever()) {
+            return NeverMatcher.get();
         }
-        return this;
+
+        List<Matcher> matchers = this.matchers.stream()
+                .filter(m->!m.matchesAlways())
+                .collect(Collectors.toList());
+        if (this.matchers.size() == matchers.size()) {
+            return this;
+        } else if (matchers.isEmpty()) {
+            return AlwaysMatcher.get();
+        } else {
+            return new AllOfMatcher(matchers);
+        }
     }
 
     @Override

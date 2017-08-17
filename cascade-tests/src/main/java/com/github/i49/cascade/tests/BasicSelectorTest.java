@@ -28,9 +28,10 @@ import com.github.i49.cascade.api.SelectorCompiler;
 
 public abstract class BasicSelectorTest extends AbstractSelectorTest {
 
-    public static final String XHTML_URI = "http://www.w3.org/1999/xhtml";
+    public static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
+    public static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
 
-    private static String defaultNamespace = XHTML_URI;
+    private static String defaultNamespace = XHTML_NS;
 
     protected BasicSelectorTest(String rootId, String expression, Expectation expected) {
         super(rootId, expression, expected);
@@ -41,7 +42,7 @@ public abstract class BasicSelectorTest extends AbstractSelectorTest {
     }
 
     @Test
-    public void test() {
+    public void testWithoutDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create();
         Selector selector = compiler.compile(getExpression());
         List<Element> actual  = selector.select(getRoot());
@@ -55,5 +56,14 @@ public abstract class BasicSelectorTest extends AbstractSelectorTest {
         Selector selector = compiler.compile(getExpression());
         List<Element> actual  = selector.select(getRoot());
         assertThat(actual).containsExactlyElementsOf(getExpected());
+    }
+
+    @Test
+    public void testWithUnknownDefaultNamespace() {
+        SelectorCompiler compiler = SelectorCompiler.create();
+        compiler.declareDefault(NONEXISTENT_NS);
+        Selector selector = compiler.compile(getExpression());
+        List<Element> actual  = selector.select(getRoot());
+        assertThat(actual).isEmpty();
     }
 }
