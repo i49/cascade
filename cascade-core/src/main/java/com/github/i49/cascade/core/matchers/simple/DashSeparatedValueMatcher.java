@@ -23,8 +23,8 @@ import org.w3c.dom.Element;
  */
 public class DashSeparatedValueMatcher extends AttributeValueMatcher {
 
-    public DashSeparatedValueMatcher(String name, String value) {
-        super(name, value);
+    public DashSeparatedValueMatcher(AttributeNameMatcher nameMatcher, String value) {
+        super(nameMatcher, value);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class DashSeparatedValueMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String actual = element.getAttribute(getName());
+        String actual = getActualValue(element);
         String expected = getExpectedValue();
         return actual.equals(expected) || actual.startsWith(expected + "-");
     }

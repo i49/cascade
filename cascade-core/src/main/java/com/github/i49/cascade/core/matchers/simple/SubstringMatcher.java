@@ -23,12 +23,8 @@ import org.w3c.dom.Element;
  */
 public class SubstringMatcher extends AttributeValueMatcher {
 
-    public static SubstringMatcher of(String name, String substring) {
-        return new SubstringMatcher(name, substring);
-    }
-
-    private SubstringMatcher(String name, String substring) {
-        super(name, substring);
+    public SubstringMatcher(AttributeNameMatcher nameMatcher, String substring) {
+        super(nameMatcher, substring);
     }
 
     @Override
@@ -40,8 +36,8 @@ public class SubstringMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String value = element.getAttribute(getName());
-        return value.contains(expected);
+        String actual = getActualValue(element);
+        return actual.contains(expected);
     }
 
     @Override

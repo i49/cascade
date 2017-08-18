@@ -22,15 +22,16 @@ import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 
 /**
- *
+ * Matcher for universal selector represented by "*".
  */
-public class UniversalMatcher implements Matcher {
+public class UniversalMatcher implements Matcher, QualifiedMatcherProvider<UniversalMatcher> {
 
-    private static final UniversalMatcher ANY_NAMESPACE = new UniversalMatcher();
-    private static final UniversalMatcher NO_NAMESPACE = new NoNamespaceUniversalMatcher();
+    private static final UniversalMatcher DEFAULT_INSTANCE = new UniversalMatcher();
+    private static final UniversalMatcher ANY_NAMESPACE = new AnyNamespaceMatcher();
+    private static final UniversalMatcher NO_NAMESPACE = new NoNamespaceMatcher();
 
     public static UniversalMatcher get() {
-        return ANY_NAMESPACE;
+        return DEFAULT_INSTANCE;
     }
 
     protected UniversalMatcher() {
@@ -56,19 +57,35 @@ public class UniversalMatcher implements Matcher {
         return "*";
     }
 
+    @Override
+    public UniversalMatcher anyNamespace() {
+        return ANY_NAMESPACE;
+    }
+
+    @Override
     public UniversalMatcher withNamespace(String namespace) {
-        return new NamespacedUnversalMatcher(namespace);
+        return new NamespacedMatcher(namespace);
     }
 
+    @Override
     public UniversalMatcher withNamespace(String prefix, String namespace) {
-        return new NamespacedUnversalMatcher(prefix, namespace);
+        return new NamespacedMatcher(prefix, namespace);
     }
 
+    @Override
     public UniversalMatcher withoutNamespace() {
         return NO_NAMESPACE;
     }
 
-    protected static class NoNamespaceUniversalMatcher extends UniversalMatcher {
+    private static class AnyNamespaceMatcher extends UniversalMatcher {
+
+        @Override
+        public String toString() {
+            return "*|" + super.toString();
+        }
+    }
+
+    private static class NoNamespaceMatcher extends UniversalMatcher {
 
         @Override
         public boolean matches(Element element) {
@@ -86,17 +103,17 @@ public class UniversalMatcher implements Matcher {
         }
     }
 
-    protected static class NamespacedUnversalMatcher extends UniversalMatcher {
+    private static class NamespacedMatcher extends UniversalMatcher {
 
         private final String prefix;
         private final String namespace;
 
-        public NamespacedUnversalMatcher(String namespace) {
+        public NamespacedMatcher(String namespace) {
             this.prefix = null;
             this.namespace = namespace;
         }
 
-        public NamespacedUnversalMatcher(String prefix, String namespace) {
+        public NamespacedMatcher(String prefix, String namespace) {
             this.prefix = prefix;
             this.namespace = namespace;
         }

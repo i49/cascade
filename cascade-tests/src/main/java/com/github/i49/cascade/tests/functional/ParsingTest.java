@@ -40,13 +40,13 @@ public class ParsingTest {
         return Arrays.asList(new Object[][] {
             // universal selector
             { "*", "*" },
-            { "*|*", "*" },
-            { "foo|*", "foo|*" },
+            { "*|*", "*|*" },
+            { "ns|*", "ns|*" },
             { "|*", "|*" },
             // type selector
             { "h1", "h1" },
-            { "*|h1", "h1" },
-            { "foo|h1", "foo|h1" },
+            { "*|h1", "*|h1" },
+            { "ns|h1", "ns|h1" },
             { "|h1", "|h1" },
             // class
             { ".pastoral", "*.pastoral" },
@@ -62,7 +62,13 @@ public class ParsingTest {
             { "#\u00a9", "*#\u00a9" },
             // attribute
             { "[title]", "*[title]" },
+            { "[ns|title]", "*[ns|title]" },
+            { "[*|title]", "*[*|title]" },
+            { "[|title]", "*[|title]" },
             { "[class=example]", "*[class=\"example\"]" },
+            { "[ns|class=example]", "*[ns|class=\"example\"]" },
+            { "[*|class=example]", "*[*|class=\"example\"]" },
+            { "[|class=example]", "*[|class=\"example\"]" },
             { "[class=\"example\"]", "*[class=\"example\"]" },
             { "[class=\'example\']", "*[class=\"example\"]" },
             { "span[hello=\"Cleveland\"][goodbye=\"Columbus\"]", "span[hello=\"Cleveland\"][goodbye=\"Columbus\"]" },
@@ -169,6 +175,6 @@ public class ParsingTest {
     }
 
     private void declareNamespaces(SelectorCompiler compiler) {
-        compiler.declare("foo", "http://www.example.com");
+        compiler.declare("ns", "http://www.example.com");
     }
 }

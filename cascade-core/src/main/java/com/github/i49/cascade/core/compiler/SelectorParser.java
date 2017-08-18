@@ -25,7 +25,7 @@ import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.pseudo.Parity;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClassMatcherFactory;
-import com.github.i49.cascade.core.matchers.simple.AttributeMatcher;
+import com.github.i49.cascade.core.matchers.simple.AttributeNameMatcher;
 import com.github.i49.cascade.core.matchers.simple.ClassMatcher;
 import com.github.i49.cascade.core.matchers.simple.DashSeparatedValueMatcher;
 import com.github.i49.cascade.core.matchers.simple.ExactMatcher;
@@ -191,14 +191,12 @@ public class SelectorParser {
 
     private Matcher parseTypeSelector(Token token, int index) {
         String prefix = null;
-        if (token == Token.VERTICAL_BAR) {
+        if (token.is(TokenCategory.VERTICAL_BAR)) {
             prefix = "";
             token = nextToken();
-        } else if (peekToken() == Token.VERTICAL_BAR) {
+        } else if (peekToken().is(TokenCategory.VERTICAL_BAR)) {
             prefix = token.getText();
-            if (token != Token.ASTERISK && !namespaceRegistry.hasPrefix(prefix)) {
-                throw newException(Message.NAMESPACE_PREFIX_IS_NOT_DECLARED.with(prefix));
-            }
+            validateNamespacePrefix(prefix);
             // skips vertical bar
             nextToken();
             token = nextToken();
@@ -240,14 +238,38 @@ public class SelectorParser {
     }
 
     private Matcher parseAttributeSelector() {
+        String prefix = null;
         Token token = nextNonSpaceToken();
+        if (token.is(TokenCategory.VERTICAL_BAR)) {
+            prefix = "";
+            token = nextToken();
+        } else if (token.is(TokenCategory.ASTERISK)) {
+            prefix = token.getText(); // *
+            token = nextToken();
+            if (token.is(TokenCategory.VERTICAL_BAR)) {
+                token = nextToken();
+            } else {
+                throw newException(Message.NAMESPACE_SEPARATOR_IS_MISSING);
+            }
+        } else if (token.is(TokenCategory.IDENTITY)) {
+            if (peekToken().is(TokenCategory.VERTICAL_BAR)) {
+                prefix = token.getText();
+                validateNamespacePrefix(prefix);
+                // skips vertical bar
+                nextToken();
+                token = nextToken();
+            }
+        }
         if (token.getCategory() != TokenCategory.IDENTITY) {
             throw newException(Message.ATTRIBUTE_NAME_IS_MISSING);
         }
-        String name = token.getRawText();
+        String localName = token.getRawText();
+        AttributeNameMatcher nameMatcher = (prefix == null) ?
+                        newAttributeSelector(localName) :
+                        newAttributeSelector(prefix, localName);
         token = nextNonSpaceToken();
-        if (token == Token.CLOSING_BRACKET) {
-            return AttributeMatcher.of(name);
+        if (token.is(TokenCategory.CLOSING_BRACKET)) {
+            return nameMatcher;
         } else {
             switch (token.getCategory()) {
             case EXACT_MATCH:
@@ -256,14 +278,14 @@ public class SelectorParser {
             case PREFIX_MATCH:
             case SUFFIX_MATCH:
             case SUBSTRING_MATCH:
-                return parseAttributeValueSelector(name, token);
+                return parseAttributeValueSelector(nameMatcher, token);
             default:
                 throw unexpectedToken(token);
             }
         }
     }
 
-    private Matcher parseAttributeValueSelector(String name, Token operator) {
+    private Matcher parseAttributeValueSelector(AttributeNameMatcher nameMatcher, Token operator) {
         Token token = nextNonSpaceToken();
         switch (token.getCategory()) {
         case IDENTITY:
@@ -276,22 +298,22 @@ public class SelectorParser {
         }
         String value = token.getValue();
         token = nextNonSpaceToken();
-        if (token != Token.CLOSING_BRACKET) {
+        if (!token.is(TokenCategory.CLOSING_BRACKET)) {
             throw unexpectedToken(token);
         }
         switch (operator.getCategory()) {
         case EXACT_MATCH:
-            return ExactMatcher.of(name, value);
+            return new ExactMatcher(nameMatcher, value);
         case INCLUDES:
-            return SpaceSeparatedValueMatcher.of(name, value);
+            return new SpaceSeparatedValueMatcher(nameMatcher, value);
         case DASH_MATCH:
-            return new DashSeparatedValueMatcher(name, value);
+            return new DashSeparatedValueMatcher(nameMatcher, value);
         case PREFIX_MATCH:
-            return PrefixMatcher.of(name, value);
+            return new PrefixMatcher(nameMatcher, value);
         case SUFFIX_MATCH:
-            return SuffixMatcher.of(name, value);
+            return new SuffixMatcher(nameMatcher, value);
         case SUBSTRING_MATCH:
-            return SubstringMatcher.of(name, value);
+            return new SubstringMatcher(nameMatcher, value);
         default:
             throw internalError();
         }
@@ -299,7 +321,7 @@ public class SelectorParser {
 
     private Matcher parsePseudoClass(boolean nested) {
         Token token = nextToken();
-        if (token == Token.COLON) {
+        if (token.is(TokenCategory.COLON)) {
             return parsePseudoElement();
         }
         TokenCategory category = token.getCategory();
@@ -345,7 +367,7 @@ public class SelectorParser {
 
     private Token getFirstTokenInFunction(PseudoClass pseudoClass) {
         Token token = nextNonSpaceToken();
-        if (token == Token.CLOSING_PARENTHESIS) {
+        if (token.is(TokenCategory.CLOSING_PARENTHESIS)) {
             throw newException(Message.PSEUDO_CLASS_ARGUMENT_IS_MISSING.with(pseudoClass));
         }
         return token;
@@ -366,7 +388,7 @@ public class SelectorParser {
 
     private Matcher parseParityFunctionalPseudoClass(PseudoClass pseudoClass, Parity parity) {
         Token token = nextNonSpaceToken();
-        if (token == Token.CLOSING_PARENTHESIS) {
+        if (token.is(TokenCategory.CLOSING_PARENTHESIS)) {
             return newFunctionalPseudoClassSelector(pseudoClass, parity);
         } else {
             throw unexpectedTokenInFunction(token);
@@ -386,7 +408,7 @@ public class SelectorParser {
             throw unexpectedToken(token);
         }
         token = nextNonSpaceToken();
-        if (token != Token.CLOSING_PARENTHESIS) {
+        if (!token.is(TokenCategory.CLOSING_PARENTHESIS)) {
             throw unexpectedToken(token);
         }
         return Matchers.negate(selector);
@@ -425,7 +447,9 @@ public class SelectorParser {
         UniversalMatcher matcher = UniversalMatcher.get();
         if (prefix.isEmpty()) {
             matcher = matcher.withoutNamespace();
-        } else if (!prefix.equals("*")){
+        } else if (prefix.equals("*")) {
+            matcher = matcher.anyNamespace();
+        } else {
             matcher = matcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
         }
         return matcher;
@@ -441,9 +465,11 @@ public class SelectorParser {
 
     private Matcher newTypeSelector(String prefix, String selector) {
         TypeMatcher matcher = new TypeMatcher(selector);
-        if (prefix.isEmpty()){
+        if (prefix.isEmpty()) {
             matcher = matcher.withoutNamespace();
-        } else if (!prefix.equals("*")){
+        } else if (prefix.equals("*")) {
+            matcher = matcher.anyNamespace();
+        } else {
             matcher = matcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
         }
         return matcher;
@@ -456,6 +482,22 @@ public class SelectorParser {
 
     private Matcher newClassSelector(String className) {
         return new ClassMatcher(className);
+    }
+
+    private AttributeNameMatcher newAttributeSelector(String localName) {
+        return new AttributeNameMatcher(localName);
+    }
+
+    private AttributeNameMatcher newAttributeSelector(String prefix, String localName) {
+        AttributeNameMatcher matcher = new AttributeNameMatcher(localName);
+        if (prefix.isEmpty()) {
+            matcher = matcher.withoutNamespace();
+        } else if (prefix.equals("*")) {
+            matcher = matcher.anyNamespace();
+        } else {
+            matcher = matcher.withNamespace(prefix, namespaceRegistry.lookUp(prefix));
+        }
+        return matcher;
     }
 
     private Matcher newPseudoClassSelector(PseudoClass pseudoClass) {
@@ -482,6 +524,13 @@ public class SelectorParser {
         return matcher;
     }
 
+    private void validateNamespacePrefix(String prefix) {
+        if (prefix.equals("*") || namespaceRegistry.hasPrefix(prefix)) {
+            return;
+        }
+        throw newException(Message.NAMESPACE_PREFIX_IS_NOT_DECLARED.with(prefix));
+    }
+
     private Token peekToken() {
         if (this.nextToken == null) {
             this.nextToken = this.tokenizer.nextToken();
@@ -502,18 +551,18 @@ public class SelectorParser {
 
     private Token nextNonSpaceToken() {
         Token token = nextToken();
-        if (token == Token.SPACE) {
+        if (token.is(TokenCategory.SPACE)) {
             token = nextToken();
         }
         return token;
     }
 
     private InvalidSelectorException unexpectedToken(Token token) {
-        if (token == Token.EOI) {
+        if (token.is(TokenCategory.EOI)) {
             return newException(Message.UNEXPECTED_END_OF_INPUT);
-        } else if (token == Token.UNKNOWN) {
+        } else if (token.is(TokenCategory.UNKNOWN)) {
             return newException(Message.UNKNOWN_TOKEN);
-        } else if (token == Token.SPACE) {
+        } else if (token.is(TokenCategory.SPACE)) {
             return newException(Message.UNEXPECTED_WHITESPACE);
         } else {
             return newException(Message.UNEXPECTED_TOKEN.with(token.getRawText()));
@@ -521,7 +570,7 @@ public class SelectorParser {
     }
 
     private InvalidSelectorException unexpectedTokenInFunction(Token token) {
-        if (token == Token.EOI) {
+        if (token.is(TokenCategory.EOI)) {
             return newException(Message.FUNCTION_IS_NOT_CLOSED);
         }
         return unexpectedToken(token);
@@ -549,9 +598,9 @@ public class SelectorParser {
 
             // a or b
 
-            if (token == Token.PLUS) {
+            if (token.is(TokenCategory.PLUS)) {
                 token = nextToken();
-            } else if (token == Token.MINUS) {
+            } else if (token.is(TokenCategory.MINUS)) {
                 sign = -1;
                 token = nextToken();
             }
@@ -575,12 +624,12 @@ public class SelectorParser {
             // after "n"
 
             token = nextNonSpaceToken();
-            if (token == Token.CLOSING_PARENTHESIS) {
+            if (token.is(TokenCategory.CLOSING_PARENTHESIS)) {
                 b = 0;
             } else {
-                if (token == Token.PLUS) {
+                if (token.is(TokenCategory.PLUS)) {
                     sign = 1;
-                } else if (token == Token.MINUS) {
+                } else if (token.is(TokenCategory.MINUS)) {
                     sign = -1;
                 } else {
                     throw unexpectedTokenInFunction(token);
@@ -627,7 +676,7 @@ public class SelectorParser {
 
         private void expectClosingParenthesis() {
             Token token = nextNonSpaceToken();
-            if (token != Token.CLOSING_PARENTHESIS) {
+            if (!token.is(TokenCategory.CLOSING_PARENTHESIS)) {
                 throw unexpectedToken(token);
             }
         }

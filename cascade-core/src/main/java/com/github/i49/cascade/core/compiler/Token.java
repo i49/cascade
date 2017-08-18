@@ -32,7 +32,7 @@ public class Token {
     public static final Token PERIOD = new Token(TokenCategory.PERIOD, ".");
     public static final Token SPACE = new Token(TokenCategory.SPACE, " ");
     public static final Token OPENING_BRACKET = new Token(TokenCategory.OPENING_BRACKET, "[");
-    public static final Token CLOSING_BRACKET = new Token(TokenCategory.OPENING_BRACKET, "]");
+    public static final Token CLOSING_BRACKET = new Token(TokenCategory.CLOSING_BRACKET, "]");
     public static final Token EXACT_MATCH = new Token(TokenCategory.EXACT_MATCH, "=");
     public static final Token INCLUDES = new Token(TokenCategory.INCLUDES, "~=");
     public static final Token DASH_MATCH = new Token(TokenCategory.DASH_MATCH, "|=");
@@ -46,6 +46,13 @@ public class Token {
     private final TokenCategory category;
     private final String rawText;
 
+    /**
+     * Creates a new token.
+     *
+     * @param category the category of the token, cannot be {@code null}.
+     * @param rawText the raw lexeme of the token, cannot be {@code null}.
+     * @return newly created token.
+     */
     public static Token create(TokenCategory category, String rawText) {
         switch (category) {
         case NUMBER:
@@ -75,6 +82,16 @@ public class Token {
      */
     public TokenCategory getCategory() {
         return category;
+    }
+
+    /**
+     * Checks if this token belongs to the given category.
+     *
+     * @param category the token category to check.
+     * @return {@code true} if this token belongs to the given category, {@code false} otherwise..
+     */
+    public boolean is(TokenCategory category) {
+        return getCategory() == category;
     }
 
     /**

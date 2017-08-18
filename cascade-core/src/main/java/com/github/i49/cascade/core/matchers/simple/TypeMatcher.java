@@ -22,14 +22,14 @@ import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 
 /**
- *
+ * Matcher for type selector.
  */
-public class TypeMatcher implements Matcher {
+public class TypeMatcher implements Matcher, QualifiedMatcherProvider<TypeMatcher> {
 
-    private final String elementName;
+    private final String localName;
 
-    public TypeMatcher(String elementName) {
-        this.elementName = elementName;
+    public TypeMatcher(String localName) {
+        this.localName = localName;
     }
 
     @Override
@@ -39,33 +39,53 @@ public class TypeMatcher implements Matcher {
 
     @Override
     public boolean matches(Element element) {
-        return elementName.equals(element.getLocalName());
+        return localName.equals(element.getLocalName());
     }
 
     @Override
     public String toString() {
-        return elementName;
+        return localName;
     }
 
-    public String getElementName() {
-        return elementName;
+    public String getLocalName() {
+        return localName;
     }
 
+    @Override
+    public TypeMatcher anyNamespace() {
+        return new AnyNamespaceMatcher(getLocalName());
+    }
+
+    @Override
     public TypeMatcher withNamespace(String namespace) {
-        return new NamespacedTypeMatcher(namespace, getElementName());
+        return new NamespacedMatcher(namespace, getLocalName());
     }
 
+    @Override
     public TypeMatcher withNamespace(String prefix, String namespace) {
-        return new NamespacedTypeMatcher(prefix, namespace, getElementName());
+        return new NamespacedMatcher(prefix, namespace, getLocalName());
     }
 
+    @Override
     public TypeMatcher withoutNamespace() {
-        return new NoNamespaceTypeMatcher(getElementName());
+        return new NoNamespaceMatcher(getLocalName());
     }
 
-    private static class NoNamespaceTypeMatcher extends TypeMatcher {
+    private static class AnyNamespaceMatcher extends TypeMatcher {
 
-        public NoNamespaceTypeMatcher(String elementName) {
+        public AnyNamespaceMatcher(String elementName) {
+            super(elementName);
+        }
+
+        @Override
+        public String toString() {
+            return "*|" + super.toString();
+        }
+    }
+
+    private static class NoNamespaceMatcher extends TypeMatcher {
+
+        public NoNamespaceMatcher(String elementName) {
             super(elementName);
         }
 
@@ -83,18 +103,18 @@ public class TypeMatcher implements Matcher {
         }
     }
 
-    private static class NamespacedTypeMatcher extends TypeMatcher {
+    private static class NamespacedMatcher extends TypeMatcher {
 
         private final String prefix;
         private final String namespace;
 
-        public NamespacedTypeMatcher(String namespace, String localName) {
+        public NamespacedMatcher(String namespace, String localName) {
             super(localName);
             this.prefix = null;
             this.namespace = namespace;
         }
 
-        public NamespacedTypeMatcher(String prefix, String namespace, String localName) {
+        public NamespacedMatcher(String prefix, String namespace, String localName) {
             super(localName);
             this.prefix = prefix;
             this.namespace = namespace;

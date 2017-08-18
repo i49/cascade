@@ -16,42 +16,16 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 import com.github.i49.cascade.core.matchers.Matcher;
 import com.github.i49.cascade.core.matchers.MatcherType;
 
 /**
- * The matcher which will check the presence of the specified attribute.
+ * The base type for all attribute matchers.
  */
-public class AttributeMatcher implements Matcher {
-
-    private final String name;
-
-    public static AttributeMatcher of(String name) {
-        return new AttributeMatcher(name);
-    }
-
-    protected AttributeMatcher(String name) {
-        this.name = name;
-    }
+public interface AttributeMatcher extends Matcher {
 
     @Override
-    public MatcherType getType() {
+    default MatcherType getType() {
         return MatcherType.ATTRIBUTE;
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        return element.hasAttribute(getName());
-    }
-
-    @Override
-    public String toString() {
-        return "[" + getName() + "]";
-    }
-
-    protected String getName() {
-        return name;
     }
 }

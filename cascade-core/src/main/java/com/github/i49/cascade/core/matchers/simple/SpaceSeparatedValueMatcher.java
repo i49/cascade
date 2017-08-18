@@ -20,8 +20,6 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 
-import com.github.i49.cascade.core.matchers.Matcher;
-
 /**
  * The matcher which tests space separated values of the attribute.
  */
@@ -29,12 +27,8 @@ public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
 
     private static final Pattern SEPARATOR = Pattern.compile("[ \\t\\r\\n\\f]+");
 
-    public static Matcher of(String name, String value) {
-        return new SpaceSeparatedValueMatcher(name, value);
-    }
-
-    private SpaceSeparatedValueMatcher(String name, String value) {
-        super(name, value);
+    public SpaceSeparatedValueMatcher(AttributeNameMatcher nameMatcher, String value) {
+        super(nameMatcher, value);
     }
 
     @Override
@@ -46,8 +40,8 @@ public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String values = element.getAttribute(getName());
-        for (String value: SEPARATOR.split(values)) {
+        String actual = getActualValue(element);
+        for (String value: SEPARATOR.split(actual)) {
             if (value.equals(expected)) {
                 return true;
             }

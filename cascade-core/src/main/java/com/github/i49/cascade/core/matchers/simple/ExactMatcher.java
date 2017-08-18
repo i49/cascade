@@ -23,12 +23,8 @@ import org.w3c.dom.Element;
  */
 public class ExactMatcher extends AttributeValueMatcher {
 
-    public static ExactMatcher of(String attribute, String value) {
-        return new ExactMatcher(attribute, value);
-    }
-
-    private ExactMatcher(String attribute, String value) {
-        super(attribute, value);
+    public ExactMatcher(AttributeNameMatcher nameMatcher, String value) {
+        super(nameMatcher, value);
     }
 
     @Override
@@ -36,8 +32,8 @@ public class ExactMatcher extends AttributeValueMatcher {
         if (!super.matches(element)) {
             return false;
         }
-        String value = element.getAttribute(getName());
-        return value.equals(getExpectedValue());
+        String actual = getActualValue(element);
+        return actual.equals(getExpectedValue());
     }
 
     @Override

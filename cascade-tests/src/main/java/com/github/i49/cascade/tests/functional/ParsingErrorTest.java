@@ -43,6 +43,7 @@ public class ParsingErrorTest {
             { "", 0 },
             { "undeclared|p", 0 },
             { "undeclared|*", 0 },
+            { "ns|123", 3 },
             // selector group
             { "p, ", 3 },
             // class
@@ -66,6 +67,9 @@ public class ParsingErrorTest {
             { "[*=test]", 1 },
             { "##", 0 },
             { "[title=two words]", 11 },
+            { "[undeclared|title]", 1 },
+            { "[ns|123]", 4 },
+            { "[*title]", 2 },
             // pseudo-class
             { ":", 1 },
             { ":foo", 1 },
@@ -126,6 +130,6 @@ public class ParsingErrorTest {
     }
 
     private void declareNamespaces(SelectorCompiler compiler) {
-        compiler.declare("foo", "http://www.example.com");
+        compiler.declare("ns", "http://www.example.com");
     }
 }
