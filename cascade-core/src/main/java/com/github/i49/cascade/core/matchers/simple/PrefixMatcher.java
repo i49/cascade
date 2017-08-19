@@ -16,28 +16,13 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 /**
- * Matcher which tests if attribute value starts with the specified prefix.
+ * The matcher which tests if attribute value starts with the specified prefix.
  */
 public class PrefixMatcher extends AttributeValueMatcher {
 
     public PrefixMatcher(AttributeNameMatcher nameMatcher, String prefix) {
         super(nameMatcher, prefix);
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        String expected = getExpectedValue();
-        if (expected.isEmpty()) {
-            return false;
-        }
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        return actual.startsWith(expected);
     }
 
     @Override
@@ -48,5 +33,14 @@ public class PrefixMatcher extends AttributeValueMatcher {
     @Override
     protected String getSymbol() {
         return "^=";
+    }
+
+    @Override
+    public boolean testValue(String actualValue) {
+        final String expectedValue = getExpectedValue();
+        if (expectedValue.isEmpty()) {
+            return false;
+        }
+        return actualValue.startsWith(expectedValue);
     }
 }

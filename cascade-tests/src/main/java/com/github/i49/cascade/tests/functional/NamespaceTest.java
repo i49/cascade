@@ -38,13 +38,14 @@ import com.github.i49.cascade.tests.Expectation;
 public class NamespaceTest extends AbstractSelectorTest {
 
     private static final String SVG_NS = "http://www.w3.org/2000/svg";
+    private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
     private static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
 
     @Parameters(name = "{index}: {2}")
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
 
-            // prefixed
+            // prefixed element
             { "#prefix-test", null, "text", contains(1) },
             { "#prefix-test", SVG_NS, "text", contains(1) },
             { "#prefix-test", NONEXISTENT_NS, "text", contains() },
@@ -53,10 +54,10 @@ public class NamespaceTest extends AbstractSelectorTest {
             { "#prefix-test", NONEXISTENT_NS, "*", contains() },
             { "#prefix-test", null, "ns1|text", contains(1) },
             { "#prefix-test", null, "ns1|*", contains(0, 1, 2) },
-            { "#prefix-test", null, "ns2|text", contains() },
-            { "#prefix-test", null, "ns2|*", contains() },
+            { "#prefix-test", null, "ns3|text", contains() },
+            { "#prefix-test", null, "ns3|*", contains() },
 
-            // default namespace
+            // element in default namespace
             { "#default-ns-test", null, "text", contains(1) },
             { "#default-ns-test", SVG_NS, "text", contains(1) },
             { "#default-ns-test", NONEXISTENT_NS, "text", contains() },
@@ -65,10 +66,10 @@ public class NamespaceTest extends AbstractSelectorTest {
             { "#default-ns-test", NONEXISTENT_NS, "*", contains() },
             { "#default-ns-test", null, "ns1|text", contains(1) },
             { "#default-ns-test", null, "ns1|*", contains(0, 1, 2) },
-            { "#default-ns-test", null, "ns2|text", contains() },
-            { "#default-ns-test", null, "ns2|*", contains() },
+            { "#default-ns-test", null, "ns3|text", contains() },
+            { "#default-ns-test", null, "ns3|*", contains() },
 
-            // no namespace
+            // element without namespace
             { "#no-ns-test", null, "text", contains(1) },
             { "#no-ns-test", null, "|text", contains(1) },
             { "#no-ns-test", SVG_NS, "text", contains() },
@@ -77,6 +78,48 @@ public class NamespaceTest extends AbstractSelectorTest {
             { "#no-ns-test", SVG_NS, "*", contains() },
             { "#no-ns-test", null, "ns1|text", contains() },
             { "#no-ns-test", null, "ns1|*", contains() },
+
+            // prefixed attribute
+            { "#attribute-prefix-test", null, "[type]", contains() },
+            { "#attribute-prefix-test", XLINK_NS, "[type]", contains() },
+            { "#attribute-prefix-test", NONEXISTENT_NS, "[type]", contains() },
+            { "#attribute-prefix-test", null, "[ns2|type]", contains(1, 2) },
+            { "#attribute-prefix-test", null, "[ns2|type=extended]", contains(2) },
+            { "#attribute-prefix-test", null, "[ns3|type]", contains() },
+            { "#attribute-prefix-test", null, "[ns3|type=extended]", contains() },
+            { "#attribute-prefix-test", null, "[|type]", contains() },
+            { "#attribute-prefix-test", null, "[*|type]", contains(1, 2) },
+            { "#attribute-prefix-test", null, "[*|type=extended]", contains(2) },
+
+            // unprefixed attribute with default namespace
+            { "#attribute-default-ns-test", null, "[type]", contains(1, 2) },
+            { "#attribute-default-ns-test", XLINK_NS, "*|*[type]", contains(1, 2) },
+            { "#attribute-default-ns-test", XLINK_NS, "*|*[type=extended]", contains(2) },
+            { "#attribute-default-ns-test", NONEXISTENT_NS, "*|*[type]", contains(1, 2) },
+            { "#attribute-default-ns-test", NONEXISTENT_NS, "*|*[type=extended]", contains(2) },
+            { "#attribute-default-ns-test", null, "[ns2|type]", contains() },
+            { "#attribute-default-ns-test", null, "[ns3|type]", contains() },
+            { "#attribute-default-ns-test", null, "[|type]", contains(1, 2) },
+            { "#attribute-default-ns-test", null, "[|type=extended]", contains(2) },
+            { "#attribute-default-ns-test", null, "[*|type]", contains(1, 2) },
+            { "#attribute-default-ns-test", null, "[*|type=extended]", contains(2) },
+
+            // unprefixed attribute without default namespace
+            { "#attribute-no-ns-test", null, "[type]", contains(1, 2) },
+            { "#attribute-no-ns-test", XLINK_NS, "*|*[type]", contains(1, 2) },
+            { "#attribute-no-ns-test", XLINK_NS, "*|*[type=extended]", contains(2) },
+            { "#attribute-no-ns-test", NONEXISTENT_NS, "*|*[type]", contains(1, 2) },
+            { "#attribute-no-ns-test", NONEXISTENT_NS, "*|*[type=extended]", contains(2) },
+            { "#attribute-no-ns-test", null, "[ns2|type]", contains() },
+            { "#attribute-no-ns-test", null, "[ns3|type]", contains() },
+            { "#attribute-no-ns-test", null, "[|type]", contains(1, 2) },
+            { "#attribute-no-ns-test", null, "[|type=extended]", contains(2) },
+            { "#attribute-no-ns-test", null, "[*|type]", contains(1, 2) },
+            { "#attribute-no-ns-test", null, "[*|type=extended]", contains(2) },
+
+            // multiple attributes test
+            { "#multiple-attributes-test", null, "a[*|attribute=\"pass\"]", contains(1) },
+            { "#multiple-attributes-test", null, "b[*|attribute=\"pass\"]", contains(2) },
         });
     }
 
@@ -97,8 +140,9 @@ public class NamespaceTest extends AbstractSelectorTest {
     }
 
     private void configureCompiler(SelectorCompiler compiler) {
-        compiler.declare("ns1", "http://www.w3.org/2000/svg");
-        compiler.declare("ns2", NONEXISTENT_NS);
+        compiler.declare("ns1", SVG_NS);
+        compiler.declare("ns2", XLINK_NS);
+        compiler.declare("ns3", NONEXISTENT_NS);
         if (defaultNamespace != null) {
             compiler.declareDefault(defaultNamespace);
         }

@@ -17,7 +17,8 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 * Operating on standard W3C DOM interface defined in _org.w3c.dom_ package.
 * Intuitive and clean API.
 * Optimization is performed when selectors are compiled.
-* Passed 600+ test cases.
+* Namespace support.
+* Passed 700+ test cases.
 
 ## Supported Selectors
 ### Simple Selectors
@@ -63,7 +64,7 @@ General sibling combinator           | h1 ~ pre
 Pseudo-elements are not supported.
 
 ## Namespace Support
-Element names can be qualified with namespaces.
+Element and attribute names can be qualified with namespaces.
 
 ```java
 SelectorCompiler compiler = SelectorCompiler.create();

@@ -18,10 +18,9 @@ package com.github.i49.cascade.core.matchers.simple;
 
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Element;
-
 /**
- * The matcher which tests space separated values of the attribute.
+ * The matcher which tests if any part of attribute value
+ * separated by spaces equals to the specified value.
  */
 public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
 
@@ -32,24 +31,6 @@ public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
     }
 
     @Override
-    public boolean matches(Element element) {
-        String expected = getExpectedValue();
-        if (expected.isEmpty()) {
-            return false;
-        }
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        for (String value: SEPARATOR.split(actual)) {
-            if (value.equals(expected)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public boolean matchesNever() {
         return getExpectedValue().isEmpty();
     }
@@ -57,5 +38,19 @@ public class SpaceSeparatedValueMatcher extends AttributeValueMatcher {
     @Override
     protected String getSymbol() {
         return "~=";
+    }
+
+    @Override
+    public boolean testValue(String actualValue) {
+        final String expectedValue = getExpectedValue();
+        if (expectedValue.isEmpty()) {
+            return false;
+        }
+        for (String value: SEPARATOR.split(actualValue)) {
+            if (value.equals(expectedValue)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

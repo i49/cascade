@@ -16,10 +16,8 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 /**
- *
+ * The matcher which tests if attribute value exactly equals to the specified prefix.
  */
 public class ExactMatcher extends AttributeValueMatcher {
 
@@ -28,16 +26,12 @@ public class ExactMatcher extends AttributeValueMatcher {
     }
 
     @Override
-    public boolean matches(Element element) {
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        return actual.equals(getExpectedValue());
+    protected String getSymbol() {
+        return "=";
     }
 
     @Override
-    protected String getSymbol() {
-        return "=";
+    public boolean testValue(String actualValue) {
+        return actualValue.equals(getExpectedValue());
     }
 }

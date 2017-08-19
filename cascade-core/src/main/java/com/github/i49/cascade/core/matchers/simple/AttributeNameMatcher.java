@@ -16,7 +16,15 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * The matcher which will check the presence of the specified attribute.
@@ -28,10 +36,10 @@ public class AttributeNameMatcher implements AttributeMatcher, QualifiedMatcherP
     /**
      * Constructs this matcher.
      *
-     * @param name the name of the attribute.
+     * @param localName the unqualified name of the attribute.
      */
-    public AttributeNameMatcher(String name) {
-        this.localName = name;
+    public AttributeNameMatcher(String localName) {
+        this.localName = localName;
     }
 
     @Override
@@ -67,19 +75,34 @@ public class AttributeNameMatcher implements AttributeMatcher, QualifiedMatcherP
         return getLocalName();
     }
 
-    public String getAttributeValue(Element element) {
-        return element.getAttributeNS(null, getLocalName());
+    public List<Attr> findAttributes(Element element) {
+        Attr found = element.getAttributeNodeNS(null, getLocalName());
+        if (found == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(found);
     }
 
+    /**
+     * Matcher for attributes in all namespaces including no namespace.
+     */
     private static class AnyNamespaceMatcher extends AttributeNameMatcher {
 
-        public AnyNamespaceMatcher(String name) {
-            super(name);
+        public AnyNamespaceMatcher(String localName) {
+            super(localName);
         }
 
         @Override
         public boolean matches(Element element) {
-            return element.hasAttribute(getLocalName());
+            final String expectedName = getLocalName();
+            NamedNodeMap attributes = element.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attribute = attributes.item(i);
+                if (attribute.getLocalName().equals(expectedName)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -88,15 +111,30 @@ public class AttributeNameMatcher implements AttributeMatcher, QualifiedMatcherP
         }
 
         @Override
-        public String getAttributeValue(Element element) {
-            return element.getAttribute(getLocalName());
+        public List<Attr> findAttributes(Element element) {
+            List<Attr> found = null;
+            final String expectedName = getLocalName();
+            NamedNodeMap attributes = element.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attribute = attributes.item(i);
+                if (attribute.getLocalName().equals(expectedName)) {
+                    if (found == null) {
+                        found = new ArrayList<>();
+                    }
+                    found.add((Attr)attribute);
+                }
+            }
+            return (found != null) ? found : Collections.emptyList();
         }
     }
 
+    /**
+     * Matcher for attributes without namespace.
+     */
     private static class NoNamespaceMatcher extends AttributeNameMatcher {
 
-        public NoNamespaceMatcher(String name) {
-            super(name);
+        public NoNamespaceMatcher(String localName) {
+            super(localName);
         }
 
         @Override
@@ -105,13 +143,16 @@ public class AttributeNameMatcher implements AttributeMatcher, QualifiedMatcherP
         }
     }
 
+    /**
+     * Matcher for attributes in specific namespace.
+     */
     private static class NamespacedMatcher extends AttributeNameMatcher {
 
         private final String prefix;
         private final String namespace;
 
-        public NamespacedMatcher(String prefix, String namespace, String name) {
-            super(name);
+        public NamespacedMatcher(String prefix, String namespace, String localName) {
+            super(localName);
             assert(prefix != null);
             assert(namespace != null);
             this.prefix = prefix;
@@ -124,14 +165,18 @@ public class AttributeNameMatcher implements AttributeMatcher, QualifiedMatcherP
         }
 
         @Override
-        public String getAttributeValue(Element element) {
-            return element.getAttributeNS(this.namespace, getLocalName());
-        }
-
-        @Override
         public String getDisplayName() {
             StringBuilder b = new StringBuilder();
             return b.append(prefix).append("|").append(getLocalName()).toString();
+        }
+
+        @Override
+        public List<Attr> findAttributes(Element element) {
+            Attr found = element.getAttributeNodeNS(this.namespace, getLocalName());
+            if (found == null) {
+                return Collections.emptyList();
+            }
+            return Arrays.asList(found);
         }
     }
 }

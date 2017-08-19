@@ -18,4 +18,27 @@
     <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
 </svg>
 
+<webpages id="attribute-prefix-test" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <webpage xlink:type="simple" xlink:href="http://www.w3.org/">W3C</webpage>
+    <links xlink:type="extended">
+    </links>
+</webpages>
+
+<webpages id="attribute-default-ns-test" xmlns="http://www.w3.org/1999/xlink">
+    <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
+    <links type="extended">
+    </links>
+</webpages>
+
+<webpages id="attribute-no-ns-test">
+    <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
+    <links type="extended">
+    </links>
+</webpages>
+
+<test id="multiple-attributes-test" xmlns="http://css.example.net" xmlns:test="http://css.example.net">
+    <a attribute="pass" test:attribute="fail">1</a>
+    <b attribute="fail" test:attribute="pass">2</b>
+</test>
+
 </tests>

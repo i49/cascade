@@ -16,28 +16,13 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 /**
- * Matcher which tests if attribute value ends with the specified suffix.
+ * The matcher which tests if attribute value ends with the specified suffix.
  */
 public class SuffixMatcher extends AttributeValueMatcher {
 
     public SuffixMatcher(AttributeNameMatcher nameMatcher, String suffix) {
         super(nameMatcher, suffix);
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        String expected = getExpectedValue();
-        if (expected.isEmpty()) {
-            return false;
-        }
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        return actual.endsWith(expected);
     }
 
     @Override
@@ -48,5 +33,14 @@ public class SuffixMatcher extends AttributeValueMatcher {
     @Override
     protected String getSymbol() {
         return "$=";
+    }
+
+    @Override
+    public boolean testValue(String actualValue) {
+        final String expectedValue = getExpectedValue();
+        if (expectedValue.isEmpty()) {
+            return false;
+        }
+        return actualValue.endsWith(expectedValue);
     }
 }

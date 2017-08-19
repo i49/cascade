@@ -16,28 +16,13 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 /**
- *
+ * The matcher which tests if attribute value contains the specified suffix.
  */
 public class SubstringMatcher extends AttributeValueMatcher {
 
     public SubstringMatcher(AttributeNameMatcher nameMatcher, String substring) {
         super(nameMatcher, substring);
-    }
-
-    @Override
-    public boolean matches(Element element) {
-        String expected = getExpectedValue();
-        if (expected.isEmpty()) {
-            return false;
-        }
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        return actual.contains(expected);
     }
 
     @Override
@@ -48,5 +33,14 @@ public class SubstringMatcher extends AttributeValueMatcher {
     @Override
     protected String getSymbol() {
         return "*=";
+    }
+
+    @Override
+    public boolean testValue(String actualValue) {
+        final String expectedValue = getExpectedValue();
+        if (expectedValue.isEmpty()) {
+            return false;
+        }
+        return actualValue.contains(expectedValue);
     }
 }

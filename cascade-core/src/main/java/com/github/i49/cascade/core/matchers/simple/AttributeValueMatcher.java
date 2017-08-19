@@ -16,6 +16,7 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 /**
@@ -24,16 +25,21 @@ import org.w3c.dom.Element;
 public abstract class AttributeValueMatcher implements AttributeMatcher {
 
     private final AttributeNameMatcher nameMatcher;
-    private final String value;
+    private final String expectedValue;
 
-    protected AttributeValueMatcher(AttributeNameMatcher nameMatcher, String value) {
+    protected AttributeValueMatcher(AttributeNameMatcher nameMatcher, String expectedValue) {
         this.nameMatcher = nameMatcher;
-        this.value = value;
+        this.expectedValue = expectedValue;
     }
 
     @Override
     public boolean matches(Element element) {
-        return nameMatcher.matches(element);
+        for (Attr attribute: nameMatcher.findAttributes(element)) {
+            if (testValue(attribute.getValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -54,17 +60,7 @@ public abstract class AttributeValueMatcher implements AttributeMatcher {
      * @return the expected value.
      */
     public String getExpectedValue() {
-        return value;
-    }
-
-    /**
-     * Returns the actual attribute value of the specified element.
-     *
-     * @param element the element which has the attribute.
-     * @return the attribute value.
-     */
-    public String getActualValue(Element element) {
-        return nameMatcher.getAttributeValue(element);
+        return expectedValue;
     }
 
     /**
@@ -73,4 +69,12 @@ public abstract class AttributeValueMatcher implements AttributeMatcher {
      * @return the symbol of the comparison.
      */
     protected abstract String getSymbol();
+
+    /**
+     * Tests the actual attribute value.
+     *
+     * @param actualValue the attribute value, never be {@code null}.
+     * @return {@code true} if the value is expected one.
+     */
+    protected abstract boolean testValue(String actualValue);
 }

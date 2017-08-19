@@ -16,10 +16,9 @@
 
 package com.github.i49.cascade.core.matchers.simple;
 
-import org.w3c.dom.Element;
-
 /**
- * The matcher which tests dash separated values of the attribute.
+ * The matcher which tests if the first part of attribute value
+ * separated by dashes equals to the specified value.
  */
 public class DashSeparatedValueMatcher extends AttributeValueMatcher {
 
@@ -28,17 +27,13 @@ public class DashSeparatedValueMatcher extends AttributeValueMatcher {
     }
 
     @Override
-    public boolean matches(Element element) {
-        if (!super.matches(element)) {
-            return false;
-        }
-        String actual = getActualValue(element);
-        String expected = getExpectedValue();
-        return actual.equals(expected) || actual.startsWith(expected + "-");
+    protected String getSymbol() {
+        return "|=";
     }
 
     @Override
-    protected String getSymbol() {
-        return "|=";
+    public boolean testValue(String actualValue) {
+        final String expectedValue = getExpectedValue();
+        return actualValue.equals(expectedValue) || actualValue.startsWith(expectedValue + "-");
     }
 }
