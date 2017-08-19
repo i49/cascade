@@ -1,44 +1,90 @@
+<?xml version="1.1"?>
 <tests>
 
-<!-- with prefix -->
-<svg:svg id="prefix-test" width="400px" height="400px" version="1.1" xmlns:svg="http://www.w3.org/2000/svg">
-    <svg:text x="10" y="10">1</svg:text>
-    <svg:rect x="0" y="0" width="400" height="400" style="fill:blue;" />
-</svg:svg>
+<!-- prefixed element -->
+<test id="prefix-test">
+    <svg:svg width="400px" height="400px" version="1.1" xmlns:svg="http://www.w3.org/2000/svg">
+        <svg:text x="10" y="10">1</svg:text>
+        <svg:rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+    </svg:svg>
+</test>
 
-<!-- with default namespace -->
-<svg id="default-ns-test" width="400px" height="400px" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <text x="10" y="10">1</text>
-    <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
-</svg>
+<!-- element in default namespace -->
+<test id="default-ns-test">
+    <svg width="400px" height="400px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="10">1</text>
+        <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+    </svg>
+</test>
 
-<!-- with no namespace -->
-<svg id="no-ns-test" width="400px" height="400px" version="1.1">
-    <text x="10" y="10">1</text>
-    <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
-</svg>
+<!-- element with no namespace -->
+<test id="no-ns-test">
+    <svg width="400px" height="400px" version="1.1">
+        <text x="10" y="10">1</text>
+        <rect x="0" y="0" width="400" height="400" style="fill:blue;" />
+    </svg>
+</test>
 
-<webpages id="attribute-prefix-test" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <webpage xlink:type="simple" xlink:href="http://www.w3.org/">W3C</webpage>
-    <links xlink:type="extended">
-    </links>
-</webpages>
+<test id="attribute-prefix-test">
+    <webpages xmlns:xlink="http://www.w3.org/1999/xlink">
+        <webpage xlink:type="simple" xlink:href="http://www.w3.org/">W3C</webpage>
+        <links xlink:type="extended">
+        </links>
+    </webpages>
+</test>
 
-<webpages id="attribute-default-ns-test" xmlns="http://www.w3.org/1999/xlink">
-    <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
-    <links type="extended">
-    </links>
-</webpages>
+<test id="attribute-default-ns-test">
+    <webpages xmlns="http://www.w3.org/1999/xlink">
+        <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
+        <links type="extended">
+        </links>
+    </webpages>
+</test>
 
-<webpages id="attribute-no-ns-test">
-    <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
-    <links type="extended">
-    </links>
-</webpages>
+<test id="attribute-no-ns-test">
+    <webpages>
+        <webpage type="simple" href="http://www.w3.org/">W3C</webpage>
+        <links type="extended">
+        </links>
+    </webpages>
+</test>
+
+<test id="exact-value-test" xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
+    <p title="hello" xmlns="http://www.w3.org/1999/xhtml">1</p>
+    <q xmlns="http://www.example.org/a" a:title="hello">2</q>
+    <r xmlns="http://www.example.org/a" a:title="hellogoodbye">3</r>
+    <s xmlns="http://www.example.org/b" b:title="hello">4</s>
+    <t xmlns="http://www.example.org/a" a:title="helloworld">5</t>
+</test>
+
+<test id="space-separated-value-test" xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
+    <p title="hello world" xmlns="http://www.w3.org/1999/xhtml">1</p>
+    <q xmlns="http://www.example.org/a" a:title="hello world">2</q>
+    <r xmlns="http://www.example.org/a" a:title="hello goodbye">3</r>
+    <s xmlns="http://www.example.org/b" b:title="hello world">4</s>
+    <t xmlns="http://www.example.org/a" a:title="helloworld">5</t>
+</test>
+
+<test id="dash-separated-value-test" xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
+    <p title="hello-world" xmlns="http://www.w3.org/1999/xhtml">1</p>
+    <q xmlns="http://www.example.org/a" a:title="hello">2</q>
+    <r xmlns="http://www.example.org/a" a:title="hello-world">3</r>
+    <s xmlns="http://www.example.org/b" b:title="hello-world">4</s>
+    <t xmlns="http://www.example.org/a" a:title="helloworld">5</t>
+</test>
+
+<test id="substring-value-test" xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
+    <p title="pen pineapple apple" xmlns="http://www.w3.org/1999/xhtml">1</p>
+    <q xmlns="http://www.example.org/a" a:title="pen pineapple apple">2</q>
+    <r xmlns="http://www.example.org/a" a:title="pen pineapple">3</r>
+    <s xmlns="http://www.example.org/b" b:title="pen pineapple apple">4</s>
+    <t xmlns="http://www.example.org/a" a:title="pen apple pineapple">5</t>
+</test>
 
 <test id="multiple-attributes-test" xmlns="http://css.example.net" xmlns:test="http://css.example.net">
     <a attribute="pass" test:attribute="fail">1</a>
     <b attribute="fail" test:attribute="pass">2</b>
 </test>
+
 
 </tests>
