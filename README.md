@@ -1,6 +1,7 @@
 # Cascade
 [![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0
-)
+) [![Build Status](https://travis-ci.org/i49/cascade.svg?branch=master)](https://travis-ci.org/i49/cascade)
+
 
 Cascade is a pure Java implementation of CSS Selectors operating on W3C DOM.
 
@@ -18,6 +19,7 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 * Intuitive and clean API.
 * Optimization is performed when selectors are compiled.
 * Namespace support.
+* Can be used with JavaFX WebEngine document.
 * Passed 700+ test cases.
 
 ## Supported Selectors

@@ -22,8 +22,11 @@ package com.github.i49.cascade.core.matchers.simple;
  */
 public class DashSeparatedValueMatcher extends AttributeValueMatcher {
 
+    private final String dashedValue;
+
     public DashSeparatedValueMatcher(AttributeNameMatcher nameMatcher, String value) {
         super(nameMatcher, value);
+        this.dashedValue = value + "-";
     }
 
     @Override
@@ -33,7 +36,7 @@ public class DashSeparatedValueMatcher extends AttributeValueMatcher {
 
     @Override
     public boolean testValue(String actualValue) {
-        final String expectedValue = getExpectedValue();
-        return actualValue.equals(expectedValue) || actualValue.startsWith(expectedValue + "-");
+        return actualValue.equals(getExpectedValue()) ||
+               actualValue.startsWith(dashedValue);
     }
 }

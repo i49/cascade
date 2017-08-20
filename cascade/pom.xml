@@ -34,5 +34,31 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-    </build>    
+    </build> 
+    
+    <!-- Project Information -->
+    
+    <name>Cascade</name>
+    <description>Cascade is a pure Java implementation of CSS Selectors operating on W3C DOM.</description>
+    <url>https://github.com/i49/cascade</url>
+    <inceptionYear>2017</inceptionYear>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+    
+    <!-- Environment Settings -->
+    
+    <scm>
+        <connection>scm:git:https://github.com/i49/cascade.git</connection>
+        <developerConnection>scm:git@github.com:i49/cascade.git</developerConnection>
+        <url>https://github.com/i49/cascade</url>
+    </scm>
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
+       
 </project>
