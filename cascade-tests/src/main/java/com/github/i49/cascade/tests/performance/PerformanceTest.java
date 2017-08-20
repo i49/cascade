@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.github.i49.cascade.api.Selector;
+import com.github.i49.cascade.api.SelectorCompiler;
 import com.github.i49.cascade.tests.Expectation;
 import com.github.i49.cascade.tests.functional.Html5Test;
 
@@ -42,9 +43,23 @@ public class PerformanceTest extends Html5Test {
 
     @Test
     public void testPerformance() {
-        Selector s = Selector.compile(getExpression());
-        long elapsed = profile(()->{ s.select(getRoot()); });
-        log.info("selector = \"" + getExpression() + "\", elapsed = " + elapsed + " [ms]");
+        SelectorCompiler compiler = SelectorCompiler.create();
+        Selector s = compiler.compile(getExpression());
+        profileSelector(s, getRoot(), getExpression());
+    }
+
+    @Test
+    public void testPerformanceWithDefaultNamespace() {
+        SelectorCompiler compiler = SelectorCompiler.create();
+        compiler.declareDefault(XHTML_NS);
+        Selector s = compiler.compile(getExpression());
+        log.info("with default namespace");
+        profileSelector(s, getRoot(), getExpression());
+    }
+
+    private void profileSelector(Selector selector, Element start, String expression) {
+        long elapsed = profile(()->{ selector.select(start); });
+        log.info("selector = \"" + expression + "\", elapsed = " + elapsed + " [ms]");
     }
 
     private static long profile(Runnable runnable) {

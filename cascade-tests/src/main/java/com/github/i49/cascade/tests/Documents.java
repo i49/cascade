@@ -19,18 +19,22 @@ package com.github.i49.cascade.tests;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public final class Documents {
 
@@ -47,30 +51,26 @@ public final class Documents {
         return loadFromResource(resourceName);
     }
 
+    public static void save(String fileName, Document doc) {
+        saveToFile(fileName, doc);
+    }
+
     public static List<Element> descentandsOf(Element element) {
         List<Element> descendants = new ArrayList<>();
-        visitElement(element, e->descendants.add(e));
+        walkTree(element, e->descendants.add(e));
         return descendants;
     }
 
-    public static Element findOne(Document doc, String tagname) {
-        NodeList nodes = doc.getElementsByTagName(tagname);
-        if (nodes.getLength() > 0) {
-            return (Element)nodes.item(0);
-        } else {
-            return null;
+    public static void walkTree(Element start, Consumer<Element> consumer) {
+        consumer.accept(start);
+        Node child = start.getFirstChild();
+        while (child != null) {
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                walkTree((Element)child, consumer);
+            }
+            child = child.getNextSibling();
         }
     }
-
-    public static Collection<Element> findAll(Document doc) {
-        NodeList nodes = doc.getElementsByTagName("*");
-        List<Element> found = new ArrayList<>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            found.add((Element)nodes.item(i));
-        }
-        return found;
-    }
-
     private static Document loadFromResource(String resourceName) {
         Document doc = null;
         DocumentBuilder b = builders.get();
@@ -85,23 +85,24 @@ public final class Documents {
         return doc;
     }
 
+    private static void saveToFile(String fileName, Document doc) {
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.transform(new DOMSource(doc), new StreamResult(fileName));
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void activateIdentifiers(Document doc) {
-        visitElement(doc.getDocumentElement(), e->{
+        walkTree(doc.getDocumentElement(), e->{
             if (e.hasAttribute("id")) {
                 e.setIdAttribute("id", true);
             }
         });
-    }
-
-    private static void visitElement(Element e, Consumer<Element> consumer) {
-        consumer.accept(e);
-        Node child = e.getFirstChild();
-        while (child != null) {
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                visitElement((Element)child, consumer);
-            }
-            child = child.getNextSibling();
-        }
     }
 
     private static DocumentBuilder builder() {

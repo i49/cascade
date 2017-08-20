@@ -53,6 +53,14 @@ public class Html5Test extends BasicSelectorTest {
             { ":root", contains(0) },
             { ":not(:root)", doesNotContain(0) },
             { "meta:empty", contains(2, 3) },
+
+            { "figcaption", contains(265) },
+            { "[src]", contains(254, 259, 264, 322) },
+            { "[type=password]", contains(337) },
+            { "input[type|=datetime]", contains(429, 432) },
+            { "[width$=px]", contains(313) },
+            { "[href]:not([href^=\"#\"])", contains(451, 452) },
+            { "main ~ footer a:nth-child(2)", contains(452) },
         });
     }
 
