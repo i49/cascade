@@ -17,62 +17,43 @@
 package com.github.i49.cascade.core.compiler;
 
 /**
- * Tokens to be extracted from selector expression.
+ * The token extracted from the selector expression.
  */
 public class Token {
 
-    public static final Token UNKNOWN = new Token(TokenCategory.UNKNOWN, "");
-    public static final Token EOI = new Token(TokenCategory.EOI, "");
-    public static final Token PLUS = new Token(TokenCategory.PLUS, "+");
-    public static final Token MINUS = new Token(TokenCategory.MINUS, "-");
-    public static final Token GREATER = new Token(TokenCategory.GREATER, ">");
-    public static final Token COMMA = new Token(TokenCategory.COMMA, ",");
-    public static final Token TILDE = new Token(TokenCategory.TILDE, "~");
-    public static final Token ASTERISK = new Token(TokenCategory.ASTERISK, "*");
-    public static final Token PERIOD = new Token(TokenCategory.PERIOD, ".");
-    public static final Token SPACE = new Token(TokenCategory.SPACE, " ");
-    public static final Token OPENING_BRACKET = new Token(TokenCategory.OPENING_BRACKET, "[");
-    public static final Token CLOSING_BRACKET = new Token(TokenCategory.CLOSING_BRACKET, "]");
-    public static final Token EXACT_MATCH = new Token(TokenCategory.EXACT_MATCH, "=");
-    public static final Token INCLUDES = new Token(TokenCategory.INCLUDES, "~=");
-    public static final Token DASH_MATCH = new Token(TokenCategory.DASH_MATCH, "|=");
-    public static final Token PREFIX_MATCH = new Token(TokenCategory.PREFIX_MATCH, "^=");
-    public static final Token SUFFIX_MATCH = new Token(TokenCategory.SUFFIX_MATCH, "$=");
-    public static final Token SUBSTRING_MATCH = new Token(TokenCategory.SUBSTRING_MATCH, "*=");
-    public static final Token COLON = new Token(TokenCategory.COLON, ":");
-    public static final Token CLOSING_PARENTHESIS = new Token(TokenCategory.CLOSING_PARENTHESIS, ")");
-    public static final Token VERTICAL_BAR = new Token(TokenCategory.VERTICAL_BAR, "|");
-
     private final TokenCategory category;
     private final String rawText;
+    private final int position;
 
     /**
      * Creates a new token.
      *
      * @param category the category of the token, cannot be {@code null}.
      * @param rawText the raw lexeme of the token, cannot be {@code null}.
+     * @param position the position in the original text which is zero-indexed.
      * @return newly created token.
      */
-    public static Token create(TokenCategory category, String rawText) {
+    public static Token create(TokenCategory category, String rawText, int position) {
         switch (category) {
         case NUMBER:
-            return new NumberToken(rawText);
+            return new NumberToken(rawText, position);
         case STRING:
-            return new StringToken(rawText);
+            return new StringToken(rawText, position);
         case INVALID_STRING:
-            return new InvalidStringToken(rawText);
+            return new InvalidStringToken(rawText, position);
         case IDENTITY:
         case HASH:
         case FUNCTION:
-            return new EscapedToken(category, rawText);
+            return new EscapedToken(category, rawText, position);
         default:
-            return new Token(category, rawText);
+            return new Token(category, rawText, position);
         }
     }
 
-    protected Token(TokenCategory category, String rawValue) {
+    protected Token(TokenCategory category, String rawValue, int position) {
         this.category = category;
         this.rawText = rawValue;
+        this.position = position;
     }
 
     /**
@@ -116,6 +97,16 @@ public class Token {
         return getText();
     }
 
+    /**
+     * Returns the position of this token in the original text,
+     * which is zero-indexed..
+     *
+     * @return the position of this token.
+     */
+    public int getPosition() {
+        return position;
+    }
+
     public boolean isEndOfSequence() {
         switch (getCategory()) {
         case SPACE:
@@ -137,8 +128,8 @@ public class Token {
 
     private static class EscapedToken extends Token {
 
-        public EscapedToken(TokenCategory category, String rawText) {
-            super(category, rawText);
+        public EscapedToken(TokenCategory category, String rawText, int position) {
+            super(category, rawText, position);
         }
 
         @Override
@@ -152,12 +143,12 @@ public class Token {
      */
     private static class StringToken extends EscapedToken {
 
-        public StringToken(String rawValue) {
-            this(TokenCategory.STRING, rawValue);
+        public StringToken(String rawValue, int position) {
+            this(TokenCategory.STRING, rawValue, position);
         }
 
-        public StringToken(TokenCategory category, String rawValue) {
-            super(category, rawValue);
+        public StringToken(TokenCategory category, String rawValue, int position) {
+            super(category, rawValue, position);
         }
 
         @Override
@@ -180,8 +171,8 @@ public class Token {
      */
     private static class InvalidStringToken extends StringToken {
 
-        public InvalidStringToken(String rawValue) {
-            super(TokenCategory.INVALID_STRING, rawValue);
+        public InvalidStringToken(String rawValue, int position) {
+            super(TokenCategory.INVALID_STRING, rawValue, position);
         }
 
         @Override

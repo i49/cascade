@@ -50,9 +50,8 @@ import com.github.i49.cascade.core.selectors.TailSequence;
 public class SelectorParser {
 
     private final Tokenizer tokenizer;
+    private Token currentToken;
     private Token nextToken;
-    private int nextIndex;
-    private int currentIndex;
 
     private final NamespaceRegistry namespaceRegistry;
     private final PseudoClassMatcherFactory pseudoClassMatcherFactory;
@@ -534,7 +533,6 @@ public class SelectorParser {
     private Token peekToken() {
         if (this.nextToken == null) {
             this.nextToken = this.tokenizer.nextToken();
-            this.nextIndex = this.tokenizer.getCurrentIndex();
         }
         return this.nextToken;
     }
@@ -544,7 +542,7 @@ public class SelectorParser {
             peekToken();
         }
         Token token = this.nextToken;
-        this.currentIndex = this.nextIndex;
+        this.currentToken = token;
         this.nextToken = null;
         return token;
     }
@@ -580,7 +578,7 @@ public class SelectorParser {
         return new InvalidSelectorException(
                 message.toString(),
                 tokenizer.getInput(),
-                this.currentIndex);
+                this.currentToken.getPosition());
     }
 
     private RuntimeException internalError() {

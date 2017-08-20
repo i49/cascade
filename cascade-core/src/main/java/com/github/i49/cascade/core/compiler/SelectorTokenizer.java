@@ -19,7 +19,7 @@ package com.github.i49.cascade.core.compiler;
 import static com.github.i49.cascade.core.compiler.Letters.*;
 
 /**
- * Toeknizer for CSS selector expression.
+ * The tokenizer for CSS selector expression.
  */
 class SelectorTokenizer implements Tokenizer {
 
@@ -36,7 +36,11 @@ class SelectorTokenizer implements Tokenizer {
 
     @Override
     public Token nextToken() {
+        currentToken = null;
         fetchToken();
+        if (currentToken == null) {
+            newToken(TokenCategory.UNKNOWN, "");
+        }
         nextIndex = currentIndex + currentTokenLength;
         currentTokenLength = 0;
         return currentToken;
@@ -53,13 +57,11 @@ class SelectorTokenizer implements Tokenizer {
     }
 
     private boolean fetchToken() {
-        // default token
-        currentToken = Token.UNKNOWN;
 
         int index = currentIndex = nextIndex;
 
         if (!input.hasChar(index)) {
-            return newToken(Token.EOI);
+            return newToken(TokenCategory.EOI, "");
         }
 
         if (number(index)) {
@@ -70,15 +72,15 @@ class SelectorTokenizer implements Tokenizer {
         int c = input.charAt(index);
         switch (c) {
         case '.':
-            return newToken(Token.PERIOD);
+            return newToken(TokenCategory.PERIOD, ".");
         case '[':
-            return newToken(Token.OPENING_BRACKET);
+            return newToken(TokenCategory.OPENING_BRACKET, "[");
         case ']':
-            return newToken(Token.CLOSING_BRACKET);
+            return newToken(TokenCategory.CLOSING_BRACKET, "]");
         case ':':
-            return newToken(Token.COLON);
+            return newToken(TokenCategory.COLON, ":");
         case '-':
-            return newToken(Token.MINUS);
+            return newToken(TokenCategory.MINUS, "-");
         }
 
         if (string(index) ||
@@ -95,9 +97,9 @@ class SelectorTokenizer implements Tokenizer {
         }
 
         if (c == '*') {
-            newToken(Token.ASTERISK);
+            newToken(TokenCategory.ASTERISK, "*");
         } else if (c == '|') {
-            newToken(Token.VERTICAL_BAR);
+            newToken(TokenCategory.VERTICAL_BAR, "|");
         }
 
         return true;
@@ -115,7 +117,7 @@ class SelectorTokenizer implements Tokenizer {
             return false;
         }
         String text = input.match(index, NUMBER_PATTERN);
-        return newToken(Token.create(TokenCategory.NUMBER, text));
+        return newToken(TokenCategory.NUMBER, text);
     }
 
     private boolean dimension(int index, Token number) {
@@ -124,7 +126,7 @@ class SelectorTokenizer implements Tokenizer {
             return false;
         }
         String text = number.getRawText() + currentToken.getRawText();
-        return newToken(Token.create(TokenCategory.DIMENSION, text));
+        return newToken(TokenCategory.DIMENSION, text);
     }
 
     private boolean string(int index) {
@@ -138,7 +140,7 @@ class SelectorTokenizer implements Tokenizer {
         for (;;) {
             int c = input.charAt(index);
             if (c < 0 || c == '\n' || c == '\r' || c == '\f') {
-                return newToken(Token.create(TokenCategory.INVALID_STRING, b.toString()));
+                return newToken(TokenCategory.INVALID_STRING, b.toString());
             } else if (c == '\\') {
                 String matched = input.match(index, STRING_ESCAPE_PATTERN);
                 if (matched != null) {
@@ -155,28 +157,28 @@ class SelectorTokenizer implements Tokenizer {
                 }
             }
         }
-        return newToken(Token.create(TokenCategory.STRING, b.toString()));
+        return newToken(TokenCategory.STRING, b.toString());
     }
 
     private boolean equalityOperator(int index) {
         int c = input.charAt(index);
         if (c == '=') {
-            return newToken(Token.EXACT_MATCH);
+            return newToken(TokenCategory.EXACT_MATCH, "=");
         } else if ("~|^$*".indexOf(c) >= 0) {
             if (input.charAt(index + 1) != '=') {
                 return false;
             }
             switch (c) {
             case '~':
-                return newToken(Token.INCLUDES);
+                return newToken(TokenCategory.INCLUDES, "~=");
             case '|':
-                return newToken(Token.DASH_MATCH);
+                return newToken(TokenCategory.DASH_MATCH, "|=");
             case '^':
-                return newToken(Token.PREFIX_MATCH);
+                return newToken(TokenCategory.PREFIX_MATCH, "^=");
             case '$':
-                return newToken(Token.SUFFIX_MATCH);
+                return newToken(TokenCategory.SUFFIX_MATCH, "$=");
             case '*':
-                return newToken(Token.SUBSTRING_MATCH);
+                return newToken(TokenCategory.SUBSTRING_MATCH, "*=");
             }
             return false;
         }
@@ -197,17 +199,17 @@ class SelectorTokenizer implements Tokenizer {
 
         switch (c) {
         case '+':
-            return newToken(Token.PLUS, length);
+            return newToken(TokenCategory.PLUS, "+", length);
         case '>':
-            return newToken(Token.GREATER, length);
+            return newToken(TokenCategory.GREATER, ">", length);
         case '~':
-            return newToken(Token.TILDE, length);
+            return newToken(TokenCategory.TILDE, "~", length);
         case ',':
-            return newToken(Token.COMMA, length);
+            return newToken(TokenCategory.COMMA, ",", length);
         case ')':
-            return newToken(Token.CLOSING_PARENTHESIS, length);
+            return newToken(TokenCategory.CLOSING_PARENTHESIS, ")", length);
         default:
-            return newToken(Token.SPACE, --length);
+            return newToken(TokenCategory.SPACE, " ", --length);
         }
     }
 
@@ -226,7 +228,7 @@ class SelectorTokenizer implements Tokenizer {
         }
         StringBuilder b = new StringBuilder("#");
         name(index, b);
-        return newToken(Token.create(TokenCategory.HASH, b.toString()));
+        return newToken(TokenCategory.HASH, b.toString());
     }
 
     private boolean identity(int index) {
@@ -240,7 +242,7 @@ class SelectorTokenizer implements Tokenizer {
         }
         StringBuilder b = new StringBuilder();
         name(index, b);
-        return newToken(Token.create(TokenCategory.IDENTITY, b.toString()));
+        return newToken(TokenCategory.IDENTITY, b.toString());
     }
 
     private boolean function(int index, Token identity) {
@@ -250,7 +252,7 @@ class SelectorTokenizer implements Tokenizer {
             return false;
         }
         String text = identity.getRawText() + "(";
-        return newToken(Token.create(TokenCategory.FUNCTION, text));
+        return newToken(TokenCategory.FUNCTION, text);
     }
 
     // helper methods
@@ -279,13 +281,13 @@ class SelectorTokenizer implements Tokenizer {
         return input.match(index, ESCAPE_PATTERN);
     }
 
-    private boolean newToken(Token token) {
-        int length = token.getRawText().length();
-        return newToken(token, length);
+    private boolean newToken(TokenCategory category, String text) {
+        int length = text.length();
+        return newToken(category, text, length);
     }
 
-    private boolean newToken(Token token, int length) {
-        this.currentToken = token;
+    private boolean newToken(TokenCategory category, String text, int length) {
+        this.currentToken = Token.create(category, text, this.currentIndex);
         this.currentTokenLength = length;
         return true;
     }

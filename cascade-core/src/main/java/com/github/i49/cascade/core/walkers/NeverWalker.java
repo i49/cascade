@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.compiler;
+package com.github.i49.cascade.core.walkers;
+
+import org.w3c.dom.Element;
 
 /**
- * Token representing numbers.
+ * The walker which never walk the document tree.
  */
-class NumberToken extends Token {
+public class NeverWalker implements Walker {
 
-    public NumberToken(String rawText, int position) {
-        super(TokenCategory.NUMBER, rawText, position);
+    private static final NeverWalker SINGLETON = new NeverWalker();
+
+    public static NeverWalker create() {
+        return SINGLETON;
     }
 
-    public boolean isIntegral() {
-        return getRawText().indexOf('.') < 0;
+    private NeverWalker() {
     }
 
-    public int intValue() {
-        return Integer.parseInt(getRawText());
+    /**
+     * {@inheritDoc}
+     * This method does visit no elements in the document.
+     */
+    @Override
+    public void walkTree(Element start, Visitor visitor) {
+        // Do nothing.
     }
 }

@@ -25,6 +25,7 @@ import com.github.i49.cascade.core.matchers.simple.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.util.Matchers;
 import com.github.i49.cascade.core.walkers.DepthFirstWalker;
 import com.github.i49.cascade.core.walkers.IdentifierWalker;
+import com.github.i49.cascade.core.walkers.NeverWalker;
 import com.github.i49.cascade.core.walkers.RootOnlyWalker;
 import com.github.i49.cascade.core.walkers.Walker;
 
@@ -48,6 +49,9 @@ public class TailSequence extends AbstractSequence {
      * @return newly created walker.
      */
     public Walker createWalker() {
+        if (optimum.matchesNever()) {
+            return NeverWalker.create();
+        }
         Matcher found = Matchers.extractByPseudoClass(optimum, PseudoClass.ROOT);
         if (found != null) {
             return RootOnlyWalker.create();
