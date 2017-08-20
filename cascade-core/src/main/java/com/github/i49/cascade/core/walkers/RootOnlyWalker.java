@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.traversers;
+package com.github.i49.cascade.core.walkers;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.github.i49.cascade.core.dom.Elements;
 
 /**
- * Fast traverser accelerated by {@link Document#getElementById(String)} method.
+ * The walker which will visit only the root element of the document.
  */
-public class FastIdentifierTraverser extends DepthFirstTraverser {
+public class RootOnlyWalker implements Walker {
 
-    private final String identifier;
+    // The one and only instance of this class.
+    private static final RootOnlyWalker SINGLETON = new RootOnlyWalker();
 
-    public FastIdentifierTraverser(String identifier) {
-        this.identifier = identifier;
+    public static RootOnlyWalker create() {
+        return SINGLETON;
     }
 
+    private RootOnlyWalker() {
+    }
+
+    /**
+     * {@inheritDoc}
+     * This method only visits the element at the root of the document.
+     */
     @Override
-    public void traverse(Element start, Visitor visitor) {
-        if (!Elements.isRoot(start)) {
-            super.traverse(start, visitor);
-            return;
-        }
-        Document doc = start.getOwnerDocument();
-        Element found = doc.getElementById(identifier);
-        if (found != null) {
-            visitor.visit(found);
+    public void walkTree(Element start, Visitor visitor) {
+        if (Elements.isRoot(start)) {
+            visitor.visit(start);
         }
     }
 }

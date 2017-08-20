@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import com.github.i49.cascade.api.Selector;
 import com.github.i49.cascade.api.SelectorGroup;
 import com.github.i49.cascade.api.SingleSelector;
-import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
+import com.github.i49.cascade.core.walkers.DepthFirstWalker;
 
 /**
  *
@@ -50,7 +50,7 @@ public class DefaultSelectorGroup extends AbstractSelector implements SelectorGr
     }
 
     private DefaultSelectorGroup(List<DefaultSingleSelector> selectors) {
-        super(DepthFirstTraverser.SINGLETON);
+        super(DepthFirstWalker.create());
         this.selectors = selectors;
     }
 

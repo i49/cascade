@@ -15,6 +15,6 @@
  */
 
 /**
- * Provides various kinds of traversers for DOM tree.
+ * Provides various kinds of walkers for walking document trees.
  */
-package com.github.i49.cascade.core.traversers;
+package com.github.i49.cascade.core.walkers;

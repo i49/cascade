@@ -23,10 +23,10 @@ import com.github.i49.cascade.core.matchers.MatcherType;
 import com.github.i49.cascade.core.matchers.pseudo.PseudoClass;
 import com.github.i49.cascade.core.matchers.simple.IdentifierMatcher;
 import com.github.i49.cascade.core.matchers.util.Matchers;
-import com.github.i49.cascade.core.traversers.DepthFirstTraverser;
-import com.github.i49.cascade.core.traversers.FastIdentifierTraverser;
-import com.github.i49.cascade.core.traversers.RootTraverser;
-import com.github.i49.cascade.core.traversers.Traverser;
+import com.github.i49.cascade.core.walkers.DepthFirstWalker;
+import com.github.i49.cascade.core.walkers.IdentifierWalker;
+import com.github.i49.cascade.core.walkers.RootOnlyWalker;
+import com.github.i49.cascade.core.walkers.Walker;
 
 /**
  * The last sequence of sequences combined by combinators.
@@ -42,16 +42,21 @@ public class TailSequence extends AbstractSequence {
         return test(element) && testPrevious(element, root);
     }
 
-    public Traverser createTraverser() {
+    /**
+     * Creates a document tree walker appropriate for this sequence.
+     *
+     * @return newly created walker.
+     */
+    public Walker createWalker() {
         Matcher found = Matchers.extractByPseudoClass(optimum, PseudoClass.ROOT);
         if (found != null) {
-            return RootTraverser.SINGLETON;
+            return RootOnlyWalker.create();
         }
         found = Matchers.extractByType(optimum, MatcherType.IDENTIFIER);
         if (found != null) {
             String identifier = ((IdentifierMatcher)found).getIdentifier();
-            return new FastIdentifierTraverser(identifier);
+            return IdentifierWalker.create(identifier);
         }
-        return DepthFirstTraverser.SINGLETON;
+        return DepthFirstWalker.create();
     }
 }

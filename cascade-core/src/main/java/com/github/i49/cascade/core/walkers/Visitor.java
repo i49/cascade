@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.traversers;
+package com.github.i49.cascade.core.walkers;
 
 import org.w3c.dom.Element;
 
 /**
- * The base interface of all traversers.
+ * Visitor who visits each element in the document tree.
  */
 @FunctionalInterface
-public interface Traverser {
+public interface Visitor {
 
     /**
-     * Traverses the document tree.
+     * Visits the given element.
      *
-     * @param start the starting point of the traversal.
-     * @param visitor the visitor of each element.
+     * @param element the element to visit, never be {@code null}.
      */
-    void traverse(Element start, Visitor visitor);
+    void visit(Element element);
 }

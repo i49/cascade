@@ -22,17 +22,17 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import com.github.i49.cascade.api.Selector;
-import com.github.i49.cascade.core.traversers.Traverser;
+import com.github.i49.cascade.core.walkers.Walker;
 
 /**
  * A skeletal implementation of {@link Selector}.
  */
 abstract class AbstractSelector implements Selector {
 
-    private final Traverser traverser;
+    private final Walker walker;
 
-    protected AbstractSelector(Traverser traverser) {
-        this.traverser = traverser;
+    protected AbstractSelector(Walker walker) {
+        this.walker = walker;
     }
 
     @Override
@@ -41,7 +41,7 @@ abstract class AbstractSelector implements Selector {
             throw new NullPointerException("root must not be null.");
         }
         List<Element> selected  = new ArrayList<>();
-        this.traverser.traverse(root, element->{
+        this.walker.walkTree(root, element->{
             if (test(element, root)) {
                 selected.add(element);
             }

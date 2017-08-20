@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.i49.cascade.core.traversers;
+package com.github.i49.cascade.core.walkers;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * A basic depth-first traverser.
+ * A basic depth-first walker.
  */
-public class DepthFirstTraverser implements Traverser {
+public class DepthFirstWalker implements Walker {
 
-    // The one and only instance of this traverser.
-    public static final DepthFirstTraverser SINGLETON = new DepthFirstTraverser();
+    // The one and only instance of this class.
+    private static final DepthFirstWalker SINGLETON = new DepthFirstWalker();
 
-    protected DepthFirstTraverser() {
+    public static DepthFirstWalker create() {
+        return SINGLETON;
+    }
+
+    private DepthFirstWalker() {
     }
 
     @Override
-    public void traverse(Element start, Visitor visitor) {
+    public void walkTree(Element start, Visitor visitor) {
         visitor.visit(start);
         visitDescendants(start, visitor);
     }

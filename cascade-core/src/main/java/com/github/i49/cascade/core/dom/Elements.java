@@ -28,6 +28,24 @@ public final class Elements {
         return element.getOwnerDocument().getDocumentElement() == element;
     }
 
+    /**
+     * Checks if the given element has the specified another element as a descendant.
+     *
+     * @param element the element to check.
+     * @param descendant the element to be a descendant of {@code element}.
+     * @return {@code true} if given {@code descendant} is actually a descendant of the {@code element}.
+     */
+    public static boolean hasDescendant(Element element, Element descendant) {
+        Node current = descendant;
+        while (current.getNodeType() != Node.DOCUMENT_NODE) {
+            if (current == element) {
+                return true;
+            }
+            current = current.getParentNode();
+        }
+        return false;
+    }
+
     public static boolean hasParent(Element element) {
         return element.getParentNode() != null;
     }

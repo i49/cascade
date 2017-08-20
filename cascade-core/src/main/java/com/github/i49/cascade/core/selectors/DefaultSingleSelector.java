@@ -28,7 +28,7 @@ public class DefaultSingleSelector extends AbstractSelector implements SingleSel
     private final TailSequence tail;
 
     public DefaultSingleSelector(TailSequence tail) {
-        super(tail.createTraverser());
+        super(tail.createWalker());
         this.tail = tail;
     }
 
