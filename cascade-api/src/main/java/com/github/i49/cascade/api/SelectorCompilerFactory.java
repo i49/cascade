@@ -21,9 +21,9 @@ import java.util.ServiceLoader;
 /**
  * A factory for producing instances of {@link SelectorCompiler}.
  *
- * <p>
- * Each instance of this class is thread-safe.
- * </p>
+ * <p>This type is a Service Provider Interface and
+ * the instance of this type should be provided by the API implementation.</p>
+ * <p>Each instance of this class is thread-safe.</p>
  */
 public abstract class SelectorCompilerFactory {
 

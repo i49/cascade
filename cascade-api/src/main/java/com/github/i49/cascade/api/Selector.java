@@ -22,6 +22,22 @@ import org.w3c.dom.Element;
 
 /**
  * Cascading Style Sheets selector.
+ *
+ * <p>The following code snippet shows the most basic usage of this class.</p>
+ * <pre><code> Selector selector = Selector.compile("div p");
+ * Document doc = ... // doc is an instance of org.w3c.dom.Document
+ * List&lt;Element&gt; selected = selector.select(doc.getDocumentElement());
+ * </code></pre>
+ *
+ * <p>If you would like to configure the compiler, you can create the compiler explicitly.</p>
+ * <pre><code> SelectorCompiler compiler = SelectorCompiler.create();
+ * compiler.declare("ns", "http://www.w3.org/2000/svg");
+ * Selector selector = compiler.compile("ns|circle");
+ * Document doc = ... // doc is an instance of org.w3c.dom.Document
+ * List&lt;Element&gt; selected = selector.select(doc.getDocumentElement());
+ * </code></pre>
+ *
+ * @see SelectorCompiler
  */
 public interface Selector {
 
@@ -31,6 +47,7 @@ public interface Selector {
      * @param expression the expression representing a selector.
      * @return created selector.
      * @throws NullPointerException if given {@code expression} is {@code null}.
+     * @throws InvalidSelectorException if given {@code expression} has any syntax errors.
      */
     static Selector compile(String expression) {
         return SelectorCompiler.create().compile(expression);
@@ -38,6 +55,8 @@ public interface Selector {
 
     /**
      * Searches the document tree for elements matching this selector.
+     * The list returned by this method does not contain any duplicates
+     * and retains the order of the elements in the original document.
      *
      * @param root the root of all elements to search.
      *             All descendants of this element and given element itself will be searched.

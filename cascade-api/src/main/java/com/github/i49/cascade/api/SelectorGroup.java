@@ -24,9 +24,9 @@ import java.util.Iterator;
 public interface SelectorGroup extends Selector, Iterable<SingleSelector> {
 
     /**
-     * Returns an iterator over component selectors.
+     * Returns an iterator over selectors in this group.
      *
-     * @return an iterator.
+     * @return an iterator, never be {@code null}.
      */
     @Override
     Iterator<SingleSelector> iterator();

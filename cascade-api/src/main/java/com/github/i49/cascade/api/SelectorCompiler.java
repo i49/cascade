@@ -61,6 +61,7 @@ public interface SelectorCompiler {
      * @param expression the expression representing a selector.
      * @return created selector.
      * @throws NullPointerException if given {@code expression} is {@code null}.
+     * @throws InvalidSelectorException if given {@code expression} has any syntax errors.
      */
     Selector compile(String expression);
 }

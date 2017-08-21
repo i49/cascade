@@ -42,7 +42,7 @@ public class InvalidSelectorException extends RuntimeException {
     /**
      * Returns the expression which caused a problem.
      *
-     * @return the expression.
+     * @return the expression, which never be {@code null}.
      */
     public String getExpression() {
         return expression;
@@ -51,7 +51,7 @@ public class InvalidSelectorException extends RuntimeException {
     /**
      * Returns the position in the expression where the problem was found.
      *
-     * @return the position in the expression.
+     * @return the position in the expression, which starts from zero.
      */
     public int getPosition() {
         return position;
