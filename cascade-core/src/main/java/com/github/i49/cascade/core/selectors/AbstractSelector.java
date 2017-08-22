@@ -36,13 +36,13 @@ abstract class AbstractSelector implements Selector {
     }
 
     @Override
-    public List<Element> select(Element root) {
-        if (root == null) {
-            throw new NullPointerException("root must not be null.");
+    public List<Element> select(Element start) {
+        if (start == null) {
+            throw new NullPointerException("start must not be null.");
         }
         List<Element> selected  = new ArrayList<>();
-        this.walker.walkTree(root, element->{
-            if (test(element, root)) {
+        this.walker.walkTree(start, element->{
+            if (test(element, start)) {
                 selected.add(element);
             }
         });

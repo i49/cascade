@@ -58,10 +58,24 @@ public interface Selector {
      * The list returned by this method does not contain any duplicates
      * and retains the order of the elements in the original document.
      *
-     * @param root the root of all elements to search.
-     *             All descendants of this element and given element itself will be searched.
+     * @param start the starting point of all elements to search.
+     *              All descendants of this element including this element will be searched.
+     *              This element must exist in the document tree.
      * @return the list of all elements found, may be empty but never be {@code null}.
-     * @throws NullPointerException if the given {@code root} is {@code null}.
+     * @throws NullPointerException if the given {@code start} is {@code null}.
      */
-    List<Element> select(Element root);
+    List<Element> select(Element start);
+
+    /**
+     * Returns the string representation of this selector.
+     * <p>
+     * The string to be returned is almost same as the text initially passed to the compiler,
+     * but will be in normalized form.
+     * e.g., for "[title=hello]" this method returns "*[title="hello"]".
+     * </p>
+     *
+     * @return the string representation of this selector.
+     */
+    @Override
+    String toString();
 }

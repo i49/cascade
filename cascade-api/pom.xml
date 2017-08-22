@@ -12,4 +12,12 @@
     <artifactId>cascade-api</artifactId>
     <packaging>jar</packaging>
 
+    <name>Cascade API</name>
+
+    <scm>
+        <connection>scm:git:https://github.com/i49/cascade.git</connection>
+        <developerConnection>scm:git@github.com:i49/cascade.git</developerConnection>
+        <url>https://github.com/i49/cascade</url>
+    </scm>
+
 </project>
