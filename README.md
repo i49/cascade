@@ -12,15 +12,38 @@ Selector selector = Selector.compile("div p");
 Document doc = ... /* doc is an instance of org.w3c.dom.Document */
 List<Element> selected = selector.select(doc.getDocumentElement());
 ```
+
 ## Features
 
 * Compliant with [W3C Selectors Level 3](http://www.w3.org/TR/css3-selectors/).
 * Operating on standard W3C DOM interface defined in _org.w3c.dom_ package.
-* Intuitive and clean API.
+* Simple and intuitive API.
 * Optimization is performed when selectors are compiled.
 * Namespace support.
 * Can be used with JavaFX WebEngine document.
 * Passed 700+ test cases.
+
+## Prerequisites
+
+* Java 8 or higher.
+
+The library is available in the Maven central repository.
+Add dependencies to your pom.xml before using it as follows:
+```xml
+<dependencies>
+  <dependency>
+    <groupId>com.github.i49</groupId>
+    <artifactId>cascade-api</artifactId>
+    <version>3.0.0</version>
+  </dependency>
+  <dependency>
+    <groupId>com.github.i49</groupId>
+    <artifactId>cascade-core</artifactId>
+    <version>3.0.0</version>
+    <scope>runtime</scope>
+  </dependency>
+</dependencies>
+```
 
 ## Supported Selectors
 ### Simple Selectors
