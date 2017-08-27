@@ -22,7 +22,7 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 * Compatible with documents provided by `javafx.scene.web.WebEngine`.
 * Passed 700+ test cases.
 
-For more detail, please see [API documentation](https://www.javadoc.io/doc/com.github.i49/cascade-api)
+For more detail, please see [API documentation](https://www.javadoc.io/doc/io.github.i49/cascade-api)
 
 ## Prerequisites
 
