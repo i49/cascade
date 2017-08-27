@@ -1,6 +1,6 @@
 # Cascade
 [![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0
-) [![Build Status](https://travis-ci.org/i49/cascade.svg?branch=master)](https://travis-ci.org/i49/cascade) [![Javadocs](https://www.javadoc.io/badge/com.github.i49/cascade-api.svg?color=blue)](https://www.javadoc.io/doc/com.github.i49/cascade-api)
+) [![Build Status](https://travis-ci.org/i49/cascade.svg?branch=master)](https://travis-ci.org/i49/cascade) [![Javadocs](https://www.javadoc.io/badge/io.github.i49/cascade-api.svg?color=blue)](https://www.javadoc.io/doc/io.github.i49/cascade-api)
 
 Cascade is a pure Java implementation of CSS Selectors operating on W3C DOM.
 
@@ -19,7 +19,7 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 * Simple and intuitive API.
 * Optimization is performed when selectors are compiled.
 * Supports namespace.
-* Compatible with documents provided by `JavaFX WebEngine`.
+* Compatible with documents provided by `javafx.scene.web.WebEngine`.
 * Passed 700+ test cases.
 
 For more detail, please see [API documentation](https://www.javadoc.io/doc/com.github.i49/cascade-api)
@@ -32,14 +32,14 @@ The library is available in the Maven central repository.
 Add 2 dependencies to your pom.xml before using it as follows:
 ```xml
 <dependency>
-  <groupId>com.github.i49</groupId>
+  <groupId>io.github.i49</groupId>
   <artifactId>cascade-api</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 <dependency>
-  <groupId>com.github.i49</groupId>
+  <groupId>io.github.i49</groupId>
   <artifactId>cascade-core</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
   <scope>runtime</scope>
 </dependency>
 ```
