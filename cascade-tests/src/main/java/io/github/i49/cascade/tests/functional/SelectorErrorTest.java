@@ -20,17 +20,42 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import io.github.i49.cascade.api.Selector;
+import io.github.i49.cascade.tests.Documents;
 
 public class SelectorErrorTest {
 
     @Test
-    public void selector_shouldThrowExceptionIfRootIsNull() {
+    public void select_shouldThrowExceptionIfStartElementIsNull() {
+        // given
         Selector s = Selector.compile("p");
+        Element startElement = null;
+        
+        // when
         Throwable thrown = catchThrowable(()->{
-            s.select(null);
+            s.select(startElement);
         });
+        
+        // then
         assertThat(thrown).isInstanceOf(NullPointerException.class);
+    }
+    
+    @Test
+    public void select_shouldThrowExceptionIfStartElementIsOrphan() {
+        // given
+        Selector s = Selector.compile("*");
+        Document doc = Documents.empty();
+        Element startElement = doc.createElement("orphan");
+
+        // when
+        Throwable thrown = catchThrowable(()->{
+            s.select(startElement);
+        });
+        
+        // then
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -27,6 +27,7 @@ public enum Message {
 
     ARGUMENT_IS_NULL,
     ARGUMENT_IS_BLANK,
+    ELEMENT_HAS_NOT_PARENT,
 
     // parsing errors
 

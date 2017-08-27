@@ -22,6 +22,8 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import io.github.i49.cascade.api.Selector;
+import io.github.i49.cascade.core.dom.Elements;
+import io.github.i49.cascade.core.message.Message;
 import io.github.i49.cascade.core.walkers.Walker;
 
 /**
@@ -39,6 +41,8 @@ abstract class AbstractSelector implements Selector {
     public List<Element> select(Element start) {
         if (start == null) {
             throw new NullPointerException("start must not be null.");
+        } else if (Elements.isOrphan(start)) {
+            throw new IllegalArgumentException(Message.ELEMENT_HAS_NOT_PARENT.toString());
         }
         List<Element> selected  = new ArrayList<>();
         this.walker.walkTree(start, element->{

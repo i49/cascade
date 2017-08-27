@@ -49,6 +49,10 @@ public final class Elements {
     public static boolean hasParent(Element element) {
         return element.getParentNode() != null;
     }
+    
+    public static boolean isOrphan(Element element) {
+        return !hasParent(element);
+    }
 
     public static boolean hasSiblingBefore(Element element) {
         Node sibling = element.getPreviousSibling();

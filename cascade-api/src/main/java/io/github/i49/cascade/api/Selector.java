@@ -63,6 +63,7 @@ public interface Selector {
      *              This element must exist in the document tree.
      * @return the list of all elements found, may be empty but never be {@code null}.
      * @throws NullPointerException if the given {@code start} is {@code null}.
+     * @throws IllegalArgumentException if the given {@code start} does not exist in the document tree.
      */
     List<Element> select(Element start);
 
