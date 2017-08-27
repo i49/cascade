@@ -91,8 +91,8 @@ Pseudo-elements are not supported.
 Element and attribute names can be qualified with namespaces.
 
 ```java
-SelectorCompiler compiler = SelectorCompiler.create();
-compiler.declare("ns", "http://www.w3.org/2000/svg");
+SelectorCompiler compiler = SelectorCompiler.create()
+        .withNamespace("ns", "http://www.w3.org/2000/svg");
 Selector selector = compiler.compile("ns|circle");
 Document doc = ... /* doc is an instance of org.w3c.dom.Document */
 List<Element> selected = selector.select(doc.getDocumentElement());

@@ -51,8 +51,8 @@ public abstract class BasicSelectorTest extends AbstractSelectorTest {
 
     @Test
     public void testWithDefaultNamespace() {
-        SelectorCompiler compiler = SelectorCompiler.create();
-        compiler.declareDefault(defaultNamespace);
+        SelectorCompiler compiler = SelectorCompiler.create()
+                .withDefaultNamespace(defaultNamespace);
         Selector selector = compiler.compile(getExpression());
         List<Element> actual  = selector.select(getRoot());
         assertThat(actual).containsExactlyElementsOf(getExpected());
@@ -60,8 +60,8 @@ public abstract class BasicSelectorTest extends AbstractSelectorTest {
 
     @Test
     public void testWithUnknownDefaultNamespace() {
-        SelectorCompiler compiler = SelectorCompiler.create();
-        compiler.declareDefault(NONEXISTENT_NS);
+        SelectorCompiler compiler = SelectorCompiler.create()
+                .withDefaultNamespace(NONEXISTENT_NS);
         Selector selector = compiler.compile(getExpression());
         List<Element> actual  = selector.select(getRoot());
         assertThat(actual).isEmpty();

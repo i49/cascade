@@ -184,21 +184,23 @@ public class NamespaceTest extends AbstractSelectorTest {
     @Test
     public void test() {
         SelectorCompiler compiler = SelectorCompiler.create();
-        configureCompiler(compiler);
+        compiler = configureCompiler(compiler);
         Selector selector = compiler.compile(getExpression());
         List<Element> actual  = selector.select(getRoot());
         assertThat(actual).containsExactlyElementsOf(getExpected());
     }
 
-    private void configureCompiler(SelectorCompiler compiler) {
-        compiler.declare("ns1", SVG_NS);
-        compiler.declare("ns2", XLINK_NS);
-        compiler.declare("ns3", NONEXISTENT_NS);
-        compiler.declare("a", "http://www.example.org/a");
-        compiler.declare("b", "http://www.example.org/b");
+    private SelectorCompiler configureCompiler(SelectorCompiler compiler) {
+        compiler = compiler
+            .withNamespace("ns1", SVG_NS)
+            .withNamespace("ns2", XLINK_NS)
+            .withNamespace("ns3", NONEXISTENT_NS)
+            .withNamespace("a", "http://www.example.org/a")
+            .withNamespace("b", "http://www.example.org/b");
         if (defaultNamespace != null) {
-            compiler.declareDefault(defaultNamespace);
+            compiler = compiler.withDefaultNamespace(defaultNamespace);
         }
+        return compiler;
     }
 
     @BeforeClass

@@ -35,7 +35,7 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
     }
 
     @Override
-    public void declare(String prefix, String namespace) {
+    public SelectorCompiler withNamespace(String prefix, String namespace) {
         if (prefix == null) {
             throw new NullPointerException(Message.ARGUMENT_IS_NULL.with("prefix"));
         } else if (prefix.isEmpty()) {
@@ -45,14 +45,16 @@ public class DefaultSelectorCompiler implements SelectorCompiler {
             throw new NullPointerException(Message.ARGUMENT_IS_NULL.with("namespace"));
         }
         namespaceRegistry.register(prefix, namespace);
+        return this;
     }
 
     @Override
-    public void declareDefault(String namespace) {
+    public SelectorCompiler withDefaultNamespace(String namespace) {
         if (namespace == null) {
             throw new NullPointerException(Message.ARGUMENT_IS_NULL.with("namespace"));
         }
         namespaceRegistry.registerDefault(namespace);
+        return this;
     }
 
     @Override

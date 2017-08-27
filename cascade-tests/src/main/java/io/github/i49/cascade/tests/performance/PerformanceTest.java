@@ -51,7 +51,7 @@ public class PerformanceTest extends Html5Test {
     @Test
     public void testPerformanceWithDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create();
-        compiler.declareDefault(XHTML_NS);
+        compiler = compiler.withDefaultNamespace(XHTML_NS);
         Selector s = compiler.compile(getExpression());
         log.info("with default namespace");
         profileSelector(s, getRoot(), getExpression());

@@ -35,8 +35,8 @@ public class Examples {
 
     @SuppressWarnings("unused")
     public static void namespaceExample() {
-        SelectorCompiler compiler = SelectorCompiler.create();
-        compiler.declare("ns", "http://www.w3.org/2000/svg");
+        SelectorCompiler compiler = SelectorCompiler.create()
+                .withNamespace("ns", "http://www.w3.org/2000/svg");
         Selector selector = compiler.compile("ns|circle");
         Document doc = getDocument(); /* doc is of org.w3c.dom.Document */
         List<Element> selected = selector.select(doc.getDocumentElement());

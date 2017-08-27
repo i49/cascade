@@ -174,7 +174,7 @@ public class ParsingTest {
         log.fine(this.expression + " -> " + this.result);
     }
 
-    private void declareNamespaces(SelectorCompiler compiler) {
-        compiler.declare("ns", "http://www.example.com");
+    private SelectorCompiler declareNamespaces(SelectorCompiler compiler) {
+        return compiler.withNamespace("ns", "http://www.example.com");
     }
 }

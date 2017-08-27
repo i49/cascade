@@ -30,8 +30,8 @@ import org.w3c.dom.Element;
  * </code></pre>
  *
  * <p>If you would like to configure the compiler, you can create the compiler explicitly.</p>
- * <pre><code> SelectorCompiler compiler = SelectorCompiler.create();
- * compiler.declare("ns", "http://www.w3.org/2000/svg");
+ * <pre><code> SelectorCompiler compiler = SelectorCompiler.create()
+ *         .withNamespace("ns", "http://www.w3.org/2000/svg");
  * Selector selector = compiler.compile("ns|circle");
  * Document doc = ... // doc is an instance of org.w3c.dom.Document
  * List&lt;Element&gt; selected = selector.select(doc.getDocumentElement());

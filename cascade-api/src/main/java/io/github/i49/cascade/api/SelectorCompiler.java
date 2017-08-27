@@ -40,10 +40,11 @@ public interface SelectorCompiler {
      *
      * @param prefix the prefix which represents the namespace.
      * @param namespace the namespace to declare.
+     * @return configured compiler.
      * @throws NullPointerException if one or more arguments are {@code null}.
      * @throws IllegalArgumentException if given {@code prefix} is blank.
      */
-    void declare(String prefix, String namespace);
+    SelectorCompiler withNamespace(String prefix, String namespace);
 
     /**
      * Declares the default namespace.
@@ -51,9 +52,10 @@ public interface SelectorCompiler {
      * If default namespace is already declared, it will be replaced by new one.
      *
      * @param namespace the default namespace.
+     * @return configured compiler.
      * @throws NullPointerException if given argument is {@code null}.
      */
-    void declareDefault(String namespace);
+    SelectorCompiler withDefaultNamespace(String namespace);
 
     /**
      * Compiles the given expression to generate a selector.
