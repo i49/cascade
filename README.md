@@ -15,11 +15,11 @@ List<Element> selected = selector.select(doc.getDocumentElement());
 ## Features
 
 * Compliant with [W3C Selectors Level 3](http://www.w3.org/TR/css3-selectors/).
-* Operating on standard W3C DOM interface defined in _org.w3c.dom_ package.
+* Operating on standard W3C DOM interface defined in `org.w3c.dom` package.
 * Simple and intuitive API.
 * Optimization is performed when selectors are compiled.
 * Supports namespace.
-* Can be used with JavaFX WebEngine document.
+* Compatible with documents provided by `JavaFX WebEngine`.
 * Passed 700+ test cases.
 
 For more detail, please see [API documentation](https://www.javadoc.io/doc/com.github.i49/cascade-api)
