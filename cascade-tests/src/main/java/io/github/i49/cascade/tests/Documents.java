@@ -40,6 +40,15 @@ public final class Documents {
 
     private static final ThreadLocal<DocumentBuilder> builders =
             ThreadLocal.withInitial(Documents::builder);
+    
+    /**
+     * Returns an empty document.
+     * 
+     * @return an empty document.
+     */
+    public static Document empty() {
+    	return builders.get().newDocument();
+    }
 
     /**
      * Loads a document from resource specified by name.
