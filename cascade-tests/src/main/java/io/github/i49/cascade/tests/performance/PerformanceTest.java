@@ -17,44 +17,70 @@
 package io.github.i49.cascade.tests.performance;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import io.github.i49.cascade.api.Selector;
 import io.github.i49.cascade.api.SelectorCompiler;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 import io.github.i49.cascade.tests.functional.Html5Test;
 
 @RunWith(Parameterized.class)
-public class PerformanceTest extends Html5Test {
+public class PerformanceTest {
 
+    public static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
+    
     private static final Logger log = Logger.getLogger(PerformanceTest.class.getName());
     private static int REPEAT_COUNT = 10000;
+    
+    private static Document doc;
+    private final Fixture fixture;
 
-    public PerformanceTest(String expression, Expectation expected) {
-        super(expression, expected);
+    @Parameters(name = "{index}: {0}")
+    public static Iterable<Object[]> parameters() {
+        return Html5Test.parameters();
+    }
+
+    public PerformanceTest(String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        this.fixture = new Fixture(doc, expression, matcherFactory);
+    }
+    
+    @BeforeClass
+    public static void setUpOnce() {
+        doc = Documents.load("/html5-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 
     @Test
     public void testPerformance() {
         SelectorCompiler compiler = SelectorCompiler.create();
-        Selector s = compiler.compile(getExpression());
-        profileSelector(s, getRoot(), getExpression());
+        Selector selector = compiler.compile(fixture.getExpression());
+        profileSelector(selector, fixture.getStartElement(), fixture.getExpression());
     }
 
     @Test
     public void testPerformanceWithDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create();
         compiler = compiler.withDefaultNamespace(XHTML_NS);
-        Selector s = compiler.compile(getExpression());
+        Selector selector = compiler.compile(fixture.getExpression());
         log.info("with default namespace");
-        profileSelector(s, getRoot(), getExpression());
+        profileSelector(selector, fixture.getStartElement(), fixture.getExpression());
     }
 
     private void profileSelector(Selector selector, Element start, String expression) {
@@ -78,7 +104,6 @@ public class PerformanceTest extends Html5Test {
         String id = "forms__action";
         String expression = "#" + id;
 
-        Document doc = getDocument();
         long elapsed1 = profile(()->doc.getElementById(id));
 
         Selector s = Selector.compile(expression);
@@ -90,11 +115,10 @@ public class PerformanceTest extends Html5Test {
         log.info("\"" + expression + "\": " + elapsed1 + " : " + elapsed2);
      }
 
-    // Not used.
+     // Not used.
      public void compareWithGetElementsByTagName() {
          String expression = "article";
 
-         Document doc = getDocument();
          long elapsed1 = profile(()->{
              NodeList nodeList = doc.getElementsByTagName(expression);
              nodeList.getLength();

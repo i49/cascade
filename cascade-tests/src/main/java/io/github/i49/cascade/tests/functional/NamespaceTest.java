@@ -16,33 +16,37 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.github.i49.cascade.tests.Fixture.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import io.github.i49.cascade.api.Selector;
 import io.github.i49.cascade.api.SelectorCompiler;
-import io.github.i49.cascade.tests.AbstractSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 @RunWith(Parameterized.class)
-public class NamespaceTest extends AbstractSelectorTest {
+public class NamespaceTest {
 
     private static final String SVG_NS = "http://www.w3.org/2000/svg";
     private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
     private static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
 
     @Parameters(name = "{index}: {2}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
 
             // prefixed element
@@ -174,20 +178,33 @@ public class NamespaceTest extends AbstractSelectorTest {
         });
     }
 
+    private static Document doc;
+    
+    private final Fixture fixture;
     private final String defaultNamespace;
 
-    public NamespaceTest(String rootId, String defaultNamespace, String expression, Expectation expected) {
-        super(rootId, expression, expected);
+    public NamespaceTest(String startId, String defaultNamespace, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        this.fixture = new Fixture(doc, startId, expression, matcherFactory);
         this.defaultNamespace = defaultNamespace;
+    }
+    
+    @BeforeClass
+    public static void setUpOnce() {
+        doc = Documents.load("/namespace-test.xml");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 
     @Test
     public void test() {
         SelectorCompiler compiler = SelectorCompiler.create();
         compiler = configureCompiler(compiler);
-        Selector selector = compiler.compile(getExpression());
-        List<Element> actual  = selector.select(getRoot());
-        assertThat(actual).containsExactlyElementsOf(getExpected());
+        Selector selector = compiler.compile(fixture.getExpression());
+        List<Element> actual  = selector.select(fixture.getStartElement());
+        assertThat(actual, fixture.getMatcher());
     }
 
     private SelectorCompiler configureCompiler(SelectorCompiler compiler) {
@@ -201,10 +218,5 @@ public class NamespaceTest extends AbstractSelectorTest {
             compiler = compiler.withDefaultNamespace(defaultNamespace);
         }
         return compiler;
-    }
-
-    @BeforeClass
-    public static void setUpOnce() {
-        loadDocument("/namespace-test.xml");
     }
 }

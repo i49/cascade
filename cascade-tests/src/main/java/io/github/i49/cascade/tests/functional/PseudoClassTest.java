@@ -16,16 +16,22 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static io.github.i49.cascade.tests.Fixture.*;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 /**
  * Tests for pseudo-class selectors.
@@ -34,7 +40,7 @@ import io.github.i49.cascade.tests.Expectation;
 public class PseudoClassTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // :root
             { null, ":root", contains(0) },
@@ -148,12 +154,19 @@ public class PseudoClassTest extends BasicSelectorTest {
         });
     }
 
-    public PseudoClassTest(String rootId, String expression, Expectation expected) {
-        super(rootId, expression, expected);
-    }
+    private static Document doc;
 
+    public PseudoClassTest(String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, startId, expression, matcherFactory));
+    }
+    
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/pseudo-class-test.html");
+        doc = Documents.load("/pseudo-class-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 }

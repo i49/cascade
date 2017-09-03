@@ -16,16 +16,22 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static io.github.i49.cascade.tests.Fixture.*;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 /**
  * Tests for universal selector, type selector, identifier selector and class selector.
@@ -34,7 +40,7 @@ import io.github.i49.cascade.tests.Expectation;
 public class SimpleSelectorTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // universal
             { "#universal-selector-test", "*", contains(0) },
@@ -87,12 +93,19 @@ public class SimpleSelectorTest extends BasicSelectorTest {
         });
     }
 
-    public SimpleSelectorTest(String rootId, String expression, Expectation expected) {
-        super(rootId, expression, expected);
-    }
+    private static Document doc;
 
+    public SimpleSelectorTest(String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, startId, expression, matcherFactory));
+    }
+    
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/simple-selector-test.html");
+        doc = Documents.load("/simple-selector-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 }

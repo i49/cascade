@@ -16,18 +16,24 @@
 
 package io.github.i49.cascade.tests.functional;
 
+import static io.github.i49.cascade.tests.Fixture.*;
+
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Function;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
 
 @RunWith(Parameterized.class)
 public class SmallXmlTest extends BasicSelectorTest {
@@ -42,19 +48,26 @@ public class SmallXmlTest extends BasicSelectorTest {
             { "_ + _", contains() },
         });
     }
+    
+    private static Document doc;
 
-    public SmallXmlTest(String expression, Expectation expected) {
-        super(null, expression, expected);
+    public SmallXmlTest(String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, expression, matcherFactory));
     }
-
+    
+    @BeforeClass
+    public static void setUpOnce() {
+        doc = Documents.load("/smallest-xml.xml");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
+    }
+    
     @Override
     @Test
     @Ignore
     public void testWithDefaultNamespace() {
-    }
-
-    @BeforeClass
-    public static void setUpOnce() {
-        loadDocument("/smallest-xml.xml");
     }
 }

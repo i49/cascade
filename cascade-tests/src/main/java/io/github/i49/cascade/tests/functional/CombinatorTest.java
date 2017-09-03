@@ -16,16 +16,22 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static io.github.i49.cascade.tests.Fixture.*;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 /**
  * Tests for selectors with combinators.
@@ -34,7 +40,7 @@ import io.github.i49.cascade.tests.Expectation;
 public class CombinatorTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // descendant combinator
             { "#descendant-combinator-test", "div.main p", contains(3, 8, 10) },
@@ -63,12 +69,19 @@ public class CombinatorTest extends BasicSelectorTest {
         });
     }
 
-    public CombinatorTest(String rootId, String expression, Expectation expected) {
-        super(rootId, expression, expected);
+    private static Document doc;
+    
+    public CombinatorTest(String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, startId, expression, matcherFactory));
     }
-
+    
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/combinator-test.html");
+        doc = Documents.load("/combinator-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 }

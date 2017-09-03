@@ -16,16 +16,21 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static io.github.i49.cascade.tests.Fixture.*;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
 
 /**
  * Tests for attribute selectors.
@@ -34,7 +39,7 @@ import io.github.i49.cascade.tests.Expectation;
 public class AttributeSelectorTest extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // presence
             { "#presence-test", "[title]", contains(1) },
@@ -87,12 +92,19 @@ public class AttributeSelectorTest extends BasicSelectorTest {
        });
     }
 
-    public AttributeSelectorTest(String rootId, String expression, Expectation expected) {
-        super(rootId, expression, expected);
+    private static Document doc;
+    
+    public AttributeSelectorTest(String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, startId, expression, matcherFactory));
     }
 
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/attribute-selector-test.html");
+        doc = Documents.load("/attribute-selector-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 }

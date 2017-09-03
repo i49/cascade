@@ -16,16 +16,22 @@
 
 package io.github.i49.cascade.tests.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static io.github.i49.cascade.tests.Fixture.*;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
-import io.github.i49.cascade.tests.Expectation;
+import io.github.i49.cascade.tests.Documents;
+import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 /**
  * Test with HTML5 file.
@@ -34,7 +40,7 @@ import io.github.i49.cascade.tests.Expectation;
 public class Html5Test extends BasicSelectorTest {
 
     @Parameters(name = "{index}: {0}")
-    public static Collection<Object[]> parameters() {
+    public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
             // simple selectors
             { "#forms__action", contains(435) },
@@ -64,12 +70,19 @@ public class Html5Test extends BasicSelectorTest {
         });
     }
 
-    public Html5Test(String expression, Expectation expected) {
-        super(null, expression, expected);
+    private static Document doc;
+    
+    public Html5Test(String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+        super(new Fixture(doc, expression, matcherFactory));
     }
 
     @BeforeClass
     public static void setUpOnce() {
-        loadDocument("/html5-test.html");
+        doc = Documents.load("/html5-test.html");
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        doc = null;
     }
 }

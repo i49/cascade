@@ -16,7 +16,8 @@
 
 package io.github.i49.cascade.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.util.List;
 
@@ -26,44 +27,45 @@ import org.w3c.dom.Element;
 import io.github.i49.cascade.api.Selector;
 import io.github.i49.cascade.api.SelectorCompiler;
 
-public abstract class BasicSelectorTest extends AbstractSelectorTest {
+public abstract class BasicSelectorTest {
 
     public static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
     public static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
 
-    private static String defaultNamespace = XHTML_NS;
-
-    protected BasicSelectorTest(String rootId, String expression, Expectation expected) {
-        super(rootId, expression, expected);
+    private final Fixture fixture;
+    private String defaultNamespace = XHTML_NS;
+    
+    protected BasicSelectorTest(Fixture fixture) {
+        this.fixture = fixture;
     }
 
-    public static void setDefaultNamespace(String namespace) {
+    public void setDefaultNamespace(String namespace) {
         defaultNamespace = namespace;
     }
 
     @Test
     public void testWithoutDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create();
-        Selector selector = compiler.compile(getExpression());
-        List<Element> actual  = selector.select(getRoot());
-        assertThat(actual).containsExactlyElementsOf(getExpected());
+        Selector selector = compiler.compile(fixture.getExpression());
+        List<Element> actual = selector.select(fixture.getStartElement());
+        assertThat(actual, fixture.getMatcher());
     }
 
     @Test
     public void testWithDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create()
                 .withDefaultNamespace(defaultNamespace);
-        Selector selector = compiler.compile(getExpression());
-        List<Element> actual  = selector.select(getRoot());
-        assertThat(actual).containsExactlyElementsOf(getExpected());
+        Selector selector = compiler.compile(fixture.getExpression());
+        List<Element> actual = selector.select(fixture.getStartElement());
+        assertThat(actual, fixture.getMatcher());
     }
 
     @Test
     public void testWithUnknownDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create()
                 .withDefaultNamespace(NONEXISTENT_NS);
-        Selector selector = compiler.compile(getExpression());
-        List<Element> actual  = selector.select(getRoot());
-        assertThat(actual).isEmpty();
+        Selector selector = compiler.compile(fixture.getExpression());
+        List<Element> actual = selector.select(fixture.getStartElement());
+        assertThat(actual.size(), is(equalTo(0)));
     }
 }
