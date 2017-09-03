@@ -17,6 +17,7 @@
 package io.github.i49.cascade.tests.functional;
 
 import static io.github.i49.cascade.tests.Fixture.*;
+import static io.github.i49.cascade.tests.Namespaces.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -41,21 +42,17 @@ import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 @RunWith(Parameterized.class)
 public class NamespaceTest {
 
-    private static final String SVG_NS = "http://www.w3.org/2000/svg";
-    private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
-    private static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
-
     @Parameters(name = "{index}: {2}")
     public static Iterable<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
 
             // prefixed element
             { "#prefix-test", null, "text", contains(2) },
-            { "#prefix-test", SVG_NS, "text", contains(2) },
-            { "#prefix-test", NONEXISTENT_NS, "text", contains() },
+            { "#prefix-test", SVG, "text", contains(2) },
+            { "#prefix-test", NONEXISTENT, "text", contains() },
             { "#prefix-test", null, "*", contains(0, 1, 2, 3) },
-            { "#prefix-test", SVG_NS, "*", contains(1, 2, 3) },
-            { "#prefix-test", NONEXISTENT_NS, "*", contains() },
+            { "#prefix-test", SVG, "*", contains(1, 2, 3) },
+            { "#prefix-test", NONEXISTENT, "*", contains() },
             { "#prefix-test", null, "ns1|text", contains(2) },
             { "#prefix-test", null, "ns1|*", contains(1, 2, 3) },
             { "#prefix-test", null, "ns3|text", contains() },
@@ -63,11 +60,11 @@ public class NamespaceTest {
 
             // element in default namespace
             { "#default-ns-test", null, "text", contains(2) },
-            { "#default-ns-test", SVG_NS, "text", contains(2) },
-            { "#default-ns-test", NONEXISTENT_NS, "text", contains() },
+            { "#default-ns-test", SVG, "text", contains(2) },
+            { "#default-ns-test", NONEXISTENT, "text", contains() },
             { "#default-ns-test", null, "*", contains(0, 1, 2, 3) },
-            { "#default-ns-test", SVG_NS, "*", contains(1, 2, 3) },
-            { "#default-ns-test", NONEXISTENT_NS, "*", contains() },
+            { "#default-ns-test", SVG, "*", contains(1, 2, 3) },
+            { "#default-ns-test", NONEXISTENT, "*", contains() },
             { "#default-ns-test", null, "ns1|text", contains(2) },
             { "#default-ns-test", null, "ns1|*", contains(1, 2, 3) },
             { "#default-ns-test", null, "ns3|text", contains() },
@@ -76,17 +73,17 @@ public class NamespaceTest {
             // element without namespace
             { "#no-ns-test", null, "text", contains(2) },
             { "#no-ns-test", null, "|text", contains(2) },
-            { "#no-ns-test", SVG_NS, "text", contains() },
+            { "#no-ns-test", SVG, "text", contains() },
             { "#no-ns-test", null, "*", contains(0, 1, 2, 3) },
             { "#no-ns-test", null, "|*", contains(0, 1, 2, 3) },
-            { "#no-ns-test", SVG_NS, "*", contains() },
+            { "#no-ns-test", SVG, "*", contains() },
             { "#no-ns-test", null, "ns1|text", contains() },
             { "#no-ns-test", null, "ns1|*", contains() },
 
             // prefixed attribute
             { "#attribute-prefix-test", null, "[type]", contains() },
-            { "#attribute-prefix-test", XLINK_NS, "[type]", contains() },
-            { "#attribute-prefix-test", NONEXISTENT_NS, "[type]", contains() },
+            { "#attribute-prefix-test", XLINK, "[type]", contains() },
+            { "#attribute-prefix-test", NONEXISTENT, "[type]", contains() },
             { "#attribute-prefix-test", null, "[ns2|type]", contains(2, 3) },
             { "#attribute-prefix-test", null, "[ns2|type=extended]", contains(3) },
             { "#attribute-prefix-test", null, "[ns3|type]", contains() },
@@ -97,10 +94,10 @@ public class NamespaceTest {
 
             // unprefixed attribute with default namespace
             { "#attribute-default-ns-test", null, "[type]", contains(2, 3) },
-            { "#attribute-default-ns-test", XLINK_NS, "*|*[type]", contains(2, 3) },
-            { "#attribute-default-ns-test", XLINK_NS, "*|*[type=extended]", contains(3) },
-            { "#attribute-default-ns-test", NONEXISTENT_NS, "*|*[type]", contains(2, 3) },
-            { "#attribute-default-ns-test", NONEXISTENT_NS, "*|*[type=extended]", contains(3) },
+            { "#attribute-default-ns-test", XLINK, "*|*[type]", contains(2, 3) },
+            { "#attribute-default-ns-test", XLINK, "*|*[type=extended]", contains(3) },
+            { "#attribute-default-ns-test", NONEXISTENT, "*|*[type]", contains(2, 3) },
+            { "#attribute-default-ns-test", NONEXISTENT, "*|*[type=extended]", contains(3) },
             { "#attribute-default-ns-test", null, "[ns2|type]", contains() },
             { "#attribute-default-ns-test", null, "[ns3|type]", contains() },
             { "#attribute-default-ns-test", null, "[|type]", contains(2, 3) },
@@ -110,10 +107,10 @@ public class NamespaceTest {
 
             // unprefixed attribute without default namespace
             { "#attribute-no-ns-test", null, "[type]", contains(2, 3) },
-            { "#attribute-no-ns-test", XLINK_NS, "*|*[type]", contains(2, 3) },
-            { "#attribute-no-ns-test", XLINK_NS, "*|*[type=extended]", contains(3) },
-            { "#attribute-no-ns-test", NONEXISTENT_NS, "*|*[type]", contains(2, 3) },
-            { "#attribute-no-ns-test", NONEXISTENT_NS, "*|*[type=extended]", contains(3) },
+            { "#attribute-no-ns-test", XLINK, "*|*[type]", contains(2, 3) },
+            { "#attribute-no-ns-test", XLINK, "*|*[type=extended]", contains(3) },
+            { "#attribute-no-ns-test", NONEXISTENT, "*|*[type]", contains(2, 3) },
+            { "#attribute-no-ns-test", NONEXISTENT, "*|*[type=extended]", contains(3) },
             { "#attribute-no-ns-test", null, "[ns2|type]", contains() },
             { "#attribute-no-ns-test", null, "[ns3|type]", contains() },
             { "#attribute-no-ns-test", null, "[|type]", contains(2, 3) },
@@ -183,8 +180,8 @@ public class NamespaceTest {
     private final Fixture fixture;
     private final String defaultNamespace;
 
-    public NamespaceTest(String startId, String defaultNamespace, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
-        this.fixture = new Fixture(doc, startId, expression, matcherFactory);
+    public NamespaceTest(String startId, String defaultNamespace, String expression, Function<Element, ElementMatcher> mapper) {
+        this.fixture = new Fixture(doc, startId, expression, mapper);
         this.defaultNamespace = defaultNamespace;
     }
     
@@ -200,18 +197,23 @@ public class NamespaceTest {
 
     @Test
     public void test() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create();
         compiler = configureCompiler(compiler);
         Selector selector = compiler.compile(fixture.getExpression());
+
+        // when
         List<Element> actual  = selector.select(fixture.getStartElement());
+        
+        // then
         assertThat(actual, fixture.getMatcher());
     }
 
     private SelectorCompiler configureCompiler(SelectorCompiler compiler) {
         compiler = compiler
-            .withNamespace("ns1", SVG_NS)
-            .withNamespace("ns2", XLINK_NS)
-            .withNamespace("ns3", NONEXISTENT_NS)
+            .withNamespace("ns1", SVG)
+            .withNamespace("ns2", XLINK)
+            .withNamespace("ns3", NONEXISTENT)
             .withNamespace("a", "http://www.example.org/a")
             .withNamespace("b", "http://www.example.org/b");
         if (defaultNamespace != null) {

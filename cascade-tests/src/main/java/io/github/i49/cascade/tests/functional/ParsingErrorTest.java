@@ -114,11 +114,16 @@ public class ParsingErrorTest {
 
     @Test
     public void compile_shouldThrowExceptionIfSyntaxErrorFound() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create();
         declareNamespaces(compiler);
+        
         Throwable thrown = catchThrowable(()->{
+            // when
             compiler.compile(this.expression);
         });
+        
+        // then
         if (this.expression == null) {
             assertThat(thrown).isInstanceOf(NullPointerException.class);
         } else {

@@ -34,14 +34,13 @@ import io.github.i49.cascade.api.Selector;
 import io.github.i49.cascade.api.SelectorCompiler;
 import io.github.i49.cascade.tests.Documents;
 import io.github.i49.cascade.tests.Fixture;
+import io.github.i49.cascade.tests.Namespaces;
 import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 import io.github.i49.cascade.tests.functional.Html5Test;
 
 @RunWith(Parameterized.class)
 public class PerformanceTest {
 
-    public static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
-    
     private static final Logger log = Logger.getLogger(PerformanceTest.class.getName());
     private static int REPEAT_COUNT = 10000;
     
@@ -53,8 +52,8 @@ public class PerformanceTest {
         return Html5Test.parameters();
     }
 
-    public PerformanceTest(String expression, Function<Fixture, ElementMatcher> matcherFactory) {
-        this.fixture = new Fixture(doc, expression, matcherFactory);
+    public PerformanceTest(String expression, Function<Element, ElementMatcher> mapper) {
+        this.fixture = new Fixture(doc, expression, mapper);
     }
     
     @BeforeClass
@@ -77,7 +76,7 @@ public class PerformanceTest {
     @Test
     public void testPerformanceWithDefaultNamespace() {
         SelectorCompiler compiler = SelectorCompiler.create();
-        compiler = compiler.withDefaultNamespace(XHTML_NS);
+        compiler = compiler.withDefaultNamespace(Namespaces.XHTML);
         Selector selector = compiler.compile(fixture.getExpression());
         log.info("with default namespace");
         profileSelector(selector, fixture.getStartElement(), fixture.getExpression());

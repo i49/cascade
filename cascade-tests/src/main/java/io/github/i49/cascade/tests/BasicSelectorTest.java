@@ -29,43 +29,59 @@ import io.github.i49.cascade.api.SelectorCompiler;
 
 public abstract class BasicSelectorTest {
 
-    public static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
-    public static final String NONEXISTENT_NS = "http://www.example.org/nonexistent";
-
-    private final Fixture fixture;
-    private String defaultNamespace = XHTML_NS;
-    
-    protected BasicSelectorTest(Fixture fixture) {
-        this.fixture = fixture;
-    }
-
-    public void setDefaultNamespace(String namespace) {
-        defaultNamespace = namespace;
-    }
-
+    /**
+     * Tests the selector compiled without any default namespace.
+     */
     @Test
     public void testWithoutDefaultNamespace() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create();
-        Selector selector = compiler.compile(fixture.getExpression());
-        List<Element> actual = selector.select(fixture.getStartElement());
-        assertThat(actual, fixture.getMatcher());
+        Selector selector = compiler.compile(getFixture().getExpression());
+        
+        // when
+        List<Element> actual = selector.select(getFixture().getStartElement());
+
+        // then
+        assertThat(actual, getFixture().getMatcher());
     }
 
+    /**
+     * Tests the selector compiled with proper default namespace.
+     */
     @Test
     public void testWithDefaultNamespace() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create()
-                .withDefaultNamespace(defaultNamespace);
-        Selector selector = compiler.compile(fixture.getExpression());
-        List<Element> actual = selector.select(fixture.getStartElement());
-        assertThat(actual, fixture.getMatcher());
+                .withDefaultNamespace(getDefaultNamespace());
+        Selector selector = compiler.compile(getFixture().getExpression());
+        
+        // when
+        List<Element> actual = selector.select(getFixture().getStartElement());
+
+        // then
+        assertThat(actual, getFixture().getMatcher());
     }
 
+    /**
+     * Tests the selector compiled with nonexistent default namespace.
+     */
     @Test
     public void testWithUnknownDefaultNamespace() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create()
-                .withDefaultNamespace(NONEXISTENT_NS);
-        Selector selector = compiler.compile(fixture.getExpression());
-        List<Element> actual = selector.select(fixture.getStartElement());
+                .withDefaultNamespace(Namespaces.NONEXISTENT);
+        Selector selector = compiler.compile(getFixture().getExpression());
+ 
+        // when
+        List<Element> actual = selector.select(getFixture().getStartElement());
+        
+        // then
         assertThat(actual.size(), is(equalTo(0)));
     }
+    
+    public String getDefaultNamespace() {
+        return Namespaces.XHTML;
+    }
+
+    public abstract Fixture getFixture();
 }

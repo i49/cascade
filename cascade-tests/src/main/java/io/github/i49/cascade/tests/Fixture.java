@@ -19,18 +19,26 @@ public class Fixture {
     private final String expression;
     private final ElementMatcher matcher;
    
-    public Fixture(Document doc, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
-        this(doc, null, expression, matcherFactory);
+    public Fixture(Document doc, String expression, Function<Element, ElementMatcher> mapper) {
+        this(doc, null, expression, mapper);
     }
     
-    public Fixture(Document doc, String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
+    /**
+     * Constructs this object.
+     * 
+     * @param doc the XML document.
+     * @param startId the starting element to search.
+     * @param expression the selector expression.
+     * @param mapper the object for mapping the starting element to the matcher.
+     */
+    public Fixture(Document doc, String startId, String expression, Function<Element, ElementMatcher> mapper) {
         if (startId != null) {
             this.startElement = doc.getElementById(startId.substring(1));
         } else {
             this.startElement = doc.getDocumentElement();
         }
         this.expression = expression;
-        this.matcher = matcherFactory.apply(this);
+        this.matcher = mapper.apply(this.startElement);
     }
     
     /**
@@ -60,13 +68,13 @@ public class Fixture {
         return matcher;
     }
 
-    public static Function<Fixture, ElementMatcher> contains(int... indices) {
-        return (Fixture f)->{
+    public static Function<Element, ElementMatcher> contains(int... indices) {
+        return (Element startElement)->{
             List<Element> expected = null;
             if (indices.length == 0) {
                 expected = Collections.emptyList();
             } else {
-                List<Element> all = Documents.descentandsOf(f.startElement);
+                List<Element> all = Documents.descentandsOf(startElement);
                 expected = new ArrayList<>();
                 for (int index: indices) {
                     expected.add(all.get(index));
@@ -76,13 +84,13 @@ public class Fixture {
         };
     }
     
-    public static Function<Fixture, ElementMatcher> doesNotContain(int... indices) {
-        return (Fixture f)->{
+    public static Function<Element, ElementMatcher> doesNotContain(int... indices) {
+        return (Element startElement)->{
             List<Element> expected = null;
             if (indices.length == 0) {
-                expected = Documents.descentandsOf(f.startElement);
+                expected = Documents.descentandsOf(startElement);
             } else {
-                List<Element> all = Documents.descentandsOf(f.startElement);
+                List<Element> all = Documents.descentandsOf(startElement);
                 List<Element> negation = new ArrayList<>();
                 for (int index: indices) {
                     negation.add(all.get(index));

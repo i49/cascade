@@ -24,12 +24,11 @@ import java.util.function.Function;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
 import io.github.i49.cascade.tests.Documents;
@@ -50,9 +49,10 @@ public class SmallXmlTest extends BasicSelectorTest {
     }
     
     private static Document doc;
+    private final Fixture fixture;
 
-    public SmallXmlTest(String expression, Function<Fixture, ElementMatcher> matcherFactory) {
-        super(new Fixture(doc, expression, matcherFactory));
+    public SmallXmlTest(String expression, Function<Element, ElementMatcher> mapper) {
+        this.fixture = new Fixture(doc, expression, mapper);
     }
     
     @BeforeClass
@@ -66,8 +66,12 @@ public class SmallXmlTest extends BasicSelectorTest {
     }
     
     @Override
-    @Test
-    @Ignore
     public void testWithDefaultNamespace() {
+        // nothing to do
+    }
+
+    @Override
+    public Fixture getFixture() {
+        return fixture;
     }
 }

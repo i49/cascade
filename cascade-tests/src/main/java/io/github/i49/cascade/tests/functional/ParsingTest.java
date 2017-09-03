@@ -166,10 +166,15 @@ public class ParsingTest {
     }
 
     @Test
-    public void testCompile() {
+    public void shouldCompileSuccessfully() {
+        // given
         SelectorCompiler compiler = SelectorCompiler.create();
         declareNamespaces(compiler);
+        
+        // when
         Selector s = compiler.compile(this.expression);
+        
+        // then
         assertThat(s).hasToString(this.result);
         log.fine(this.expression + " -> " + this.result);
     }

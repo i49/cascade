@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import io.github.i49.cascade.tests.BasicSelectorTest;
 import io.github.i49.cascade.tests.Documents;
@@ -93,9 +94,10 @@ public class AttributeSelectorTest extends BasicSelectorTest {
     }
 
     private static Document doc;
+    private final Fixture fixture;
     
-    public AttributeSelectorTest(String startId, String expression, Function<Fixture, ElementMatcher> matcherFactory) {
-        super(new Fixture(doc, startId, expression, matcherFactory));
+    public AttributeSelectorTest(String startId, String expression, Function<Element, ElementMatcher> mapper) {
+        this.fixture = new Fixture(doc, startId, expression, mapper);
     }
 
     @BeforeClass
@@ -106,5 +108,9 @@ public class AttributeSelectorTest extends BasicSelectorTest {
     @AfterClass
     public static void tearDownOnce() {
         doc = null;
+    }
+    
+    public Fixture getFixture() {
+        return fixture;
     }
 }
