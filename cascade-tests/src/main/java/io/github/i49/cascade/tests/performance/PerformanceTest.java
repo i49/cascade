@@ -35,7 +35,6 @@ import io.github.i49.cascade.api.SelectorCompiler;
 import io.github.i49.cascade.tests.Documents;
 import io.github.i49.cascade.tests.Fixture;
 import io.github.i49.cascade.tests.Namespaces;
-import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 import io.github.i49.cascade.tests.functional.Html5Test;
 
 @RunWith(Parameterized.class)
@@ -52,8 +51,8 @@ public class PerformanceTest {
         return Html5Test.parameters();
     }
 
-    public PerformanceTest(String expression, Function<Element, ElementMatcher> mapper) {
-        this.fixture = new Fixture(doc, expression, mapper);
+    public PerformanceTest(String expression, Function<Element, List<Element>> teacher) {
+        this.fixture = new Fixture(doc, expression, teacher);
     }
     
     @BeforeClass

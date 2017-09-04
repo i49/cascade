@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -17,10 +15,10 @@ public class Fixture {
     
     private final Element startElement;
     private final String expression;
-    private final ElementMatcher matcher;
+    private final List<Element> expected;
    
-    public Fixture(Document doc, String expression, Function<Element, ElementMatcher> mapper) {
-        this(doc, null, expression, mapper);
+    public Fixture(Document doc, String expression, Function<Element, List<Element>> teacher) {
+        this(doc, null, expression, teacher);
     }
     
     /**
@@ -29,16 +27,16 @@ public class Fixture {
      * @param doc the XML document.
      * @param startId the starting element to search.
      * @param expression the selector expression.
-     * @param mapper the object for mapping the starting element to the matcher.
+     * @param teacher the object to supply expected values.
      */
-    public Fixture(Document doc, String startId, String expression, Function<Element, ElementMatcher> mapper) {
+    public Fixture(Document doc, String startId, String expression, Function<Element, List<Element>> teacher) {
         if (startId != null) {
             this.startElement = doc.getElementById(startId.substring(1));
         } else {
             this.startElement = doc.getDocumentElement();
         }
         this.expression = expression;
-        this.matcher = mapper.apply(this.startElement);
+        this.expected = teacher.apply(this.startElement);
     }
     
     /**
@@ -59,16 +57,11 @@ public class Fixture {
         return expression;
     }
     
-    /**
-     * Returns the custom matcher for asserting on the selected elements.
-     * 
-     * @return the custom matcher.
-     */
-    public ElementMatcher getMatcher() {
-        return matcher;
+    public List<Element> getExpected() {
+        return expected;
     }
 
-    public static Function<Element, ElementMatcher> contains(int... indices) {
+    public static Function<Element, List<Element>> contains(int... indices) {
         return (Element startElement)->{
             List<Element> expected = null;
             if (indices.length == 0) {
@@ -80,11 +73,11 @@ public class Fixture {
                     expected.add(all.get(index));
                 }
             }
-            return new ElementMatcher(expected);
+            return expected;
         };
     }
     
-    public static Function<Element, ElementMatcher> doesNotContain(int... indices) {
+    public static Function<Element, List<Element>> doesNotContain(int... indices) {
         return (Element startElement)->{
             List<Element> expected = null;
             if (indices.length == 0) {
@@ -98,30 +91,11 @@ public class Fixture {
                 expected = new ArrayList<>(all);
                 expected.removeAll(negation);
             }
-            return new ElementMatcher(expected);
+            return expected;
         };
     }
     
-    public static Function<Fixture, ElementMatcher> empty() {
-        return (Fixture f)->new ElementMatcher(Collections.emptyList());
-    }
-    
-    public static class ElementMatcher extends BaseMatcher<List<Element>> {
-        
-        private final List<Element> expected;
-        
-        public ElementMatcher(List<Element> expected) {
-            this.expected = expected;
-        }
-
-        @Override
-        public boolean matches(Object actual) {
-            return expected.equals(actual);
-        }
-
-        @Override
-        public void describeTo(Description desc) {
-            desc.appendValue(expected);
-        }
+    public static Function<Fixture, List<Element>> empty() {
+        return (Fixture f)->Collections.emptyList();
     }
 }

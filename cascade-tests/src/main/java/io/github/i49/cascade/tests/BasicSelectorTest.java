@@ -16,8 +16,7 @@
 
 package io.github.i49.cascade.tests;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public abstract class BasicSelectorTest {
         List<Element> actual = selector.select(getFixture().getStartElement());
 
         // then
-        assertThat(actual, getFixture().getMatcher());
+        assertThat(actual).containsExactlyElementsOf(getFixture().getExpected());
     }
 
     /**
@@ -59,7 +58,7 @@ public abstract class BasicSelectorTest {
         List<Element> actual = selector.select(getFixture().getStartElement());
 
         // then
-        assertThat(actual, getFixture().getMatcher());
+        assertThat(actual).containsExactlyElementsOf(getFixture().getExpected());
     }
 
     /**
@@ -76,7 +75,7 @@ public abstract class BasicSelectorTest {
         List<Element> actual = selector.select(getFixture().getStartElement());
         
         // then
-        assertThat(actual.size(), is(equalTo(0)));
+        assertThat(actual).isEmpty();
     }
     
     public String getDefaultNamespace() {

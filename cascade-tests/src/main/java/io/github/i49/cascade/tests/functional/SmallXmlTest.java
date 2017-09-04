@@ -20,6 +20,7 @@ import static io.github.i49.cascade.tests.Fixture.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import org.junit.AfterClass;
@@ -51,8 +52,8 @@ public class SmallXmlTest extends BasicSelectorTest {
     private static Document doc;
     private final Fixture fixture;
 
-    public SmallXmlTest(String expression, Function<Element, ElementMatcher> mapper) {
-        this.fixture = new Fixture(doc, expression, mapper);
+    public SmallXmlTest(String expression, Function<Element, List<Element>> teacher) {
+        this.fixture = new Fixture(doc, expression, teacher);
     }
     
     @BeforeClass

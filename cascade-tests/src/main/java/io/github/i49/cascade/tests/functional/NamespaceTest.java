@@ -16,9 +16,10 @@
 
 package io.github.i49.cascade.tests.functional;
 
+import static org.assertj.core.api.Assertions.*;
+
 import static io.github.i49.cascade.tests.Fixture.*;
 import static io.github.i49.cascade.tests.Namespaces.*;
-import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +38,6 @@ import io.github.i49.cascade.api.Selector;
 import io.github.i49.cascade.api.SelectorCompiler;
 import io.github.i49.cascade.tests.Documents;
 import io.github.i49.cascade.tests.Fixture;
-import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 @RunWith(Parameterized.class)
 public class NamespaceTest {
@@ -180,8 +180,8 @@ public class NamespaceTest {
     private final Fixture fixture;
     private final String defaultNamespace;
 
-    public NamespaceTest(String startId, String defaultNamespace, String expression, Function<Element, ElementMatcher> mapper) {
-        this.fixture = new Fixture(doc, startId, expression, mapper);
+    public NamespaceTest(String startId, String defaultNamespace, String expression, Function<Element, List<Element>> teacher) {
+        this.fixture = new Fixture(doc, startId, expression, teacher);
         this.defaultNamespace = defaultNamespace;
     }
     
@@ -206,7 +206,7 @@ public class NamespaceTest {
         List<Element> actual  = selector.select(fixture.getStartElement());
         
         // then
-        assertThat(actual, fixture.getMatcher());
+        assertThat(actual).containsExactlyElementsOf(fixture.getExpected());
     }
 
     private SelectorCompiler configureCompiler(SelectorCompiler compiler) {

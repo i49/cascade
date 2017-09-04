@@ -19,6 +19,7 @@ package io.github.i49.cascade.tests.functional;
 import static io.github.i49.cascade.tests.Fixture.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import org.junit.AfterClass;
@@ -96,8 +97,8 @@ public class AttributeSelectorTest extends BasicSelectorTest {
     private static Document doc;
     private final Fixture fixture;
     
-    public AttributeSelectorTest(String startId, String expression, Function<Element, ElementMatcher> mapper) {
-        this.fixture = new Fixture(doc, startId, expression, mapper);
+    public AttributeSelectorTest(String startId, String expression, Function<Element, List<Element>> teacher) {
+        this.fixture = new Fixture(doc, startId, expression, teacher);
     }
 
     @BeforeClass

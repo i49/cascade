@@ -19,6 +19,7 @@ package io.github.i49.cascade.tests.functional;
 import static io.github.i49.cascade.tests.Fixture.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import org.junit.AfterClass;
@@ -32,7 +33,6 @@ import org.w3c.dom.Element;
 import io.github.i49.cascade.tests.BasicSelectorTest;
 import io.github.i49.cascade.tests.Documents;
 import io.github.i49.cascade.tests.Fixture;
-import io.github.i49.cascade.tests.Fixture.ElementMatcher;
 
 /**
  * Test with HTML5 file.
@@ -74,8 +74,8 @@ public class Html5Test extends BasicSelectorTest {
     private static Document doc;
     private final Fixture fixture;
    
-    public Html5Test(String expression, Function<Element, ElementMatcher> mapper) {
-        this.fixture = new Fixture(doc, expression, mapper);
+    public Html5Test(String expression, Function<Element, List<Element>> teacher) {
+        this.fixture = new Fixture(doc, expression, teacher);
     }
 
     @BeforeClass
