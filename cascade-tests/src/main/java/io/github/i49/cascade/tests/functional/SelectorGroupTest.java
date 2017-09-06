@@ -48,6 +48,9 @@ public class SelectorGroupTest extends BasicSelectorTest {
             { "#selector-group-test", "nonexistent, p", contains(1, 5) },
             { "#selector-group-test", "nonexistent1, nonexistent2", contains() },
             { "#selector-group-test", "li, .example", contains(1, 3, 4, 5) },
+            
+            // including comments
+            { "#selector-group-test", "li,/*comment*/p", contains(1, 3, 4, 5) },
         });
     }
 

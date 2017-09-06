@@ -556,15 +556,26 @@ public class SelectorParser {
     }
 
     private InvalidSelectorException unexpectedToken(Token token) {
-        if (token.is(TokenCategory.EOI)) {
-            return newException(Message.UNEXPECTED_END_OF_INPUT);
-        } else if (token.is(TokenCategory.UNKNOWN)) {
-            return newException(Message.UNKNOWN_TOKEN);
-        } else if (token.is(TokenCategory.SPACE)) {
-            return newException(Message.UNEXPECTED_WHITESPACE);
-        } else {
-            return newException(Message.UNEXPECTED_TOKEN.with(token.getRawText()));
+        // This is an instance of Message or String.
+        Object message = null; 
+        switch (token.getCategory()) {
+        case EOI:
+            message = Message.UNEXPECTED_END_OF_INPUT;
+            break;
+        case UNKNOWN:
+            message = Message.UNKNOWN_TOKEN;
+            break;
+        case SPACE:
+            message = Message.UNEXPECTED_WHITESPACE;
+            break;
+        case INVALID_COMMENT:
+            message = Message.COMMENT_IS_NOT_CLOSED;
+            break;
+        default:
+            message = Message.UNEXPECTED_TOKEN.with(token.getRawText());
+            break;
         }
+        return newException(message);
     }
 
     private InvalidSelectorException unexpectedTokenInFunction(Token token) {

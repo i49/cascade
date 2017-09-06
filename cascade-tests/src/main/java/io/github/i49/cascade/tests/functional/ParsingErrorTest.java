@@ -101,6 +101,9 @@ public class ParsingErrorTest {
             { ":not(li, p)", 7 },
             { ":not(h1.opener)", 7 },
             { ":not(42)", 5 },
+            
+            // comment
+            { "p/* comment*", 1 },
         });
     }
 

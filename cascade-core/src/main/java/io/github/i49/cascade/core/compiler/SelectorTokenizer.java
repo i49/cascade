@@ -26,7 +26,6 @@ class SelectorTokenizer implements Tokenizer {
     private final TextInput input;
 
     private int currentIndex;
-    private int nextIndex;
     private Token currentToken;
     private int currentTokenLength;
 
@@ -35,30 +34,43 @@ class SelectorTokenizer implements Tokenizer {
     }
 
     @Override
-    public Token nextToken() {
-        currentToken = null;
-        fetchToken();
-        if (currentToken == null) {
-            newToken(TokenCategory.UNKNOWN, "");
-        }
-        nextIndex = currentIndex + currentTokenLength;
-        currentTokenLength = 0;
-        return currentToken;
-    }
-
-    @Override
     public String getInput() {
         return input.getText();
     }
 
     @Override
-    public int getCurrentIndex() {
-        return currentIndex;
+    public Token nextToken() {
+        currentToken = null;
+        
+        skipComments();
+        if (currentToken == null) {
+            fetchToken();
+        }
+        
+        if (currentToken == null) {
+            newToken(TokenCategory.UNKNOWN, "");
+        }
+        currentIndex += currentTokenLength;
+        currentTokenLength = 0;
+        return currentToken;
+    }
+    
+    /**
+     * Skips comments.
+     */
+    private void skipComments() {
+        int index = currentIndex;
+        while (comment(index) && currentToken.getCategory() == TokenCategory.COMMENT) {
+            currentIndex += currentTokenLength;
+            currentTokenLength = 0;
+            currentToken = null;
+            index = currentIndex;
+        }
     }
 
     private boolean fetchToken() {
 
-        int index = currentIndex = nextIndex;
+        int index = currentIndex;
 
         if (!input.hasChar(index)) {
             return newToken(TokenCategory.EOI, "");
@@ -104,9 +116,27 @@ class SelectorTokenizer implements Tokenizer {
 
         return true;
     }
-
+    
     // token generators
 
+    private boolean comment(int index) {
+        if (input.charAt(index) == '/' && input.charAt(index + 1) == '*') {
+            index += 2;
+        } else {
+            return false;
+        }
+        StringBuilder b = new StringBuilder("/*");
+        int c = input.charAt(index);
+        while (c >= 0) {
+            if (c == '*' && input.charAt(index + 1) == '/') {
+                return newToken(TokenCategory.COMMENT, b.append("*/").toString());
+            }
+            b.append((char)c);
+            c = input.charAt(++index);
+        }
+        return newToken(TokenCategory.INVALID_COMMENT, b.toString());
+    }
+    
     private boolean number(int index) {
         int c = input.charAt(index);
         if (c == '.') {
@@ -282,8 +312,7 @@ class SelectorTokenizer implements Tokenizer {
     }
 
     private boolean newToken(TokenCategory category, String text) {
-        int length = text.length();
-        return newToken(category, text, length);
+        return newToken(category, text, text.length());
     }
 
     private boolean newToken(TokenCategory category, String text, int length) {

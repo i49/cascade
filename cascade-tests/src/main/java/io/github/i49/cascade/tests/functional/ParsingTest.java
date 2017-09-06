@@ -154,6 +154,13 @@ public class ParsingTest {
             { ":not(p)", "*:not(p)" },
             { ":not(*)", "*:not(*)" },
             { "tr:not(:nth-child(3n+2))", "tr:not(:nth-child(3n + 2))" },
+            
+            // comment
+            { "/*comment*/h1", "h1" },
+            { "h1/*comment*/", "h1" },
+            { "p/*comment*/.abstract", "p.abstract" },
+            { "figure /*comment*/img", "figure img" },
+            { "ol,/*comment*/ul", "ol, ul" },
         });
     }
 

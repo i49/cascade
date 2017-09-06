@@ -90,7 +90,9 @@ public class SimpleSelectorTest extends BasicSelectorTest {
             { "#class-and-id-test", "div:not(#other).class:not(.test).test#theid#theid", contains() },
             { "#class-and-id-test", "div:not(#other).class:not(.fail).nottest#theid#theid", contains() },
             { "#class-and-id-test", "div:not(#other).class:not(.fail).nottest#theid#other", contains() },
-
+            
+            // including comments
+            { "#class-selector-test", ".hello/*comment*/.java", contains(4) },
         });
     }
 

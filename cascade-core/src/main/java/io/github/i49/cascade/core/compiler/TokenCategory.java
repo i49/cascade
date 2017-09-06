@@ -24,7 +24,11 @@ public enum TokenCategory {
     UNKNOWN,
     /** End of input. */
     EOI,
-    /** Sequence of whitespaces. */
+    /** Comment */
+    COMMENT,
+    /** Invalid comment */
+    INVALID_COMMENT,
+    /** Sequence of white-spaces. */
     SPACE,
     IDENTITY,
     HASH,

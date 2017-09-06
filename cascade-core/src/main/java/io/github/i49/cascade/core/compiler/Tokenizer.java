@@ -22,13 +22,6 @@ package io.github.i49.cascade.core.compiler;
 interface Tokenizer {
 
     /**
-     * Returns the next token.
-     *
-     * @return the next token.
-     */
-    Token nextToken();
-
-    /**
      * Return the original input text.
      *
      * @return input text.
@@ -36,9 +29,9 @@ interface Tokenizer {
     String getInput();
 
     /**
-     * Returns the position of the current token in the input text.
+     * Returns the next token.
      *
-     * @return the position in the input text, which is zero-based.
+     * @return the next token.
      */
-    int getCurrentIndex();
+    Token nextToken();
 }
