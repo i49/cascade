@@ -2,4 +2,4 @@ language: java
 jdk:
     - oraclejdk8
 
-script: mvn package -Dmaven.javadoc.skip=true -f cascade/pom.xml
+script: mvn package -Dmaven.javadoc.skip=true
