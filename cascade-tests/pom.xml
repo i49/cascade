@@ -4,9 +4,8 @@
 
     <parent>
         <groupId>io.github.i49</groupId>
-        <artifactId>cascade</artifactId>
+        <artifactId>cascade-parent</artifactId>
         <version>3.2.0-SNAPSHOT</version>
-        <relativePath>../cascade</relativePath>
     </parent>
 
     <artifactId>cascade-tests</artifactId>
