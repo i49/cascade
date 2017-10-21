@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>cascade-core</artifactId>
+            <artifactId>cascade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

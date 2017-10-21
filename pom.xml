@@ -14,7 +14,7 @@
     </properties>
     
     <modules>
-        <module>cascade-core</module>
+        <module>cascade</module>
         <module>cascade-tests</module>
     </modules>
 
@@ -76,7 +76,7 @@
     
     <!-- Project Information -->
     
-    <name>Cascade</name>
+    <name>Cascade Parent</name>
     <description>Cascade is a pure Java implementation of CSS Selectors operating on W3C DOM.</description>
     <url>https://github.com/i49/cascade</url>
     <inceptionYear>2017</inceptionYear>
