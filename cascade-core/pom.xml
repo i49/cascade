@@ -12,35 +12,8 @@
     <packaging>jar</packaging>
     
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cascade-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cascade-tests</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <dependenciesToScan>
-                        <dependency>${project.groupId}:cascade-tests</dependency>
-                    </dependenciesToScan>
-                    <excludes>
-                        <exclude>**/performance/*</exclude>
-                    </excludes>
-                </configuration>
-             </plugin>
-        </plugins>
-    </build>
-
     <name>Cascade Core</name>
 
     <scm>

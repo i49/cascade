@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>cascade-api</artifactId>
+            <artifactId>cascade-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -28,6 +28,22 @@
             <version>3.8.0</version>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <testSourceDirectory>${basedir}\src\main\java\</testSourceDirectory>
+                    <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                    <excludes>
+                        <exclude>**/performance/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>    
+    </build>
   
     <name>Cascade Tests</name>
  
