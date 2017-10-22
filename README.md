@@ -1,6 +1,6 @@
 # Cascade
 [![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0
-) [![Build Status](https://travis-ci.org/i49/cascade.svg?branch=master)](https://travis-ci.org/i49/cascade) [![Maven Central](https://img.shields.io/maven-central/v/io.github.i49/cascade-api.svg)](https://search.maven.org/#artifactdetails%7Cio.github.i49%7Ccascade-api%7C3.1.0%7Cjar)  [![Javadocs](https://www.javadoc.io/badge/io.github.i49/cascade-api.svg?color=blue)](https://www.javadoc.io/doc/io.github.i49/cascade-api)
+) [![Build Status](https://travis-ci.org/i49/cascade.svg?branch=master)](https://travis-ci.org/i49/cascade) [![Maven Central](https://img.shields.io/maven-central/v/io.github.i49/cascade.svg)](https://search.maven.org/#artifactdetails%7Cio.github.i49%7Ccascade%7C3.2.0%7Cjar)  [![Javadocs](https://www.javadoc.io/badge/io.github.i49/cascade.svg?color=blue)](https://www.javadoc.io/doc/io.github.i49/cascade)
 
 Cascade is a pure Java implementation of CSS Selectors operating on W3C DOM.
 
@@ -28,19 +28,13 @@ For more detail, please see [API documentation](https://www.javadoc.io/doc/io.gi
 
 * Java 8 or higher.
 
-The library is available in the Maven central repository.
-Add 2 dependencies to your pom.xml before using it as follows:
+The library is available in the Maven Central repository.
+Add a dependency to your pom.xml as below:
 ```xml
 <dependency>
   <groupId>io.github.i49</groupId>
-  <artifactId>cascade-api</artifactId>
-  <version>3.1.0</version>
-</dependency>
-<dependency>
-  <groupId>io.github.i49</groupId>
-  <artifactId>cascade-core</artifactId>
-  <version>3.1.0</version>
-  <scope>runtime</scope>
+  <artifactId>cascade</artifactId>
+  <version>3.2.0</version>
 </dependency>
 ```
 
