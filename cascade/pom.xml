@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.github.i49</groupId>
         <artifactId>cascade-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cascade</artifactId>
@@ -27,17 +27,6 @@
     </dependencies>
     
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <excludePackageNames>io.github.i49.cascade.core</excludePackageNames>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -59,8 +48,78 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <excludePackageNames>io.github.i49.cascade.core</excludePackageNames>
+                </configuration>
+            </plugin>
         </plugins>    
     </build>
+    
+    <profiles>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-compiler-plugin</artifactId>
+		                <configuration>
+		                    <source>1.8</source>
+		                    <target>1.8</target>  
+		                    <excludes>
+		                        <execlude>module-info.java</execlude>
+		                    </excludes>
+		                </configuration>
+	                </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk9</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>8</release>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <release>9</release>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>java8-compile</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>module-info.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
     <name>Cascade</name>
 
